@@ -326,15 +326,7 @@
       50% { opacity: 1; }
     }
 
-    /* Sigil SVG ember glow pulse */
-    @keyframes svgEmberGlow {
-      0%, 100% {
-        filter: drop-shadow(0 0 6px rgba(212, 165, 116, 0.4)) drop-shadow(0 0 12px rgba(212, 165, 116, 0.15));
-      }
-      50% {
-        filter: drop-shadow(0 0 12px rgba(212, 165, 116, 0.6)) drop-shadow(0 0 24px rgba(212, 165, 116, 0.25)) drop-shadow(0 0 40px rgba(212, 165, 116, 0.1));
-      }
-    }
+    /* (svgEmberGlow removed — using text sigil now) */
 
     /* Typewriter cursor blink */
     @keyframes cursorBlink {
@@ -920,50 +912,14 @@
       z-index: 1;
     }
 
-    /* Animated SVG Sigil */
-    .hero-sigil-svg {
-      display: block;
-      width: 90px;
-      height: 90px;
+    /* Hero Sigil Character */
+    .hero-sigil {
+      font-size: 80px;
+      line-height: 1;
+      color: var(--ember);
       margin-bottom: var(--space-8);
-    }
-
-    .hero-sigil-svg .sigil-circle,
-    .hero-sigil-svg .sigil-line {
-      fill: none;
-      stroke: var(--ember);
-      stroke-width: 3;
-      stroke-linecap: round;
-    }
-
-    .hero-sigil-svg .sigil-circle {
-      stroke-dasharray: 220;
-      stroke-dashoffset: 220;
-    }
-
-    .hero-sigil-svg .sigil-line {
-      stroke-dasharray: 52;
-      stroke-dashoffset: 52;
-    }
-
-    .hero-sigil-svg.animate .sigil-circle {
-      animation: drawCircle 1.2s var(--ease-out) forwards;
-    }
-
-    .hero-sigil-svg.animate .sigil-line {
-      animation: drawLine 0.5s var(--ease-out) 0.9s forwards;
-    }
-
-    .hero-sigil-svg.glow {
-      animation: svgEmberGlow 4s ease-in-out infinite;
-    }
-
-    @keyframes drawCircle {
-      to { stroke-dashoffset: 0; }
-    }
-
-    @keyframes drawLine {
-      to { stroke-dashoffset: 0; }
+      animation: emberGlowPulse 4s ease-in-out infinite;
+      text-shadow: 0 0 30px rgba(212, 165, 116, 0.4);
     }
 
     .hero h1 {
@@ -2230,9 +2186,8 @@
         margin-bottom: var(--space-16);
       }
 
-      .hero-sigil-svg {
-        width: 70px;
-        height: 70px;
+      .hero-sigil {
+        font-size: 64px;
       }
     }
 
@@ -2333,11 +2288,7 @@
   <main id="main" role="main">
     <!-- Hero -->
     <section class="hero" aria-labelledby="hero-title">
-      <!-- Animated SVG Sigil -->
-      <svg class="hero-sigil-svg" id="heroSigil" viewBox="0 0 80 80" aria-hidden="true">
-        <circle class="sigil-circle" cx="40" cy="40" r="34" />
-        <line class="sigil-line" x1="40" y1="6" x2="40" y2="74" />
-      </svg>
+      <div class="hero-sigil" aria-hidden="true">⏀</div>
 
       <h1 id="hero-title">SIGIL Protocol</h1>
 
@@ -2897,22 +2848,6 @@ const result = await fetch('/v1/verify', {
   </footer>
 
   <script>
-    // ===== HERO SIGIL SVG DRAW ANIMATION =====
-    (function() {
-      const sigil = document.getElementById('heroSigil');
-      if (!sigil) return;
-
-      // Trigger draw animation after a short delay
-      setTimeout(() => {
-        sigil.classList.add('animate');
-      }, 200);
-
-      // Add glow pulse after drawing completes
-      setTimeout(() => {
-        sigil.classList.add('glow');
-      }, 1800);
-    })();
-
     // ===== TYPEWRITER GLYPH STRING =====
     (function() {
       const el = document.getElementById('glyphTypewriter');

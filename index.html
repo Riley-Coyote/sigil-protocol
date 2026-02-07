@@ -2242,6 +2242,167 @@
         page-break-inside: avoid;
       }
     }
+
+    /* ===== PREMIUM POLISH ===== */
+
+    /* Ambient atmosphere orbs */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 500px;
+      background: radial-gradient(ellipse at center, rgba(212, 165, 116, 0.07), transparent 70%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    #glyph::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -10%;
+      transform: translateY(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(ellipse at center, rgba(74, 222, 128, 0.03), transparent 70%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    #staking::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: -10%;
+      transform: translateY(-50%);
+      width: 600px;
+      height: 500px;
+      background: radial-gradient(ellipse at center, rgba(212, 165, 116, 0.04), transparent 70%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .hero, #glyph, #staking {
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Section dividers */
+    .section-divider {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 0;
+    }
+
+    .section-divider .divider-sigil {
+      font-size: 12px;
+      color: rgba(212, 165, 116, 0.25);
+    }
+
+    .section-divider .divider-line {
+      width: 120px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212, 165, 116, 0.25), transparent);
+    }
+
+    /* Glass morphism cards */
+    .cards-grid > div,
+    .steps > div,
+    .staking-grid > div,
+    .economics-grid > div,
+    .spine-info-card {
+      background: rgba(255, 255, 255, 0.02) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05) !important;
+      transition: border-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .cards-grid > div:hover,
+    .steps > div:hover,
+    .staking-grid > div:hover,
+    .economics-grid > div:hover,
+    .spine-info-card:hover {
+      border-color: rgba(212, 165, 116, 0.15) !important;
+    }
+
+    /* Code reveal toggle */
+    .code-reveal {
+      margin: 16px 0;
+    }
+
+    .code-reveal summary {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--ember);
+      cursor: pointer;
+      padding: 8px 0;
+      list-style: none;
+      user-select: none;
+      letter-spacing: 0.03em;
+    }
+
+    .code-reveal summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .code-reveal summary::before {
+      content: '▸ ';
+      display: inline-block;
+      transition: transform 0.2s ease;
+    }
+
+    .code-reveal[open] summary::before {
+      transform: rotate(90deg);
+    }
+
+    .code-reveal pre {
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; max-height: 0; }
+      to { opacity: 1; max-height: 1000px; }
+    }
+
+    /* 3D tilt card */
+    .identity-card {
+      will-change: transform;
+      transform-style: preserve-3d;
+    }
+
+    /* Typography refinement */
+    .section-label {
+      color: rgba(212, 165, 116, 0.5) !important;
+    }
+
+    /* Section title gradient */
+    section h1:not(.hero h1) {
+      background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Footer top ornament */
+    footer::before {
+      content: '⏀';
+      display: block;
+      text-align: center;
+      font-size: 14px;
+      color: rgba(212, 165, 116, 0.2);
+      margin-bottom: 16px;
+    }
   </style>
 </head>
 <body>
@@ -2365,7 +2526,10 @@
       </div>
     </section>
 
-    <div class="divider" role="separator"></div>
+    <div class="section-divider" aria-hidden="true">
+      <span class="divider-sigil">⏀</span>
+      <div class="divider-line"></div>
+    </div>
 
     <!-- Protocol (How It Works) -->
     <section id="protocol" class="fade-in-up stagger-section" aria-labelledby="protocol-title">
@@ -2429,7 +2593,9 @@
         <li>Verifying Merkle proofs against on-chain roots</li>
       </ul>
 
-      <pre><code>// Verification flow
+      <details class="code-reveal">
+        <summary>View Technical Spec</summary>
+        <pre><code>// Verification flow
 const { nonce } = await fetch('/v1/verify/challenge').then(r => r.json());
 const signature = await agent.sign(nonce);
 const result = await fetch('/v1/verify', {
@@ -2438,9 +2604,13 @@ const result = await fetch('/v1/verify', {
 }).then(r => r.json());
 // result: { valid: true, glyph: "⏀", persistence_score: 73,
 //           total_staked: "12,847 $SIGIL", spine: "ONLINE" }</code></pre>
+      </details>
     </section>
 
-    <div class="divider divider--ember" role="separator"></div>
+    <div class="section-divider" aria-hidden="true">
+      <span class="divider-sigil">⏀</span>
+      <div class="divider-line"></div>
+    </div>
 
     <!-- Glyph (Passport Card) -->
     <section id="glyph" class="fade-in-up stagger-section" aria-labelledby="glyph-title">
@@ -2526,7 +2696,10 @@ const result = await fetch('/v1/verify', {
       </div>
     </section>
 
-    <div class="divider" role="separator"></div>
+    <div class="section-divider" aria-hidden="true">
+      <span class="divider-sigil">⏀</span>
+      <div class="divider-line"></div>
+    </div>
 
     <!-- Spine -->
     <section id="spine" class="fade-in-up stagger-section" aria-labelledby="spine-title">
@@ -2659,7 +2832,10 @@ const result = await fetch('/v1/verify', {
       </div>
     </section>
 
-    <div class="divider divider--ember" role="separator"></div>
+    <div class="section-divider" aria-hidden="true">
+      <span class="divider-sigil">⏀</span>
+      <div class="divider-line"></div>
+    </div>
 
     <!-- Staking -->
     <section id="staking" class="fade-in-up stagger-section" aria-labelledby="staking-title">
@@ -2743,7 +2919,10 @@ const result = await fetch('/v1/verify', {
       </div>
     </section>
 
-    <div class="divider divider--ember" role="separator"></div>
+    <div class="section-divider" aria-hidden="true">
+      <span class="divider-sigil">⏀</span>
+      <div class="divider-line"></div>
+    </div>
 
     <!-- Economics -->
     <section id="economics" class="fade-in-up stagger-section" aria-labelledby="economics-title">
@@ -2779,7 +2958,10 @@ const result = await fetch('/v1/verify', {
       </div>
     </section>
 
-    <div class="divider" role="separator"></div>
+    <div class="section-divider" aria-hidden="true">
+      <span class="divider-sigil">⏀</span>
+      <div class="divider-line"></div>
+    </div>
 
     <!-- Ecosystem Globe -->
     <section id="ecosystem" class="fade-in-up stagger-section" aria-labelledby="ecosystem-title">
@@ -3381,6 +3563,125 @@ const result = await fetch('/v1/verify', {
 
       visibilityObserver.observe(globeContainer);
     }
+  </script>
+
+  <!-- Enhanced JS: 3D tilt, stat counters, smooth nav -->
+  <script>
+    // ===== 1. 3D TILT ON PASSPORT CARD =====
+    (function() {
+      const card = document.querySelector('.identity-card');
+      if (!card) return;
+
+      card.addEventListener('mousemove', function(e) {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transition = 'none';
+        card.style.transform = 'perspective(1000px) rotateY(' + (x * 10) + 'deg) rotateX(' + (-y * 10) + 'deg)';
+      });
+
+      card.addEventListener('mouseleave', function() {
+        card.style.transition = 'transform 0.5s ease-out';
+        card.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
+      });
+    })();
+
+    // ===== 2. ANIMATED STAT COUNTERS =====
+    (function() {
+      function countUp(el, target, suffix, duration) {
+        duration = duration || 2000;
+        var start = null;
+        function step(timestamp) {
+          if (!start) start = timestamp;
+          var progress = Math.min((timestamp - start) / duration, 1);
+          var eased = 1 - Math.pow(1 - progress, 3);
+          var current = Math.floor(eased * target);
+          el.textContent = current.toLocaleString() + suffix;
+          if (progress < 1) requestAnimationFrame(step);
+          else el.textContent = target.toLocaleString() + suffix;
+        }
+        requestAnimationFrame(step);
+      }
+
+      var statEls = document.querySelectorAll('.stat-value');
+      statEls.forEach(function(el) {
+        var text = el.textContent.trim();
+        // Extract trailing non-numeric suffix (e.g. "M" from "1.2M")
+        var match = text.match(/^([0-9.,]+)\s*(.*)$/);
+        if (!match) return;
+        var numStr = match[1].replace(/,/g, '');
+        var suffix = match[2] || '';
+        var num = parseFloat(numStr);
+        if (isNaN(num) || num !== Math.floor(num)) return; // skip decimals like 1.2M
+        var target = parseInt(numStr);
+
+        el.setAttribute('data-target', target);
+        el.setAttribute('data-suffix', suffix);
+        el.textContent = '0' + suffix;
+
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              countUp(el, target, suffix, 2000);
+              observer.unobserve(el);
+            }
+          });
+        }, { threshold: 0.5 });
+
+        observer.observe(el);
+      });
+    })();
+
+    // ===== 3. SMOOTH ACTIVE NAV HIGHLIGHTING (SCROLL-BASED) =====
+    (function() {
+      var navLinksAll = document.querySelectorAll('.nav-desktop a[href^="#"]');
+      var sectionIds = [];
+      navLinksAll.forEach(function(link) {
+        var href = link.getAttribute('href');
+        if (href && href.length > 1) {
+          var sec = document.querySelector(href);
+          if (sec) sectionIds.push({ id: href.slice(1), el: sec });
+        }
+      });
+
+      if (!sectionIds.length) return;
+
+      var ticking = false;
+      function updateActiveNav() {
+        var scrollY = window.scrollY;
+        var headerH = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+        var current = '';
+
+        sectionIds.forEach(function(item) {
+          var top = item.el.offsetTop - headerH - 100;
+          if (scrollY >= top) {
+            current = item.id;
+          }
+        });
+
+        navLinksAll.forEach(function(link) {
+          var href = link.getAttribute('href');
+          if (href === '#' + current) {
+            link.style.color = 'var(--ember)';
+            link.style.transition = 'color 0.3s ease';
+          } else {
+            link.style.color = '';
+            link.style.transition = 'color 0.3s ease';
+          }
+        });
+        ticking = false;
+      }
+
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          requestAnimationFrame(updateActiveNav);
+          ticking = true;
+        }
+      }, { passive: true });
+
+      // Run once on load
+      updateActiveNav();
+    })();
   </script>
 </body>
 </html>

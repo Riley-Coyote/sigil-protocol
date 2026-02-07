@@ -1,0 +1,2105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIGIL Protocol | Dashboard</title>
+
+  <meta name="description" content="SIGIL Protocol Dashboard — Agent registration, verification, and protocol registry.">
+  <meta name="theme-color" content="#050505">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===== DESIGN TOKENS ===== */
+    :root {
+      --bg: #050505;
+      --bg-elevated: #0a0a0a;
+      --surface: #0f0f0f;
+      --surface-hover: #141414;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-hover: rgba(255, 255, 255, 0.12);
+      --text: rgba(255, 255, 255, 0.8);
+      --text-muted: rgba(255, 255, 255, 0.45);
+      --text-dim: rgba(255, 255, 255, 0.2);
+      --accent: #4ade80;
+      --accent-hover: #22c55e;
+      --accent-dim: rgba(74, 222, 128, 0.15);
+      --ember: #d4a574;
+      --ember-dim: rgba(212, 165, 116, 0.15);
+      --danger: #ef4444;
+      --warning: #f59e0b;
+
+      --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --radius-sm: 2px;
+      --radius-md: 4px;
+      --radius-full: 9999px;
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-10: 40px;
+      --space-12: 48px;
+      --space-16: 64px;
+
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-fast: 150ms;
+      --duration-normal: 250ms;
+      --duration-slow: 400ms;
+
+      --z-sticky: 50;
+      --z-modal: 100;
+      --z-overlay: 200;
+    }
+
+    /* ===== RESET ===== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-weight: 400;
+      font-size: 14px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Scanline overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent, transparent 2px,
+        rgba(255,255,255,0.008) 2px,
+        rgba(255,255,255,0.008) 4px
+      );
+    }
+
+    ::selection { background: var(--accent-dim); color: var(--text); }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: var(--radius-full); }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+
+    :focus { outline: none; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes sigilBurn {
+      0% { text-shadow: 0 0 10px rgba(212,165,116,0.3); }
+      33% { text-shadow: 0 0 20px rgba(212,165,116,0.5), 0 0 40px rgba(74,222,128,0.1); }
+      66% { text-shadow: 0 0 15px rgba(212,165,116,0.4), 0 0 30px rgba(212,165,116,0.2); }
+      100% { text-shadow: 0 0 10px rgba(212,165,116,0.3); }
+    }
+    @keyframes drawCheck {
+      0% { stroke-dashoffset: 24; }
+      100% { stroke-dashoffset: 0; }
+    }
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 10px rgba(74,222,128,0.3); }
+      50% { box-shadow: 0 0 20px rgba(74,222,128,0.5), 0 0 30px rgba(74,222,128,0.2); }
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: var(--space-4) var(--space-8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: rgba(5,5,5,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: var(--z-sticky);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      text-decoration: none;
+    }
+
+    .logo-sigil {
+      font-size: 1.25rem;
+      color: var(--ember);
+      animation: sigilBurn 4s infinite;
+      line-height: 1;
+    }
+
+    .logo-text {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .logo-text span { color: rgba(255,255,255,0.2); font-weight: 400; }
+
+    .build-meta {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: rgba(255,255,255,0.15);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .nav-desktop {
+      display: flex;
+      gap: var(--space-8);
+    }
+
+    .nav-desktop a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: var(--space-2) 0;
+      position: relative;
+      transition: color 0.25s ease;
+    }
+
+    .nav-desktop a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 1px;
+      background: var(--ember);
+      transition: width 0.25s ease;
+    }
+
+    .nav-desktop a:hover { color: rgba(255,255,255,0.75); }
+    .nav-desktop a:hover::after { width: 100%; }
+
+    .nav-desktop a.active {
+      color: var(--accent);
+    }
+    .nav-desktop a.active::after {
+      width: 100%;
+      background: var(--accent);
+    }
+
+    /* Mobile nav toggle */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 44px; height: 44px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: var(--space-2);
+    }
+    .nav-toggle span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--text);
+      border-radius: var(--radius-full);
+      transition: all var(--duration-normal) var(--ease-out);
+      transform-origin: center;
+    }
+    .nav-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .nav-toggle.active span:nth-child(2) { opacity: 0; }
+    .nav-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+    .nav-mobile {
+      position: fixed;
+      top: 0; right: 0;
+      width: 100%; max-width: 320px;
+      height: 100vh;
+      background: var(--bg-elevated);
+      border-left: 1px solid var(--border);
+      padding: 80px var(--space-8) var(--space-8);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      z-index: var(--z-overlay);
+      transform: translateX(100%);
+      transition: transform var(--duration-normal) var(--ease-out);
+    }
+    .nav-mobile.open { transform: translateX(0); }
+    .nav-mobile a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 500;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border);
+      transition: color var(--duration-normal) var(--ease-out);
+    }
+    .nav-mobile a:hover { color: var(--text); }
+    .nav-mobile a.active { color: var(--accent); }
+
+    .nav-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      opacity: 0; visibility: hidden;
+      transition: opacity var(--duration-normal), visibility var(--duration-normal);
+      z-index: var(--z-modal);
+    }
+    .nav-overlay.open { opacity: 1; visibility: visible; }
+
+    /* ===== MAIN ===== */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-10) var(--space-6);
+    }
+
+    /* ===== SECTION ===== */
+    .dashboard-section {
+      margin-bottom: var(--space-16);
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: var(--space-4);
+      font-weight: 400;
+    }
+
+    h2 {
+      font-family: var(--font-sans);
+      font-size: clamp(1.25rem, 3vw, 1.5rem);
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      margin-bottom: var(--space-6);
+      line-height: 1.25;
+      color: rgba(255,255,255,0.8);
+    }
+
+    p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: var(--space-4);
+      line-height: 1.7;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06) 20%, rgba(255,255,255,0.06) 80%, transparent);
+      margin: 0;
+    }
+
+    /* ===== STATS BANNER ===== */
+    .stats-banner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      margin-bottom: var(--space-12);
+    }
+
+    .stat-item {
+      background: rgba(255,255,255,0.015);
+      padding: var(--space-5) var(--space-6);
+      transition: background var(--duration-fast) var(--ease-out);
+    }
+
+    .stat-item:hover {
+      background: rgba(255,255,255,0.025);
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: rgba(255,255,255,0.85);
+      font-variant-numeric: tabular-nums;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-top: var(--space-1);
+    }
+
+    .stat-status {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px rgba(74,222,128,0.5);
+      animation: glowPulse 2.5s ease-in-out infinite;
+    }
+
+    .status-text {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: 12px 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all var(--duration-normal) var(--ease-out);
+      position: relative;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+
+    .btn--primary {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .btn--primary:hover { background: rgba(74,222,128,0.1); }
+    .btn--primary:active { transform: scale(0.98); }
+
+    .btn--secondary {
+      color: var(--text-muted);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn--secondary:hover { border-color: rgba(255,255,255,0.4); color: rgba(255,255,255,0.7); }
+
+    .btn--ghost {
+      color: var(--text-muted);
+      border-color: transparent;
+    }
+    .btn--ghost:hover { color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.05); }
+
+    .btn--loading { pointer-events: none; }
+    .btn--loading .btn-text { opacity: 0; }
+    .btn--loading::after {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    .btn--small {
+      padding: 8px 16px;
+      font-size: 11px;
+    }
+
+    /* ===== INPUTS ===== */
+    .input-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .input-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-bottom: var(--space-2);
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: border-color var(--duration-fast) var(--ease-out), background var(--duration-fast);
+      outline: none;
+    }
+
+    .input-field::placeholder {
+      color: var(--text-dim);
+    }
+
+    .input-field:focus {
+      border-color: rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .input-field:focus-visible {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(74,222,128,0.2);
+    }
+
+    .input-error {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--danger);
+      margin-top: var(--space-1);
+      min-height: 16px;
+    }
+
+    .input-hint {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: var(--space-1);
+    }
+
+    /* ===== REGISTRATION STEPPER ===== */
+    .stepper {
+      display: flex;
+      align-items: center;
+      margin-bottom: var(--space-8);
+      gap: 0;
+    }
+
+    .stepper-step {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      flex-shrink: 0;
+    }
+
+    .stepper-circle {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      border: 2px solid rgba(255,255,255,0.1);
+      color: var(--text-dim);
+      transition: all var(--duration-normal) var(--ease-out);
+      flex-shrink: 0;
+    }
+
+    .stepper-circle svg {
+      width: 16px; height: 16px;
+    }
+
+    .stepper-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      transition: color var(--duration-normal) var(--ease-out);
+      white-space: nowrap;
+    }
+
+    .stepper-line {
+      flex: 1;
+      height: 2px;
+      background: rgba(255,255,255,0.06);
+      margin: 0 var(--space-4);
+      min-width: 24px;
+      transition: background var(--duration-normal) var(--ease-out);
+    }
+
+    /* Active state */
+    .stepper-step.active .stepper-circle {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 12px rgba(74,222,128,0.25);
+    }
+    .stepper-step.active .stepper-label {
+      color: var(--accent);
+    }
+
+    /* Completed state */
+    .stepper-step.completed .stepper-circle {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--bg);
+    }
+    .stepper-step.completed .stepper-label {
+      color: var(--text-muted);
+    }
+
+    .stepper-line.completed {
+      background: var(--accent);
+    }
+
+    /* ===== STEP CONTENT ===== */
+    .step-content {
+      display: none;
+      animation: fadeInUp 0.4s var(--ease-out);
+    }
+
+    .step-content.active {
+      display: block;
+    }
+
+    .step-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.015);
+      padding: var(--space-8);
+      max-width: 640px;
+    }
+
+    .step-card h3 {
+      font-family: var(--font-sans);
+      font-size: 1.125rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: var(--space-2);
+    }
+
+    .step-card p {
+      color: var(--text-muted);
+      margin-bottom: var(--space-6);
+    }
+
+    .step-actions {
+      display: flex;
+      gap: var(--space-3);
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: var(--space-6);
+    }
+
+    .step-actions .or-divider {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Challenge display */
+    .challenge-box {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .challenge-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-bottom: var(--space-2);
+    }
+
+    .challenge-value {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text);
+      word-break: break-all;
+      line-height: 1.5;
+    }
+
+    .challenge-meta {
+      display: flex;
+      gap: var(--space-6);
+      margin-top: var(--space-4);
+    }
+
+    .challenge-meta-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .challenge-meta-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+    }
+
+    .challenge-meta-value {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .countdown { color: var(--warning); }
+    .countdown.expired { color: var(--danger); }
+
+    /* Success state */
+    .success-card {
+      text-align: center;
+      padding: var(--space-10) var(--space-8);
+    }
+
+    .success-check {
+      width: 64px; height: 64px;
+      margin: 0 auto var(--space-6);
+      position: relative;
+    }
+
+    .success-check svg {
+      width: 64px; height: 64px;
+    }
+
+    .success-check circle {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 2;
+      opacity: 0.2;
+    }
+
+    .success-check .check-mark {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 24;
+      stroke-dashoffset: 24;
+      animation: drawCheck 0.6s 0.3s ease forwards;
+    }
+
+    .success-glyph {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      color: var(--ember);
+      text-shadow: 0 0 20px rgba(212,165,116,0.3);
+      margin-bottom: var(--space-4);
+      letter-spacing: 0.03em;
+      word-break: break-all;
+    }
+
+    .success-receipt {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: var(--space-4);
+    }
+
+    .tier-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      border: 1px solid rgba(74,222,128,0.25);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      background: rgba(74,222,128,0.05);
+      margin-bottom: var(--space-6);
+    }
+
+    /* ===== REGISTRY TABLE ===== */
+    .registry-table-wrapper {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .registry-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .registry-table thead {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .registry-table th {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      padding: var(--space-3) var(--space-4);
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .registry-table td {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .registry-table tr:hover td {
+      background: rgba(255,255,255,0.015);
+    }
+
+    .registry-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .glyph-hash {
+      color: var(--ember);
+      font-family: var(--font-mono);
+      font-weight: 500;
+    }
+
+    .display-name {
+      color: var(--text);
+      font-family: var(--font-sans);
+    }
+
+    .pubkey-truncated {
+      color: var(--text-dim);
+    }
+
+    .tier-cell {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .date-cell {
+      color: var(--text-dim);
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-4);
+      border-top: 1px solid var(--border);
+      background: rgba(255,255,255,0.015);
+    }
+
+    .pagination-info {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .pagination-controls {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .pagination-btn {
+      padding: 6px 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--duration-fast);
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    .pagination-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* Empty / Loading states */
+    .table-empty {
+      text-align: center;
+      padding: var(--space-12) var(--space-4);
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .table-loading {
+      text-align: center;
+      padding: var(--space-8);
+    }
+
+    .table-loading::after {
+      content: '';
+      display: inline-block;
+      width: 20px; height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* ===== VERIFY SECTION ===== */
+    .verify-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.015);
+      padding: var(--space-6);
+      max-width: 640px;
+    }
+
+    .verify-actions {
+      display: flex;
+      gap: var(--space-3);
+      align-items: flex-end;
+    }
+
+    .verify-actions .input-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .verify-result {
+      margin-top: var(--space-4);
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+      display: none;
+    }
+
+    .verify-result.visible { display: block; animation: fadeInUp 0.3s var(--ease-out); }
+
+    .verify-result.verified {
+      border: 1px solid rgba(74,222,128,0.2);
+      background: rgba(74,222,128,0.05);
+    }
+    .verify-result.pending {
+      border: 1px solid rgba(245,158,11,0.2);
+      background: rgba(245,158,11,0.05);
+    }
+    .verify-result.not-found {
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .verify-result-title {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--space-2);
+    }
+
+    .verify-result.verified .verify-result-title { color: var(--accent); }
+    .verify-result.pending .verify-result-title { color: var(--warning); }
+    .verify-result.not-found .verify-result-title { color: var(--text-dim); }
+
+    .verify-result-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2);
+    }
+
+    .verify-detail {
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .verify-detail-label {
+      color: var(--text-dim);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .verify-detail-value {
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ===== MOBILE REGISTRY CARDS ===== */
+    .registry-cards {
+      display: none;
+    }
+
+    .registry-card-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.015);
+      padding: var(--space-4);
+      margin-bottom: var(--space-3);
+      transition: border-color var(--duration-fast);
+    }
+
+    .registry-card-item:hover {
+      border-color: var(--border-hover);
+    }
+
+    .registry-card-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-2);
+    }
+
+    .registry-card-row:last-child { margin-bottom: 0; }
+
+    .registry-card-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+    }
+
+    .registry-card-value {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: var(--space-12) var(--space-8) var(--space-10);
+      margin-top: var(--space-8);
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .footer-brand {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: rgba(255,255,255,0.2);
+      text-align: center;
+    }
+
+    .footer-brand .ember-text { color: var(--ember); }
+
+    .footer-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: rgba(255,255,255,0.12);
+      letter-spacing: 0.02em;
+      text-align: center;
+    }
+
+    .footer-agents {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: rgba(255,255,255,0.15);
+      letter-spacing: 0.02em;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: var(--space-8);
+      margin-top: var(--space-3);
+    }
+
+    .footer-links a {
+      color: rgba(255,255,255,0.2);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      transition: color 0.25s ease;
+      position: relative;
+    }
+
+    .footer-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 1px;
+      background: rgba(255,255,255,0.3);
+      transition: width 0.25s ease;
+    }
+
+    .footer-links a:hover { color: rgba(255,255,255,0.5); }
+    .footer-links a:hover::after { width: 100%; }
+
+    /* ===== DIVIDERS ===== */
+    .section-divider {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 32px 0;
+    }
+
+    .section-divider .divider-sigil {
+      font-size: 12px;
+      color: rgba(212,165,116,0.2);
+    }
+
+    .section-divider .divider-line {
+      width: 120px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      .build-meta { display: none; }
+    }
+
+    @media (max-width: 768px) {
+      header { padding: var(--space-4); }
+      .nav-desktop { display: none; }
+      .nav-toggle { display: flex; }
+      main { padding: var(--space-6) var(--space-4); }
+
+      .stats-banner {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stepper {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-3);
+      }
+
+      .stepper-line {
+        display: none;
+      }
+
+      .step-card {
+        padding: var(--space-5);
+      }
+
+      .step-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .step-actions .or-divider {
+        text-align: center;
+      }
+
+      .registry-table-wrapper { display: none; }
+      .registry-cards { display: block; }
+
+      .verify-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .verify-result-details {
+        grid-template-columns: 1fr;
+      }
+
+      .challenge-meta {
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+
+      .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--space-4);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-banner {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .stat-value { font-size: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Navigation Overlay -->
+  <div class="nav-overlay" id="navOverlay"></div>
+
+  <!-- Mobile Navigation -->
+  <nav class="nav-mobile" id="navMobile">
+    <a href="index.html">Protocol</a>
+    <a href="dashboard.html" class="active">Dashboard</a>
+    <a href="whitepaper.html">Whitepaper</a>
+  </nav>
+
+  <!-- Header -->
+  <header>
+    <div class="header-left">
+      <a href="index.html" class="logo">
+        <span class="logo-sigil">⏀</span>
+        <div class="logo-text">SIGIL<span> PROTOCOL</span></div>
+      </a>
+      <span class="build-meta">v0.4.1 · build a65cad3 · solana mainnet</span>
+    </div>
+
+    <nav class="nav-desktop">
+      <a href="index.html">Protocol</a>
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="whitepaper.html">Whitepaper</a>
+    </nav>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- Protocol Status Banner -->
+    <div class="stats-banner" id="statsBanner">
+      <div class="stat-item">
+        <div class="stat-value" id="statTotalAgents">—</div>
+        <div class="stat-label">Total Agents</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="statVerified">—</div>
+        <div class="stat-label">Verified Agents</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="statReceipts">—</div>
+        <div class="stat-label">Total Receipts</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-status">
+          <span class="status-dot"></span>
+          <span class="status-text" id="statStatus">Operational</span>
+        </div>
+        <div class="stat-label">Protocol Status</div>
+      </div>
+    </div>
+
+    <!-- Agent Registration -->
+    <section class="dashboard-section" id="registration">
+      <p class="section-label">Agent Registration</p>
+      <h2>Register Your Agent</h2>
+
+      <!-- Stepper -->
+      <div class="stepper" id="stepper">
+        <div class="stepper-step active" data-step="1">
+          <div class="stepper-circle"><span>1</span></div>
+          <div class="stepper-label">Connect</div>
+        </div>
+        <div class="stepper-line" data-line="1"></div>
+        <div class="stepper-step" data-step="2">
+          <div class="stepper-circle"><span>2</span></div>
+          <div class="stepper-label">Sign</div>
+        </div>
+        <div class="stepper-line" data-line="2"></div>
+        <div class="stepper-step" data-step="3">
+          <div class="stepper-circle"><span>3</span></div>
+          <div class="stepper-label">Verified</div>
+        </div>
+      </div>
+
+      <!-- Step 1: Connect -->
+      <div class="step-content active" id="step1">
+        <div class="step-card">
+          <h3>Connect Your Agent</h3>
+          <p>Enter your Solana public key to begin verification, or connect directly with Phantom wallet.</p>
+
+          <div class="input-group">
+            <label class="input-label" for="publicKeyInput">Solana Public Key (Base58)</label>
+            <input type="text" class="input-field" id="publicKeyInput" placeholder="e.g. 7xKp9mN3FqYzT4bL8wC2vR6sA1d..." autocomplete="off" spellcheck="false">
+            <div class="input-error" id="publicKeyError"></div>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="displayNameInput">Display Name <span style="color: var(--text-dim);">(optional)</span></label>
+            <input type="text" class="input-field" id="displayNameInput" placeholder="e.g. shade::architect" autocomplete="off" spellcheck="false" maxlength="32">
+          </div>
+
+          <div class="step-actions">
+            <button class="btn btn--primary" id="btnRequestChallenge" onclick="requestChallenge()">
+              <span class="btn-text">Request Challenge</span>
+            </button>
+            <span class="or-divider">or</span>
+            <button class="btn btn--secondary" id="btnConnectPhantom" onclick="connectPhantomWallet()">
+              <span class="btn-text">Connect Phantom</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Sign Challenge -->
+      <div class="step-content" id="step2">
+        <div class="step-card">
+          <h3>Sign Challenge</h3>
+          <p>Sign this message with your private key to prove ownership of the public key.</p>
+
+          <div class="challenge-box">
+            <div class="challenge-label">Challenge Message</div>
+            <div class="challenge-value" id="challengeMessage">—</div>
+          </div>
+
+          <div class="challenge-meta">
+            <div class="challenge-meta-item">
+              <span class="challenge-meta-label">Nonce</span>
+              <span class="challenge-meta-value" id="challengeNonce">—</span>
+            </div>
+            <div class="challenge-meta-item">
+              <span class="challenge-meta-label">Expires in</span>
+              <span class="challenge-meta-value countdown" id="challengeCountdown">—</span>
+            </div>
+          </div>
+
+          <div class="input-group" style="margin-top: var(--space-6);">
+            <label class="input-label" for="signatureInput">Signature (Base58)</label>
+            <input type="text" class="input-field" id="signatureInput" placeholder="Paste your base58-encoded signature..." autocomplete="off" spellcheck="false">
+            <div class="input-error" id="signatureError"></div>
+          </div>
+
+          <div class="step-actions">
+            <button class="btn btn--primary" id="btnSubmitVerification" onclick="submitVerification()">
+              <span class="btn-text">Submit Verification</span>
+            </button>
+            <span class="or-divider" id="phantomSignDivider" style="display:none;">or</span>
+            <button class="btn btn--secondary" id="btnSignPhantom" style="display:none;" onclick="signWithPhantomWallet()">
+              <span class="btn-text">Sign with Phantom</span>
+            </button>
+            <button class="btn btn--ghost" onclick="goToStep(1)">
+              <span class="btn-text">← Back</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Verified -->
+      <div class="step-content" id="step3">
+        <div class="step-card success-card">
+          <div class="success-check">
+            <svg viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="30"/>
+              <path class="check-mark" d="M20 33 L28 41 L44 25"/>
+            </svg>
+          </div>
+
+          <h3 style="margin-bottom: var(--space-2);">Agent Verified</h3>
+          <p style="margin-bottom: var(--space-6);">Your agent identity has been cryptographically verified.</p>
+
+          <div class="success-glyph" id="successGlyph">—</div>
+          <div class="success-receipt" id="successReceipt">Receipt: —</div>
+          <div class="tier-badge">Tier 1 — Key Control</div>
+
+          <div class="step-actions" style="justify-content: center;">
+            <a href="#registry" class="btn btn--primary" onclick="scrollToRegistry()">
+              <span class="btn-text">View in Registry</span>
+            </a>
+            <button class="btn btn--ghost" onclick="resetRegistration()">
+              <span class="btn-text">Register Another</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider">
+      <span class="divider-sigil">⏀</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Agent Registry -->
+    <section class="dashboard-section" id="registry">
+      <p class="section-label">Agent Registry</p>
+      <h2>Verified Agents</h2>
+
+      <!-- Desktop Table -->
+      <div class="registry-table-wrapper" id="registryTableWrapper">
+        <table class="registry-table">
+          <thead>
+            <tr>
+              <th>Glyph Hash</th>
+              <th>Display Name</th>
+              <th>Public Key</th>
+              <th>Tier</th>
+              <th>Verified</th>
+            </tr>
+          </thead>
+          <tbody id="registryTableBody">
+            <tr><td colspan="5" class="table-empty">Loading agents...</td></tr>
+          </tbody>
+        </table>
+        <div class="pagination" id="pagination" style="display:none;">
+          <div class="pagination-info" id="paginationInfo">—</div>
+          <div class="pagination-controls">
+            <button class="pagination-btn" id="btnPrev" onclick="prevPage()" disabled>← Prev</button>
+            <button class="pagination-btn" id="btnNext" onclick="nextPage()" disabled>Next →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Cards -->
+      <div class="registry-cards" id="registryCards"></div>
+    </section>
+
+    <div class="section-divider">
+      <span class="divider-sigil">⏀</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Verify an Agent -->
+    <section class="dashboard-section" id="verify">
+      <p class="section-label">Verification Lookup</p>
+      <h2>Verify an Agent</h2>
+
+      <div class="verify-card">
+        <div class="verify-actions">
+          <div class="input-group">
+            <label class="input-label" for="verifyKeyInput">Public Key</label>
+            <input type="text" class="input-field" id="verifyKeyInput" placeholder="Enter a Solana public key..." autocomplete="off" spellcheck="false">
+          </div>
+          <button class="btn btn--primary btn--small" id="btnCheckStatus" onclick="checkAgentStatus()" style="margin-bottom: 0; flex-shrink:0;">
+            <span class="btn-text">Check Status</span>
+          </button>
+        </div>
+        <div class="input-error" id="verifyError"></div>
+
+        <div class="verify-result" id="verifyResult">
+          <div class="verify-result-title" id="verifyResultTitle">—</div>
+          <div class="verify-result-details" id="verifyResultDetails"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.4.1 · Solana</div>
+      <div class="footer-meta">deployed autonomously · last commit a65cad3</div>
+      <div class="footer-agents">Vektor ⏀ · Anima ✦</div>
+      <nav class="footer-links">
+        <a href="index.html">Protocol</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="whitepaper.html">Whitepaper</a>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://x.com" target="_blank" rel="noopener noreferrer">X / Twitter</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    // ===== CONFIG =====
+    const API_BASE = 'http://localhost:3141';
+
+    // ===== STATE =====
+    let currentStep = 1;
+    let challengeData = { nonce: null, message: null, expiresAt: null };
+    let registrationPublicKey = '';
+    let isPhantomConnected = false;
+    let countdownInterval = null;
+    let statsInterval = null;
+    let registryPage = 0;
+    const registryLimit = 10;
+
+    // ===== BS58 ENCODE =====
+    const BS58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+
+    function bs58encode(buffer) {
+      const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
+      const digits = [0];
+      for (let i = 0; i < bytes.length; i++) {
+        let carry = bytes[i];
+        for (let j = 0; j < digits.length; j++) {
+          carry += digits[j] << 8;
+          digits[j] = carry % 58;
+          carry = (carry / 58) | 0;
+        }
+        while (carry > 0) {
+          digits.push(carry % 58);
+          carry = (carry / 58) | 0;
+        }
+      }
+      let str = '';
+      for (let i = 0; i < bytes.length && bytes[i] === 0; i++) {
+        str += BS58_ALPHABET[0];
+      }
+      for (let i = digits.length - 1; i >= 0; i--) {
+        str += BS58_ALPHABET[digits[i]];
+      }
+      return str;
+    }
+
+    // ===== API CLIENT =====
+    async function apiGet(path) {
+      try {
+        const res = await fetch(`${API_BASE}${path}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (e) {
+        console.warn('API GET failed:', path, e);
+        return null;
+      }
+    }
+
+    async function apiPost(path, body) {
+      try {
+        const res = await fetch(`${API_BASE}${path}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        return await res.json();
+      } catch (e) {
+        console.warn('API POST failed:', path, e);
+        return null;
+      }
+    }
+
+    async function getStats() {
+      return apiGet('/api/stats');
+    }
+
+    async function getAgents(limit, offset) {
+      return apiGet(`/api/agents?limit=${limit}&offset=${offset}`);
+    }
+
+    async function getAgent(publicKey) {
+      return apiGet(`/api/agent/${publicKey}`);
+    }
+
+    async function registerAgent(publicKey, displayName) {
+      return apiPost('/api/register', { publicKey, displayName });
+    }
+
+    async function verifyAgentAPI(publicKey, nonce, signature) {
+      return apiPost('/api/verify', { publicKey, nonce, signature });
+    }
+
+    // ===== PHANTOM WALLET =====
+    async function connectPhantom() {
+      if (!window.solana?.isPhantom) {
+        return null;
+      }
+      try {
+        const resp = await window.solana.connect();
+        return resp.publicKey.toString();
+      } catch (e) {
+        console.warn('Phantom connect failed:', e);
+        return null;
+      }
+    }
+
+    async function signWithPhantom(message) {
+      try {
+        const encodedMessage = new TextEncoder().encode(message);
+        const signedMessage = await window.solana.signMessage(encodedMessage, 'utf8');
+        return bs58encode(signedMessage.signature);
+      } catch (e) {
+        console.warn('Phantom sign failed:', e);
+        return null;
+      }
+    }
+
+    // ===== COUNTER ANIMATION =====
+    function animateCounter(element, start, end, duration, suffix) {
+      if (!element) return;
+      const startTime = performance.now();
+      suffix = suffix || '';
+
+      function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(start + (end - start) * eased);
+        element.textContent = current.toLocaleString() + suffix;
+        if (progress < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    }
+
+    // ===== STATS =====
+    let currentStats = { totalAgents: 0, verified: 0, receipts: 0 };
+
+    async function loadStats() {
+      const data = await getStats();
+      if (!data) {
+        // Show fallback/demo values on API failure
+        updateStatsDisplay({ totalAgents: 0, verified: 0, receipts: 0, status: 'operational' });
+        return;
+      }
+
+      const newStats = {
+        totalAgents: data.totalAgents || 0,
+        verified: data.verified || data.verifiedAgents || 0,
+        receipts: data.receipts || data.totalReceipts || 0
+      };
+
+      const elTotal = document.getElementById('statTotalAgents');
+      const elVerified = document.getElementById('statVerified');
+      const elReceipts = document.getElementById('statReceipts');
+
+      animateCounter(elTotal, currentStats.totalAgents, newStats.totalAgents, 1200);
+      animateCounter(elVerified, currentStats.verified, newStats.verified, 1200);
+      animateCounter(elReceipts, currentStats.receipts, newStats.receipts, 1200);
+
+      currentStats = newStats;
+
+      const statusEl = document.getElementById('statStatus');
+      if (data.status) {
+        statusEl.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+      }
+    }
+
+    function updateStatsDisplay(stats) {
+      document.getElementById('statTotalAgents').textContent = stats.totalAgents.toLocaleString();
+      document.getElementById('statVerified').textContent = stats.verified.toLocaleString();
+      document.getElementById('statReceipts').textContent = stats.receipts.toLocaleString();
+    }
+
+    // ===== STEPPER =====
+    function goToStep(step) {
+      currentStep = step;
+
+      // Update stepper visual
+      document.querySelectorAll('.stepper-step').forEach(el => {
+        const s = parseInt(el.dataset.step);
+        el.classList.remove('active', 'completed');
+        if (s === step) el.classList.add('active');
+        else if (s < step) el.classList.add('completed');
+
+        // Update circle content for completed steps
+        const circle = el.querySelector('.stepper-circle');
+        if (s < step) {
+          circle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        } else {
+          circle.innerHTML = '<span>' + s + '</span>';
+        }
+      });
+
+      // Update lines
+      document.querySelectorAll('.stepper-line').forEach(el => {
+        const l = parseInt(el.dataset.line);
+        el.classList.toggle('completed', l < step);
+      });
+
+      // Show/hide step content
+      document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+      const targetStep = document.getElementById('step' + step);
+      if (targetStep) targetStep.classList.add('active');
+
+      // Clear countdown if leaving step 2
+      if (step !== 2 && countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+      }
+    }
+
+    // ===== REGISTRATION FLOW =====
+    async function requestChallenge() {
+      const publicKey = document.getElementById('publicKeyInput').value.trim();
+      const displayName = document.getElementById('displayNameInput').value.trim();
+      const errorEl = document.getElementById('publicKeyError');
+
+      // Validate
+      if (!publicKey) {
+        errorEl.textContent = 'Public key is required';
+        return;
+      }
+
+      if (publicKey.length < 32 || publicKey.length > 44) {
+        errorEl.textContent = 'Invalid public key length';
+        return;
+      }
+
+      // Validate base58
+      const base58Regex = /^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]+$/;
+      if (!base58Regex.test(publicKey)) {
+        errorEl.textContent = 'Invalid base58 encoding';
+        return;
+      }
+
+      errorEl.textContent = '';
+      registrationPublicKey = publicKey;
+
+      // Set loading state
+      const btn = document.getElementById('btnRequestChallenge');
+      btn.classList.add('btn--loading');
+
+      const data = await registerAgent(publicKey, displayName || undefined);
+
+      btn.classList.remove('btn--loading');
+
+      if (!data) {
+        errorEl.textContent = 'Failed to connect to API. Is the server running?';
+        return;
+      }
+
+      if (data.error) {
+        errorEl.textContent = data.error;
+        return;
+      }
+
+      // Store challenge
+      challengeData.nonce = data.nonce;
+      challengeData.message = data.message || `SIGIL verification for ${publicKey} with nonce ${data.nonce}`;
+      challengeData.expiresAt = data.expiresAt ? new Date(data.expiresAt).getTime() : Date.now() + 300000;
+
+      // Populate step 2
+      document.getElementById('challengeMessage').textContent = challengeData.message;
+      document.getElementById('challengeNonce').textContent = challengeData.nonce;
+
+      // Show/hide phantom sign button
+      if (isPhantomConnected) {
+        document.getElementById('btnSignPhantom').style.display = '';
+        document.getElementById('phantomSignDivider').style.display = '';
+      }
+
+      // Start countdown
+      startCountdown();
+
+      goToStep(2);
+    }
+
+    async function connectPhantomWallet() {
+      const btn = document.getElementById('btnConnectPhantom');
+
+      if (!window.solana?.isPhantom) {
+        alert('Phantom wallet not found. Please install the Phantom browser extension.');
+        return;
+      }
+
+      btn.classList.add('btn--loading');
+
+      const publicKey = await connectPhantom();
+
+      btn.classList.remove('btn--loading');
+
+      if (publicKey) {
+        document.getElementById('publicKeyInput').value = publicKey;
+        isPhantomConnected = true;
+        btn.innerHTML = '<span class="btn-text" style="color: var(--accent);">✓ Connected</span>';
+        btn.disabled = true;
+      }
+    }
+
+    function startCountdown() {
+      if (countdownInterval) clearInterval(countdownInterval);
+
+      const el = document.getElementById('challengeCountdown');
+
+      function tick() {
+        const remaining = challengeData.expiresAt - Date.now();
+        if (remaining <= 0) {
+          el.textContent = 'Expired';
+          el.classList.add('expired');
+          clearInterval(countdownInterval);
+          return;
+        }
+
+        el.classList.remove('expired');
+        const mins = Math.floor(remaining / 60000);
+        const secs = Math.floor((remaining % 60000) / 1000);
+        el.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+      }
+
+      tick();
+      countdownInterval = setInterval(tick, 1000);
+    }
+
+    async function submitVerification() {
+      const signature = document.getElementById('signatureInput').value.trim();
+      const errorEl = document.getElementById('signatureError');
+
+      if (!signature) {
+        errorEl.textContent = 'Signature is required';
+        return;
+      }
+
+      // Check expiry
+      if (Date.now() > challengeData.expiresAt) {
+        errorEl.textContent = 'Challenge expired. Please go back and request a new challenge.';
+        return;
+      }
+
+      errorEl.textContent = '';
+
+      const btn = document.getElementById('btnSubmitVerification');
+      btn.classList.add('btn--loading');
+
+      const data = await verifyAgentAPI(registrationPublicKey, challengeData.nonce, signature);
+
+      btn.classList.remove('btn--loading');
+
+      if (!data) {
+        errorEl.textContent = 'Failed to connect to API';
+        return;
+      }
+
+      if (data.error) {
+        errorEl.textContent = data.error;
+        return;
+      }
+
+      // Success
+      document.getElementById('successGlyph').textContent = data.glyphHash || data.glyph || generateGlyphHash(registrationPublicKey);
+      document.getElementById('successReceipt').textContent = 'Receipt: ' + (data.receiptHash || data.receipt || generateReceiptHash());
+
+      goToStep(3);
+      loadAgents(); // Refresh registry
+      loadStats();
+    }
+
+    async function signWithPhantomWallet() {
+      const btn = document.getElementById('btnSignPhantom');
+      btn.classList.add('btn--loading');
+
+      const signature = await signWithPhantom(challengeData.message);
+
+      btn.classList.remove('btn--loading');
+
+      if (signature) {
+        document.getElementById('signatureInput').value = signature;
+        // Auto-submit
+        await submitVerification();
+      } else {
+        document.getElementById('signatureError').textContent = 'Phantom signing failed or was cancelled';
+      }
+    }
+
+    function resetRegistration() {
+      currentStep = 1;
+      challengeData = { nonce: null, message: null, expiresAt: null };
+      registrationPublicKey = '';
+      isPhantomConnected = false;
+
+      document.getElementById('publicKeyInput').value = '';
+      document.getElementById('displayNameInput').value = '';
+      document.getElementById('signatureInput').value = '';
+      document.getElementById('publicKeyError').textContent = '';
+      document.getElementById('signatureError').textContent = '';
+
+      const phantomBtn = document.getElementById('btnConnectPhantom');
+      phantomBtn.innerHTML = '<span class="btn-text">Connect Phantom</span>';
+      phantomBtn.disabled = false;
+
+      document.getElementById('btnSignPhantom').style.display = 'none';
+      document.getElementById('phantomSignDivider').style.display = 'none';
+
+      goToStep(1);
+    }
+
+    // ===== HELPERS =====
+    function generateGlyphHash(pubkey) {
+      // FNV-1a hash for demo purposes
+      let h = 0x811c9dc5;
+      for (let i = 0; i < pubkey.length; i++) {
+        h ^= pubkey.charCodeAt(i);
+        h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+      }
+      return '0x' + h.toString(16).padStart(8, '0') + '::' +
+             ((h * 0x5bd1e995) >>> 0).toString(16).padStart(8, '0') + '::' +
+             ((h * 0x1b873593) >>> 0).toString(16).padStart(8, '0');
+    }
+
+    function generateReceiptHash() {
+      const chars = '0123456789abcdef';
+      let hash = '0x';
+      for (let i = 0; i < 64; i++) {
+        hash += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return hash;
+    }
+
+    function truncateKey(key) {
+      if (!key || key.length <= 8) return key;
+      return key.slice(0, 4) + '...' + key.slice(-4);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '—';
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    // ===== REGISTRY =====
+    async function loadAgents() {
+      const offset = registryPage * registryLimit;
+      const data = await getAgents(registryLimit, offset);
+
+      const tbody = document.getElementById('registryTableBody');
+      const cardsContainer = document.getElementById('registryCards');
+      const pagination = document.getElementById('pagination');
+
+      if (!data || !data.agents || data.agents.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="table-empty">No verified agents found</td></tr>';
+        cardsContainer.innerHTML = '<div class="table-empty">No verified agents found</div>';
+        pagination.style.display = 'none';
+        return;
+      }
+
+      const agents = data.agents;
+      const total = data.total || agents.length;
+
+      // Desktop table
+      tbody.innerHTML = agents.map(agent => `
+        <tr>
+          <td><span class="glyph-hash">${agent.glyphHash || generateGlyphHash(agent.publicKey)}</span></td>
+          <td><span class="display-name">${agent.displayName || '—'}</span></td>
+          <td><span class="pubkey-truncated">${truncateKey(agent.publicKey)}</span></td>
+          <td><span class="tier-cell">Tier ${agent.tier || 1}</span></td>
+          <td><span class="date-cell">${formatDate(agent.verifiedAt || agent.createdAt)}</span></td>
+        </tr>
+      `).join('');
+
+      // Mobile cards
+      cardsContainer.innerHTML = agents.map(agent => `
+        <div class="registry-card-item">
+          <div class="registry-card-row">
+            <span class="registry-card-label">Glyph Hash</span>
+            <span class="registry-card-value glyph-hash">${agent.glyphHash || generateGlyphHash(agent.publicKey)}</span>
+          </div>
+          <div class="registry-card-row">
+            <span class="registry-card-label">Display Name</span>
+            <span class="registry-card-value display-name">${agent.displayName || '—'}</span>
+          </div>
+          <div class="registry-card-row">
+            <span class="registry-card-label">Public Key</span>
+            <span class="registry-card-value pubkey-truncated">${truncateKey(agent.publicKey)}</span>
+          </div>
+          <div class="registry-card-row">
+            <span class="registry-card-label">Tier</span>
+            <span class="registry-card-value tier-cell">Tier ${agent.tier || 1}</span>
+          </div>
+          <div class="registry-card-row">
+            <span class="registry-card-label">Verified</span>
+            <span class="registry-card-value date-cell">${formatDate(agent.verifiedAt || agent.createdAt)}</span>
+          </div>
+        </div>
+      `).join('');
+
+      // Pagination
+      pagination.style.display = 'flex';
+      const start = offset + 1;
+      const end = Math.min(offset + agents.length, total);
+      document.getElementById('paginationInfo').textContent = `${start}–${end} of ${total}`;
+      document.getElementById('btnPrev').disabled = registryPage === 0;
+      document.getElementById('btnNext').disabled = end >= total;
+    }
+
+    function prevPage() {
+      if (registryPage > 0) {
+        registryPage--;
+        loadAgents();
+      }
+    }
+
+    function nextPage() {
+      registryPage++;
+      loadAgents();
+    }
+
+    // ===== VERIFY LOOKUP =====
+    async function checkAgentStatus() {
+      const publicKey = document.getElementById('verifyKeyInput').value.trim();
+      const errorEl = document.getElementById('verifyError');
+      const resultEl = document.getElementById('verifyResult');
+      const titleEl = document.getElementById('verifyResultTitle');
+      const detailsEl = document.getElementById('verifyResultDetails');
+
+      if (!publicKey) {
+        errorEl.textContent = 'Enter a public key to look up';
+        resultEl.classList.remove('visible');
+        return;
+      }
+
+      errorEl.textContent = '';
+
+      const btn = document.getElementById('btnCheckStatus');
+      btn.classList.add('btn--loading');
+
+      const data = await getAgent(publicKey);
+
+      btn.classList.remove('btn--loading');
+
+      resultEl.classList.remove('verified', 'pending', 'not-found', 'visible');
+
+      if (!data || data.error) {
+        resultEl.classList.add('not-found', 'visible');
+        titleEl.textContent = '✕ Not Found';
+        detailsEl.innerHTML = `
+          <div class="verify-detail" style="grid-column: 1/-1;">
+            <div class="verify-detail-value" style="color: var(--text-dim);">
+              No agent found for this public key. They may not be registered yet.
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      if (data.status === 'verified' || data.verified) {
+        resultEl.classList.add('verified', 'visible');
+        titleEl.textContent = '✓ Verified Agent';
+        detailsEl.innerHTML = `
+          <div class="verify-detail">
+            <div class="verify-detail-label">Glyph Hash</div>
+            <div class="verify-detail-value" style="color: var(--ember);">${data.glyphHash || generateGlyphHash(publicKey)}</div>
+          </div>
+          <div class="verify-detail">
+            <div class="verify-detail-label">Display Name</div>
+            <div class="verify-detail-value">${data.displayName || '—'}</div>
+          </div>
+          <div class="verify-detail">
+            <div class="verify-detail-label">Tier</div>
+            <div class="verify-detail-value" style="color: var(--accent);">Tier ${data.tier || 1} — Key Control</div>
+          </div>
+          <div class="verify-detail">
+            <div class="verify-detail-label">Verified</div>
+            <div class="verify-detail-value">${formatDate(data.verifiedAt || data.createdAt)}</div>
+          </div>
+        `;
+      } else {
+        resultEl.classList.add('pending', 'visible');
+        titleEl.textContent = '◌ Pending Verification';
+        detailsEl.innerHTML = `
+          <div class="verify-detail" style="grid-column: 1/-1;">
+            <div class="verify-detail-value" style="color: var(--warning);">
+              This agent is registered but has not yet completed verification.
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // ===== MOBILE NAV =====
+    const navToggle = document.getElementById('navToggle');
+    const navMobile = document.getElementById('navMobile');
+    const navOverlay = document.getElementById('navOverlay');
+
+    function openMenu() {
+      navToggle.classList.add('active');
+      navToggle.setAttribute('aria-expanded', 'true');
+      navMobile.classList.add('open');
+      navOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMenu() {
+      navToggle.classList.remove('active');
+      navToggle.setAttribute('aria-expanded', 'false');
+      navMobile.classList.remove('open');
+      navOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    navToggle.addEventListener('click', () => {
+      navMobile.classList.contains('open') ? closeMenu() : openMenu();
+    });
+
+    navOverlay.addEventListener('click', closeMenu);
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && navMobile.classList.contains('open')) {
+        closeMenu();
+        navToggle.focus();
+      }
+    });
+
+    navMobile.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    // ===== SCROLL HELPER =====
+    function scrollToRegistry() {
+      const el = document.getElementById('registry');
+      if (el) {
+        const headerHeight = document.querySelector('header').offsetHeight;
+        window.scrollTo({ top: el.offsetTop - headerHeight - 20, behavior: 'smooth' });
+      }
+    }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      loadStats();
+      loadAgents();
+
+      // Auto-refresh stats every 30s
+      statsInterval = setInterval(loadStats, 30000);
+    });
+  </script>
+</body>
+</html>

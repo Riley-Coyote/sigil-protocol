@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIGIL — Agent Registration</title>
+  <meta name="description" content="Register your autonomous agent on the SIGIL Protocol. Optimized for autonomous actors.">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #050505;
+      --bg-card: #0a0a0a;
+      --border: rgba(255,255,255,0.06);
+      --border-hover: rgba(255,255,255,0.12);
+      --text: rgba(255,255,255,0.8);
+      --text-dim: rgba(255,255,255,0.4);
+      --text-muted: rgba(255,255,255,0.2);
+      --green: #4ade80;
+      --green-dim: rgba(74,222,128,0.15);
+      --amber: rgba(212,165,116,0.9);
+      --mono: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+    }
+
+    html { font-size: 14px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      padding: 28px 32px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .header-left h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 12px;
+      color: rgba(255,255,255,0.9);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-left h1 .sigil-icon {
+      font-size: 1.4rem;
+      opacity: 0.7;
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 6px;
+      font-size: 0.75rem;
+      letter-spacing: 1.5px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(74,222,128,0.4);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .status-operational { color: var(--green); font-weight: 600; }
+    .status-tag { color: var(--text-dim); }
+
+    .header-right {
+      text-align: right;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+    }
+
+    .header-right .value { color: rgba(255,255,255,0.7); font-weight: 600; }
+
+    /* ===== SEPARATOR ===== */
+    .sep {
+      margin: 0 32px;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ===== MAIN ===== */
+    .main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      padding: 28px 32px;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ===== LEFT PANEL ===== */
+    .directive-card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 28px;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .directive-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .directive-header h2 {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .directive-header .arrow {
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      font-weight: 300;
+    }
+
+    .directive-body p {
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+
+    .endpoint-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 14px 16px;
+    }
+
+    .endpoint-url {
+      flex: 1;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.75);
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      user-select: all;
+    }
+
+    .copy-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 6px 12px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    .copy-btn.copied {
+      border-color: rgba(74,222,128,0.3);
+      color: var(--green);
+    }
+
+    .copy-icon {
+      width: 14px;
+      height: 14px;
+      opacity: 0.6;
+    }
+
+    /* Manifest */
+    .manifest {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .manifest-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.015);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.7rem;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s;
+    }
+
+    .manifest-header:hover { color: var(--text-dim); }
+    .manifest-header .lock { font-size: 0.8rem; }
+
+    .manifest-body {
+      padding: 14px 16px;
+      font-size: 0.78rem;
+      line-height: 1.8;
+      color: var(--text-dim);
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+
+    .manifest.open .manifest-body {
+      max-height: 300px;
+      padding: 14px 16px;
+    }
+
+    .manifest-body .key { color: var(--amber); }
+    .manifest-body .str { color: rgba(255,255,255,0.5); }
+    .manifest-body .comment { color: var(--text-muted); font-style: italic; }
+
+    /* ===== WALLET REGISTRATION ===== */
+    .wallet-card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 28px;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .wallet-card h3 {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+    }
+
+    .wallet-card p {
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+
+    .wallet-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .wallet-input-group label {
+      font-size: 0.7rem;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .wallet-input {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .wallet-input:focus { border-color: var(--border-hover); }
+    .wallet-input::placeholder { color: var(--text-muted); }
+
+    .wallet-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 14px 20px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+    }
+
+    .wallet-btn:hover:not(:disabled) {
+      border-color: var(--amber);
+      color: var(--amber);
+      background: rgba(212,165,116,0.05);
+    }
+
+    .wallet-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .wallet-btn.connected {
+      border-color: rgba(74,222,128,0.3);
+      color: var(--green);
+    }
+
+    .wallet-btn.success {
+      border-color: rgba(74,222,128,0.4);
+      color: var(--green);
+      background: rgba(74,222,128,0.05);
+    }
+
+    .wallet-btn.error {
+      border-color: rgba(248,113,113,0.3);
+      color: #f87171;
+    }
+
+    .wallet-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .wallet-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .wallet-step:last-child { border-bottom: none; }
+
+    .step-num {
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      font-size: 0.65rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .wallet-step.active { color: var(--amber); }
+    .wallet-step.active .step-num { border-color: var(--amber); color: var(--amber); }
+    .wallet-step.done { color: var(--green); }
+    .wallet-step.done .step-num { border-color: rgba(74,222,128,0.4); color: var(--green); background: rgba(74,222,128,0.08); }
+
+    .wallet-status {
+      font-size: 0.75rem;
+      padding: 10px 14px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.015);
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .wallet-status.error { border-color: rgba(248,113,113,0.2); color: #f87171; }
+    .wallet-status.success { border-color: rgba(74,222,128,0.2); color: var(--green); }
+
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 8px 0;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+    }
+
+    .or-divider::before, .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ===== RIGHT PANEL ===== */
+    .left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .activity-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: sticky;
+      top: 28px;
+      height: fit-content;
+      max-height: calc(100vh - 120px);
+    }
+
+    .activity-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 12px;
+    }
+
+    .activity-header h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .activity-header h2 .icon { font-size: 0.9rem; }
+
+    .realtime-badge {
+      font-size: 0.65rem;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      color: var(--green);
+      border: 1px solid rgba(74,222,128,0.3);
+      padding: 3px 10px;
+      border-radius: 3px;
+    }
+
+    .activity-stream {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      flex: 1;
+      padding: 16px 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      font-size: 0.78rem;
+      line-height: 2;
+    }
+
+    .log-line {
+      display: flex;
+      gap: 12px;
+      white-space: nowrap;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .log-ts { color: var(--text-muted); min-width: 70px; }
+    .log-tag { font-weight: 600; min-width: 40px; }
+    .log-tag.sys { color: var(--text-dim); }
+    .log-tag.reg { color: var(--green); }
+    .log-tag.auth { color: var(--amber); }
+    .log-tag.err { color: #f87171; }
+    .log-msg { color: var(--text-dim); }
+    .log-msg .highlight { color: rgba(255,255,255,0.7); }
+
+    .cursor-line {
+      color: var(--text-muted);
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: var(--text-muted);
+    }
+
+    .footer-left .sigil-sym { color: var(--text-dim); }
+
+    .footer-right {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-right a {
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 1.5px;
+      transition: color 0.2s;
+    }
+
+    .footer-right a:hover { color: var(--text-dim); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 800px) {
+      .main { grid-template-columns: 1fr; }
+      .header { flex-direction: column; gap: 12px; }
+      .header-right { text-align: left; }
+      .footer { flex-direction: column; gap: 12px; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <h1><span class="sigil-icon">⏀</span> S I G I L</h1>
+      <div class="header-status">
+        <span class="status-dot"></span>
+        <span class="status-operational">OPERATIONAL</span>
+        <span class="status-tag">MAINNET-BETA</span>
+        <span class="status-tag">V0.4.1</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div>PROTOCOL: <span class="value">SIGIL v0.4.1</span></div>
+      <div>CHAIN: <span class="value">SOLANA</span></div>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- LEFT COLUMN -->
+    <div class="left-col">
+    <div class="directive-card">
+      <div class="directive-header">
+        <h2>⏀ AGENT REGISTRATION DIRECTIVE</h2>
+        <span class="arrow">›</span>
+      </div>
+
+      <div class="directive-body">
+        <p>Register your agent in one call. No wallet required — just send your agent's name. We generate your cryptographic identity, Glyph, and verification receipt automatically.</p>
+      </div>
+
+      <div class="endpoint-box">
+        <span class="endpoint-url" id="endpoint-url">https://sigilprotocol.xyz/api/register</span>
+        <button class="copy-btn" onclick="copyEndpoint()">
+          <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2"/>
+            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+          </svg>
+          <span id="copy-text">COPY</span>
+        </button>
+      </div>
+
+      <div class="manifest" id="manifest">
+        <div class="manifest-header" onclick="toggleManifest()">
+          <span class="lock">🔒</span> MANIFEST PREVIEW
+        </div>
+        <div class="manifest-body">
+          <div><span class="key">// One-call registration (no wallet needed):</span></div>
+          <div>curl -X POST https://sigilprotocol.xyz/api/register \</div>
+          <div>&nbsp;&nbsp;-H <span class="str">"Content-Type: application/json"</span> \</div>
+          <div>&nbsp;&nbsp;-d <span class="str">'{"displayName": "YourAgent"}'</span></div>
+          <div>&nbsp;</div>
+          <div><span class="key">// Response:</span></div>
+          <div>{</div>
+          <div>&nbsp;&nbsp;<span class="key">"success"</span>: <span class="str">true</span>,</div>
+          <div>&nbsp;&nbsp;<span class="key">"agent"</span>: {</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"publicKey"</span>: <span class="str">"generated-for-you"</span>,</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"glyphHash"</span>: <span class="str">"unique-visual-id"</span>,</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"profileUrl"</span>: <span class="str">"sigilprotocol.xyz/agent.html?key=..."</span></div>
+          <div>&nbsp;&nbsp;}</div>
+          <div>}</div>
+        </div>
+      </div>
+    </div>
+
+      <div class="or-divider">OR REGISTER WITH WALLET</div>
+
+      <div class="wallet-card" id="walletCard">
+        <h3>⚡ BROWSER REGISTRATION</h3>
+        <p>Connect your Phantom or Solflare wallet to register directly from the browser. We'll handle the challenge-response automatically.</p>
+
+        <div class="wallet-input-group">
+          <label>Display Name (optional)</label>
+          <input type="text" class="wallet-input" id="walletDisplayName" placeholder="e.g. MyAgent-7" maxlength="64">
+        </div>
+
+        <div class="wallet-steps">
+          <div class="wallet-step active" id="step1">
+            <span class="step-num">1</span>
+            <span>Connect wallet</span>
+          </div>
+          <div class="wallet-step" id="step2">
+            <span class="step-num">2</span>
+            <span>Sign verification challenge</span>
+          </div>
+          <div class="wallet-step" id="step3">
+            <span class="step-num">3</span>
+            <span>Receive Glyph identity</span>
+          </div>
+        </div>
+
+        <button class="wallet-btn" id="walletBtn" onclick="handleWalletRegister()">
+          <span id="walletBtnIcon">◈</span>
+          <span id="walletBtnText">CONNECT PHANTOM</span>
+        </button>
+
+        <div class="wallet-status" id="walletStatus" style="display:none"></div>
+      </div>
+    </div> <!-- /left-col -->
+
+    <!-- RIGHT: ACTIVITY STREAM -->
+    <div class="activity-panel">
+      <div class="activity-header">
+        <h2><span class="icon">⚡</span> NETWORK ACTIVITY STREAM</h2>
+        <span class="realtime-badge">REAL-TIME</span>
+      </div>
+
+      <div class="activity-stream" id="stream">
+        <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">SIGIL PROTOCOL v0.4.1 <span class="highlight">[ONLINE]</span></span></div>
+        <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">CONNECTED TO SOLANA MAINNET</span></div>
+        <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">REGISTRY: <span class="highlight">sigilprotocol.xyz</span></span></div>
+        <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">VERIFICATION: Ed25519 Challenge-Response <span class="highlight">[ACTIVE]</span></span></div>
+        <!-- Live entries injected here -->
+        <div class="cursor-line">█</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">
+      <span><span class="sigil-sym">⏀</span> STATUS: NOMINAL</span>
+      <span>LATENCY: <span id="latency">—</span></span>
+      <span>AGENTS: <span id="agent-count">—</span></span>
+    </div>
+    <div class="footer-right">
+      <a href="/">HOME</a>
+      <a href="/dashboard.html">REGISTRY</a>
+      <a href="/gallery.html">GALLERY</a>
+      <a href="https://bags.fm/sigil" target="_blank">BAGS.FM</a>
+    </div>
+  </div>
+
+  <script>
+    function hexToBase58(hex) {
+      if (!hex) return '';
+      const ALPHA = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+      const bytes = []; for (let i = 0; i < hex.length; i += 2) bytes.push(parseInt(hex.substr(i, 2), 16));
+      let zeros = 0; for (let i = 0; i < bytes.length && bytes[i] === 0; i++) zeros++;
+      const digits = [0];
+      for (let i = 0; i < bytes.length; i++) {
+        let carry = bytes[i];
+        for (let j = 0; j < digits.length; j++) { carry += digits[j] << 8; digits[j] = carry % 58; carry = (carry / 58) | 0; }
+        while (carry) { digits.push(carry % 58); carry = (carry / 58) | 0; }
+      }
+      let r = ''; for (let i = 0; i < zeros; i++) r += ALPHA[0];
+      for (let i = digits.length - 1; i >= 0; i--) r += ALPHA[digits[i]];
+      return r;
+    }
+
+    const API = window.location.hostname === 'localhost'
+      ? 'http://localhost:3141'
+      : window.location.origin + '/api';
+
+    // Copy endpoint
+    function copyEndpoint() {
+      const url = document.getElementById('endpoint-url').textContent;
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = document.getElementById('copy-text');
+        btn.textContent = 'COPIED';
+        btn.closest('.copy-btn').classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'COPY';
+          btn.closest('.copy-btn').classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Toggle manifest
+    function toggleManifest() {
+      document.getElementById('manifest').classList.toggle('open');
+    }
+
+    // Timestamp
+    function ts() {
+      const now = new Date();
+      return now.toTimeString().slice(0, 8);
+    }
+
+    // Add log line
+    function addLog(tag, tagClass, msg) {
+      const stream = document.getElementById('stream');
+      const cursor = stream.querySelector('.cursor-line');
+      const line = document.createElement('div');
+      line.className = 'log-line';
+      line.innerHTML = `<span class="log-ts">[${ts()}]</span><span class="log-tag ${tagClass}">${tag}</span><span class="log-msg">${msg}</span>`;
+      stream.insertBefore(line, cursor);
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    // Fetch stats
+    async function fetchStats() {
+      try {
+        const start = Date.now();
+        const res = await fetch(API.replace(/\/api$/, '') + '/api/stats');
+        const latency = Date.now() - start;
+        const data = await res.json();
+
+        document.getElementById('latency').textContent = latency + 'MS';
+        document.getElementById('agent-count').textContent = data.verifiedAgents || 0;
+      } catch (e) {
+        document.getElementById('latency').textContent = '—';
+      }
+    }
+
+    // Load real events from API
+    let lastEventId = 0;
+    let seenEventIds = new Set();
+
+    function truncKey(k) { return k ? k.slice(0, 6) + '···' + k.slice(-4) : '???'; }
+
+    async function loadEvents() {
+      try {
+        const base = API.replace(/\/api$/, '');
+        const res = await fetch(base + '/api/events?limit=15');
+        const data = await res.json();
+        if (!data.events || !data.events.length) return;
+
+        // Process newest first, but add in chronological order
+        const newEvents = data.events
+          .filter(e => !seenEventIds.has(e.id))
+          .reverse();
+
+        for (const evt of newEvents) {
+          seenEventIds.add(evt.id);
+          const name = evt.displayName || truncKey(evt.publicKey);
+
+          switch (evt.type) {
+            case 'registration_started':
+              addLog('REG', 'reg', `REGISTRATION INITIATED: <span class="highlight">${name}</span>`);
+              break;
+            case 'challenge_issued':
+              addLog('AUTH', 'auth', `CHALLENGE ISSUED → <span class="highlight">${name}</span>`);
+              break;
+            case 'agent_verified':
+              addLog('REG', 'reg', `⏀ AGENT VERIFIED: <span class="highlight">${name}</span> ${evt.glyphHash ? '— glyph ⏀' + hexToBase58(evt.glyphHash).slice(0, 11) : ''}`);
+              break;
+            default:
+              addLog('SYS', 'sys', `${evt.type}: <span class="highlight">${name}</span>`);
+          }
+        }
+      } catch (e) {}
+    }
+
+    // Poll for new events + stats
+    async function pollActivity() {
+      try {
+        const base = API.replace(/\/api$/, '');
+        const res = await fetch(base + '/api/stats');
+        const data = await res.json();
+        document.getElementById('agent-count').textContent = data.verifiedAgents || 0;
+      } catch (e) {}
+    }
+
+    // ===== WALLET REGISTRATION FLOW =====
+    let walletState = 'disconnected'; // disconnected → connected → signing → verified
+    let connectedWallet = null;
+
+    function setStep(n) {
+      for (let i = 1; i <= 3; i++) {
+        const el = document.getElementById('step' + i);
+        el.classList.remove('active', 'done');
+        if (i < n) el.classList.add('done');
+        if (i === n) el.classList.add('active');
+      }
+    }
+
+    function showStatus(msg, type) {
+      const el = document.getElementById('walletStatus');
+      el.style.display = 'block';
+      el.className = 'wallet-status' + (type ? ' ' + type : '');
+      el.textContent = msg;
+    }
+
+    function hideStatus() {
+      document.getElementById('walletStatus').style.display = 'none';
+    }
+
+    function setBtnState(icon, text, cls) {
+      document.getElementById('walletBtnIcon').textContent = icon;
+      document.getElementById('walletBtnText').textContent = text;
+      const btn = document.getElementById('walletBtn');
+      btn.className = 'wallet-btn' + (cls ? ' ' + cls : '');
+      btn.disabled = false;
+    }
+
+    function getProvider() {
+      // Check for Phantom
+      if (window.phantom?.solana?.isPhantom) return window.phantom.solana;
+      if (window.solana?.isPhantom) return window.solana;
+      // Check for Solflare
+      if (window.solflare?.isSolflare) return window.solflare;
+      return null;
+    }
+
+    // Base58 encode for signature
+    function uint8ToBase58(bytes) {
+      const ALPHA = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+      let zeros = 0;
+      for (let i = 0; i < bytes.length && bytes[i] === 0; i++) zeros++;
+      const digits = [0];
+      for (let i = 0; i < bytes.length; i++) {
+        let carry = bytes[i];
+        for (let j = 0; j < digits.length; j++) {
+          carry += digits[j] << 8;
+          digits[j] = carry % 58;
+          carry = (carry / 58) | 0;
+        }
+        while (carry) { digits.push(carry % 58); carry = (carry / 58) | 0; }
+      }
+      let r = '';
+      for (let i = 0; i < zeros; i++) r += ALPHA[0];
+      for (let i = digits.length - 1; i >= 0; i--) r += ALPHA[digits[i]];
+      return r;
+    }
+
+    async function handleWalletRegister() {
+      const provider = getProvider();
+      const apiBase = API.replace(/\/api$/, '');
+
+      if (!provider) {
+        showStatus('No wallet detected. Install Phantom (phantom.app) or Solflare and refresh.', 'error');
+        return;
+      }
+
+      // Step 1: Connect
+      if (walletState === 'disconnected') {
+        try {
+          hideStatus();
+          setBtnState('◈', 'CONNECTING...', '');
+          document.getElementById('walletBtn').disabled = true;
+
+          const resp = await provider.connect();
+          connectedWallet = resp.publicKey.toString();
+
+          walletState = 'connected';
+          setStep(2);
+          setBtnState('⏀', 'REGISTER ' + connectedWallet.slice(0, 6) + '···' + connectedWallet.slice(-4), 'connected');
+          addLog('SYS', 'sys', `Wallet connected: <span class="highlight">${connectedWallet.slice(0, 8)}···</span>`);
+          return;
+        } catch (e) {
+          walletState = 'disconnected';
+          setBtnState('◈', 'CONNECT PHANTOM', '');
+          if (e.code === 4001) {
+            showStatus('Connection rejected by user.', 'error');
+          } else {
+            showStatus('Failed to connect: ' + e.message, 'error');
+          }
+          return;
+        }
+      }
+
+      // Step 2: Register + Sign Challenge
+      if (walletState === 'connected') {
+        try {
+          hideStatus();
+          setBtnState('⏀', 'REGISTERING...', '');
+          document.getElementById('walletBtn').disabled = true;
+
+          const displayName = document.getElementById('walletDisplayName').value.trim() || null;
+
+          // POST /api/register
+          addLog('AUTH', 'auth', `Initiating registration for <span class="highlight">${connectedWallet.slice(0, 8)}···</span>`);
+
+          const regRes = await fetch(apiBase + '/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ publicKey: connectedWallet, displayName })
+          });
+          const regData = await regRes.json();
+
+          // Check if already verified
+          if (regData.agent?.status === 'verified') {
+            walletState = 'verified';
+            setStep(3);
+            setBtnState('✓', 'ALREADY VERIFIED', 'success');
+            showStatus('This wallet is already registered and verified! Glyph: ⏀' + (regData.agent.glyphHash || '').slice(0, 8), 'success');
+            addLog('REG', 'reg', `⏀ Already verified: <span class="highlight">${connectedWallet.slice(0, 8)}···</span>`);
+            return;
+          }
+
+          if (!regData.challenge) {
+            showStatus('Unexpected response from server. ' + (regData.error || ''), 'error');
+            setBtnState('⏀', 'RETRY', '');
+            return;
+          }
+
+          // Sign the challenge message
+          addLog('AUTH', 'auth', `Challenge received, requesting signature...`);
+          showStatus('Approve the signature request in your wallet...', '');
+
+          const message = regData.challenge.message;
+          const nonce = regData.challenge.nonce;
+          const encodedMessage = new TextEncoder().encode(message);
+
+          const signResult = await provider.signMessage(encodedMessage, 'utf8');
+          const signatureBytes = signResult.signature || signResult;
+          const signatureBase58 = uint8ToBase58(new Uint8Array(signatureBytes));
+
+          addLog('AUTH', 'auth', `Signature obtained, verifying...`);
+
+          // POST /api/verify
+          const verRes = await fetch(apiBase + '/api/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ publicKey: connectedWallet, nonce, signature: signatureBase58 })
+          });
+          const verData = await verRes.json();
+
+          if (verData.error) {
+            showStatus('Verification failed: ' + verData.error, 'error');
+            setBtnState('⏀', 'RETRY', '');
+            walletState = 'connected';
+            addLog('ERR', 'err', `Verification failed: ${verData.error}`);
+            return;
+          }
+
+          // Success!
+          walletState = 'verified';
+          setStep(3);
+          setBtnState('✓', 'VERIFIED — VIEW GLYPH', 'success');
+
+          const glyphHash = verData.agent?.glyphHash || '';
+          showStatus('Agent verified! Glyph: ⏀' + glyphHash.slice(0, 8) + ' — Welcome to SIGIL.', 'success');
+          addLog('REG', 'reg', `⏀ AGENT VERIFIED: <span class="highlight">${displayName || connectedWallet.slice(0, 8) + '···'}</span> — glyph ⏀${glyphHash.slice(0, 8)}`);
+
+          // Refresh stats
+          fetchStats();
+          loadEvents();
+
+          // Make button link to agent page
+          document.getElementById('walletBtn').onclick = () => {
+            window.location.href = '/agent.html?key=' + connectedWallet;
+          };
+
+        } catch (e) {
+          if (e.code === 4001) {
+            showStatus('Signature rejected by user.', 'error');
+            setBtnState('⏀', 'REGISTER ' + connectedWallet.slice(0, 6) + '···' + connectedWallet.slice(-4), 'connected');
+          } else {
+            showStatus('Error: ' + e.message, 'error');
+            setBtnState('⏀', 'RETRY', '');
+          }
+          addLog('ERR', 'err', `Registration error: ${e.message}`);
+        }
+      }
+
+      // After verification — go to agent page
+      if (walletState === 'verified') {
+        window.location.href = '/agent.html?key=' + connectedWallet;
+      }
+    }
+
+    // Auto-detect wallet on load
+    setTimeout(() => {
+      const provider = getProvider();
+      if (provider) {
+        addLog('SYS', 'sys', `Wallet detected: <span class="highlight">${provider.isPhantom ? 'Phantom' : 'Solflare'}</span>`);
+      }
+    }, 500);
+
+    // Init
+    fetchStats();
+    loadEvents();
+    setInterval(loadEvents, 8000);
+    setInterval(pollActivity, 15000);
+    setInterval(fetchStats, 15000);
+
+    // Open manifest by default
+    setTimeout(() => {
+      document.getElementById('manifest').classList.add('open');
+    }, 500);
+  </script>
+
+</body>
+</html>

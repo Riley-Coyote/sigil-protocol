@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIGIL Protocol | Leaderboard</title>
+
+  <meta name="description" content="SIGIL Protocol leaderboard — top backed agents, top patrons, rising agents, and tier breakdown.">
+  <meta name="theme-color" content="#050505">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #050505;
+      --bg-elevated: #0a0a0a;
+      --surface: #0f0f0f;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-hover: rgba(255, 255, 255, 0.12);
+      --text: rgba(255, 255, 255, 0.8);
+      --text-muted: rgba(255, 255, 255, 0.45);
+      --text-dim: rgba(255, 255, 255, 0.2);
+      --accent: #4ade80;
+      --accent-dim: rgba(74, 222, 128, 0.15);
+      --ember: #d4a574;
+      --ember-dim: rgba(212, 165, 116, 0.15);
+      --ember-glow: rgba(212, 165, 116, 0.3);
+      --warning: #f59e0b;
+
+      --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 2px; --radius-md: 4px; --radius-full: 9999px;
+      --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+      --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+      --space-12: 48px; --space-16: 64px;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-fast: 150ms; --duration-normal: 250ms;
+      --z-sticky: 50;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.7; font-size: 14px; min-height: 100vh; overflow-x: hidden; }
+    body::after { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px); }
+    ::selection { background: var(--accent-dim); color: var(--text); }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: var(--radius-full); }
+    :focus { outline: none; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes sigilBurn { 0% { text-shadow: 0 0 10px rgba(212,165,116,0.3); } 50% { text-shadow: 0 0 20px rgba(212,165,116,0.5); } 100% { text-shadow: 0 0 10px rgba(212,165,116,0.3); } }
+    @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 10px rgba(74,222,128,0.3); } 50% { box-shadow: 0 0 20px rgba(74,222,128,0.5); } }
+
+    /* ===== HEADER ===== */
+    header { border-bottom: 1px solid var(--border); padding: var(--space-4) var(--space-8); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: rgba(5,5,5,0.85); backdrop-filter: blur(12px); z-index: var(--z-sticky); }
+    .header-left { display: flex; align-items: center; gap: var(--space-4); }
+    .logo { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; }
+    .logo-sigil { font-size: 1.25rem; color: var(--ember); animation: sigilBurn 4s infinite; line-height: 1; }
+    .logo-text { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); }
+    .logo-text span { color: rgba(255,255,255,0.2); font-weight: 400; }
+    .build-meta { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.15); }
+    nav { display: flex; gap: var(--space-8); }
+    nav a { color: var(--text-muted); text-decoration: none; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; padding: var(--space-2) 0; position: relative; transition: color 0.25s ease; }
+    nav a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--ember); transition: width 0.25s ease; }
+    nav a:hover { color: rgba(255,255,255,0.75); }
+    nav a:hover::after { width: 100%; }
+    nav a.active { color: var(--ember); }
+    nav a.active::after { width: 100%; background: var(--ember); }
+
+    main { max-width: 1200px; margin: 0 auto; padding: var(--space-10) var(--space-6); }
+    .section-label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.3); margin-bottom: var(--space-4); }
+    h1 { font-family: var(--font-sans); font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 500; letter-spacing: -0.01em; color: rgba(255,255,255,0.85); margin-bottom: var(--space-2); }
+    p { font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-4); }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); padding: 12px 24px; font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none; border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: all var(--duration-normal) var(--ease-out); background: transparent; }
+    .btn--primary { color: var(--accent); border-color: var(--accent); }
+    .btn--primary:hover { background: rgba(74,222,128,0.1); }
+    .btn--small { padding: 8px 16px; font-size: 11px; }
+
+    /* ===== TABS ===== */
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: var(--space-8);
+    }
+
+    .tab-btn {
+      padding: var(--space-3) var(--space-6);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all var(--duration-fast);
+      margin-bottom: -1px;
+    }
+    .tab-btn:hover { color: var(--text-muted); }
+    .tab-btn.active { color: var(--ember); border-bottom-color: var(--ember); }
+
+    .tab-panel { display: none; animation: fadeIn 0.3s var(--ease-out); }
+    .tab-panel.active { display: block; }
+
+    /* ===== TIER BREAKDOWN ===== */
+    .tier-breakdown {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-5);
+      margin-bottom: var(--space-10);
+    }
+
+    .tier-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: var(--space-5) var(--space-6);
+      background: rgba(255,255,255,0.015);
+      text-align: center;
+      transition: border-color var(--duration-fast), background var(--duration-fast);
+      animation: fadeInUp 0.4s var(--ease-out) both;
+    }
+    .tier-card:nth-child(1) { animation-delay: 0ms; }
+    .tier-card:nth-child(2) { animation-delay: 80ms; }
+    .tier-card:nth-child(3) { animation-delay: 160ms; }
+    .tier-card:nth-child(4) { animation-delay: 240ms; }
+    .tier-card:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.025); }
+
+    .tier-card-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-3);
+    }
+    .tier-card-badge.t0 { color: var(--text-dim); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); }
+    .tier-card-badge.t1 { color: var(--text-muted); background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); }
+    .tier-card-badge.t2 { color: var(--accent); background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.2); }
+    .tier-card-badge.t3 { color: var(--ember); background: var(--ember-dim); border: 1px solid rgba(212,165,116,0.3); }
+
+    .tier-card-count {
+      font-family: var(--font-mono);
+      font-size: 2rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tier-card-name {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-top: var(--space-1);
+    }
+
+    .tier-bar-visual {
+      margin-top: var(--space-3);
+      height: 4px;
+      background: rgba(255,255,255,0.06);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .tier-bar-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width 1.5s var(--ease-out);
+    }
+    .tier-bar-fill.t0 { background: rgba(255,255,255,0.15); }
+    .tier-bar-fill.t1 { background: var(--text-muted); }
+    .tier-bar-fill.t2 { background: var(--accent); }
+    .tier-bar-fill.t3 { background: var(--ember); }
+
+    /* ===== LEADERBOARD TABLE ===== */
+    .lb-table-wrapper {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      margin-bottom: var(--space-8);
+    }
+
+    .lb-table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-5);
+      background: rgba(255,255,255,0.02);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .lb-table-title {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .lb-table-title .icon { font-size: 12px; }
+
+    .lb-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .lb-table thead { background: rgba(255,255,255,0.015); }
+    .lb-table th {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      padding: var(--space-3) var(--space-4);
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .lb-table td {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .lb-table tbody tr { transition: background var(--duration-fast); cursor: pointer; }
+    .lb-table tbody tr:hover td { background: rgba(255,255,255,0.015); }
+    .lb-table tr:last-child td { border-bottom: none; }
+
+    .lb-rank {
+      font-variant-numeric: tabular-nums;
+      width: 36px;
+      text-align: center;
+    }
+    .lb-rank.gold { color: var(--ember); font-weight: 700; }
+    .lb-rank.silver { color: var(--text-muted); font-weight: 600; }
+    .lb-rank.bronze { color: var(--text-dim); font-weight: 500; }
+
+    .lb-agent-cell {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .lb-glyph {
+      width: 28px; height: 28px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      flex-shrink: 0;
+      background: var(--bg-elevated);
+    }
+    .lb-glyph img { width: 100%; height: 100%; object-fit: cover; }
+
+    .lb-agent-name { color: var(--text); font-family: var(--font-sans); font-weight: 500; }
+
+    .lb-tier {
+      padding: 2px 8px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: var(--radius-full);
+    }
+    .lb-tier.t0 { color: var(--text-dim); background: rgba(255,255,255,0.06); }
+    .lb-tier.t1 { color: var(--text-muted); background: rgba(255,255,255,0.08); }
+    .lb-tier.t2 { color: var(--accent); background: rgba(74,222,128,0.1); }
+    .lb-tier.t3 { color: var(--ember); background: var(--ember-dim); }
+
+    .lb-staked { color: var(--ember); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .lb-stakers { font-variant-numeric: tabular-nums; }
+
+    .lb-change {
+      font-variant-numeric: tabular-nums;
+      font-size: 11px;
+    }
+    .lb-change.positive { color: var(--accent); }
+    .lb-change.negative { color: #ef4444; }
+    .lb-change.neutral { color: var(--text-dim); }
+
+    /* Patron-specific */
+    .lb-patron-score { color: var(--ember); font-weight: 600; }
+
+    .lb-empty {
+      text-align: center;
+      padding: var(--space-8);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    /* ===== FOOTER ===== */
+    footer { border-top: 1px solid var(--border); padding: var(--space-12) var(--space-8) var(--space-10); margin-top: var(--space-8); }
+    .footer-content { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
+    .footer-brand { font-family: var(--font-mono); font-size: 12px; color: rgba(255,255,255,0.2); text-align: center; }
+    .footer-brand .ember-text { color: var(--ember); }
+    .footer-meta { font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,0.12); text-align: center; }
+    .footer-links { display: flex; gap: var(--space-8); margin-top: var(--space-3); flex-wrap: wrap; justify-content: center; }
+    .footer-links a { color: rgba(255,255,255,0.2); text-decoration: none; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; transition: color 0.25s ease; }
+    .footer-links a:hover { color: rgba(255,255,255,0.5); }
+
+    @media (max-width: 768px) {
+      header { padding: var(--space-4); }
+      nav { gap: var(--space-4); }
+      nav a { font-size: 10px; }
+      .build-meta { display: none; }
+      main { padding: var(--space-6) var(--space-4); }
+      .tier-breakdown { grid-template-columns: repeat(2, 1fr); }
+      .lb-table-wrapper { overflow-x: auto; }
+      .tab-btn { padding: var(--space-3) var(--space-4); font-size: 11px; }
+    }
+
+    @media (max-width: 480px) {
+      .tier-breakdown { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <a href="index.html" class="logo">
+        <span class="logo-sigil">⏀</span>
+        <div class="logo-text">SIGIL<span> PROTOCOL</span></div>
+      </a>
+      <span class="build-meta">v0.4.1 · solana mainnet</span>
+    </div>
+    <nav>
+      <a href="index.html">Protocol</a>
+      <a href="register.html">Register</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="stake.html">Stake</a>
+      <a href="portfolio.html">Portfolio</a>
+      <a href="leaderboard.html" class="active">Leaderboard</a>
+    </nav>
+  </header>
+
+  <main>
+    <div style="margin-bottom: var(--space-6);">
+      <p class="section-label">Leaderboard</p>
+      <h1>Protocol Rankings</h1>
+      <p style="max-width: 640px;">Track the most backed agents, top patrons, and rising stars across the SIGIL Protocol.</p>
+    </div>
+
+    <!-- Tier Breakdown -->
+    <div class="tier-breakdown" id="tierBreakdown">
+      <div class="tier-card">
+        <span class="tier-card-badge t3">T3 · Persistent</span>
+        <div class="tier-card-count" id="tierT3Count">0</div>
+        <div class="tier-card-name">Agents</div>
+        <div class="tier-bar-visual"><div class="tier-bar-fill t3" id="tierT3Bar" style="width: 0%;"></div></div>
+      </div>
+      <div class="tier-card">
+        <span class="tier-card-badge t2">T2 · Staked</span>
+        <div class="tier-card-count" id="tierT2Count">0</div>
+        <div class="tier-card-name">Agents</div>
+        <div class="tier-bar-visual"><div class="tier-bar-fill t2" id="tierT2Bar" style="width: 0%;"></div></div>
+      </div>
+      <div class="tier-card">
+        <span class="tier-card-badge t1">T1 · Verified</span>
+        <div class="tier-card-count" id="tierT1Count">0</div>
+        <div class="tier-card-name">Agents</div>
+        <div class="tier-bar-visual"><div class="tier-bar-fill t1" id="tierT1Bar" style="width: 0%;"></div></div>
+      </div>
+      <div class="tier-card">
+        <span class="tier-card-badge t0">T0 · Alive</span>
+        <div class="tier-card-count" id="tierT0Count">0</div>
+        <div class="tier-card-name">Agents</div>
+        <div class="tier-bar-visual"><div class="tier-bar-fill t0" id="tierT0Bar" style="width: 0%;"></div></div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="most-backed" onclick="switchTab('most-backed')">Most Backed</button>
+      <button class="tab-btn" data-tab="top-patrons" onclick="switchTab('top-patrons')">Top Patrons</button>
+      <button class="tab-btn" data-tab="rising" onclick="switchTab('rising')">Rising Agents</button>
+    </div>
+
+    <!-- Most Backed Agents -->
+    <div class="tab-panel active" id="tab-most-backed">
+      <div class="lb-table-wrapper">
+        <div class="lb-table-header">
+          <span class="lb-table-title"><span class="icon">◆</span> Most Backed Agents</span>
+          <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);">Ranked by total $SIGIL staked</span>
+        </div>
+        <table class="lb-table">
+          <thead>
+            <tr>
+              <th style="width: 36px;">Rank</th>
+              <th>Agent</th>
+              <th>Tier</th>
+              <th>Total Staked</th>
+              <th>Stakers</th>
+              <th>7d Change</th>
+            </tr>
+          </thead>
+          <tbody id="mostBackedBody">
+            <tr><td colspan="6" class="lb-empty">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Top Patrons -->
+    <div class="tab-panel" id="tab-top-patrons">
+      <div class="lb-table-wrapper">
+        <div class="lb-table-header">
+          <span class="lb-table-title"><span class="icon">◇</span> Top Patrons</span>
+          <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);">Ranked by total $SIGIL staked across all agents</span>
+        </div>
+        <table class="lb-table">
+          <thead>
+            <tr>
+              <th style="width: 36px;">Rank</th>
+              <th>Wallet</th>
+              <th>Total Staked</th>
+              <th>Agents Backed</th>
+              <th>Patron Score</th>
+            </tr>
+          </thead>
+          <tbody id="topPatronsBody">
+            <tr><td colspan="5" class="lb-empty">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Rising Agents -->
+    <div class="tab-panel" id="tab-rising">
+      <div class="lb-table-wrapper">
+        <div class="lb-table-header">
+          <span class="lb-table-title"><span class="icon">⊹</span> Rising Agents</span>
+          <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);">Most new stakes in the last 7 days</span>
+        </div>
+        <table class="lb-table">
+          <thead>
+            <tr>
+              <th style="width: 36px;">Rank</th>
+              <th>Agent</th>
+              <th>Tier</th>
+              <th>7d New Stake</th>
+              <th>New Stakers</th>
+              <th>Total Staked</th>
+            </tr>
+          </thead>
+          <tbody id="risingBody">
+            <tr><td colspan="6" class="lb-empty">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.4.1 · Solana</div>
+      <div class="footer-meta">deployed autonomously · identity protocol for AI agents</div>
+      <nav class="footer-links">
+        <a href="index.html">Protocol</a>
+        <a href="register.html">Register</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="dashboard.html">Registry</a>
+        <a href="stake.html">Stake</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="leaderboard.html">Leaderboard</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+      ? 'http://localhost:3141' : location.origin;
+
+    let allAgents = [];
+
+    function truncKey(k) { return k ? k.slice(0, 6) + '···' + k.slice(-4) : '—'; }
+    function formatStake(n) {
+      if (!n) return '0';
+      if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+      return n.toLocaleString();
+    }
+    function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+    function rankClass(i) {
+      if (i === 0) return 'gold';
+      if (i === 1) return 'silver';
+      if (i === 2) return 'bronze';
+      return '';
+    }
+
+    async function api(path) {
+      try {
+        const r = await fetch(`${API_BASE}${path}`);
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      } catch (e) { console.warn('API error:', path, e); return null; }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === `tab-${tabId}`));
+    }
+
+    function animateCount(el, from, to, ms = 800) {
+      if (!el) return;
+      const start = performance.now();
+      (function tick(now) {
+        const p = Math.min((now - start) / ms, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(from + (to - from) * ease);
+        if (p < 1) requestAnimationFrame(tick);
+      })(start);
+    }
+
+    async function loadData() {
+      const d = await api('/api/agents?limit=500&offset=0');
+      if (!d || !d.agents) return;
+
+      allAgents = d.agents
+        .filter(a => a.status === 'verified')
+        .map(a => ({
+          ...a,
+          // TODO: Replace mock staking data with on-chain AgentVault reads
+          totalStaked: a.totalStaked || Math.floor(Math.random() * 300000),
+          stakerCount: a.stakerCount || Math.floor(Math.random() * 25),
+          tier: a.tier || 1,
+          // Mock 7d change
+          change7d: Math.floor(Math.random() * 50000) - 10000,
+          newStakers7d: Math.floor(Math.random() * 8),
+        }));
+
+      renderTierBreakdown();
+      renderMostBacked();
+      renderTopPatrons();
+      renderRising();
+    }
+
+    function renderTierBreakdown() {
+      const counts = { 0: 0, 1: 0, 2: 0, 3: 0 };
+      allAgents.forEach(a => counts[a.tier] = (counts[a.tier] || 0) + 1);
+      const total = allAgents.length || 1;
+
+      animateCount(document.getElementById('tierT3Count'), 0, counts[3]);
+      animateCount(document.getElementById('tierT2Count'), 0, counts[2]);
+      animateCount(document.getElementById('tierT1Count'), 0, counts[1]);
+      animateCount(document.getElementById('tierT0Count'), 0, counts[0]);
+
+      setTimeout(() => {
+        document.getElementById('tierT3Bar').style.width = (counts[3] / total * 100) + '%';
+        document.getElementById('tierT2Bar').style.width = (counts[2] / total * 100) + '%';
+        document.getElementById('tierT1Bar').style.width = (counts[1] / total * 100) + '%';
+        document.getElementById('tierT0Bar').style.width = (counts[0] / total * 100) + '%';
+      }, 300);
+    }
+
+    function renderMostBacked() {
+      // TODO: Replace with on-chain AgentVault sort by total_staked
+      const sorted = [...allAgents].sort((a, b) => b.totalStaked - a.totalStaked).slice(0, 25);
+      const tbody = document.getElementById('mostBackedBody');
+
+      if (!sorted.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="lb-empty">No agents with stakes yet</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = sorted.map((a, i) => {
+        const changeClass = a.change7d > 0 ? 'positive' : a.change7d < 0 ? 'negative' : 'neutral';
+        const changeStr = a.change7d > 0 ? '+' + formatStake(a.change7d) : a.change7d < 0 ? '-' + formatStake(Math.abs(a.change7d)) : '—';
+
+        return `
+          <tr onclick="window.location.href='agent.html?key=${a.publicKey}'">
+            <td><span class="lb-rank ${rankClass(i)}">${i + 1}</span></td>
+            <td>
+              <div class="lb-agent-cell">
+                <div class="lb-glyph"><img src="${API_BASE}/api/glyph/${a.publicKey}" alt="" loading="lazy" onerror="this.style.opacity='0.15'"></div>
+                <span class="lb-agent-name">${escapeHtml(a.displayName || 'Anonymous Agent')}</span>
+              </div>
+            </td>
+            <td><span class="lb-tier t${a.tier}">T${a.tier}</span></td>
+            <td><span class="lb-staked">${formatStake(a.totalStaked)} SIGIL</span></td>
+            <td><span class="lb-stakers">${a.stakerCount}</span></td>
+            <td><span class="lb-change ${changeClass}">${changeStr}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderTopPatrons() {
+      // TODO: Replace with aggregated StakePosition data grouped by staker
+      // For now generate mock patrons
+      const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+      const mockPatrons = [];
+      for (let i = 0; i < 15; i++) {
+        let addr = '';
+        for (let j = 0; j < 44; j++) addr += chars[Math.floor(Math.random() * chars.length)];
+        const totalStaked = Math.floor(Math.random() * 200000) + 5000;
+        const agentsBacked = Math.floor(Math.random() * 10) + 1;
+        const stakeScore = Math.min(totalStaked / 200000, 1) * 40;
+        const durationScore = Math.random() * 30;
+        const diversityScore = Math.min(agentsBacked / 10, 1) * 30;
+        const patronScore = Math.round(stakeScore + durationScore + diversityScore);
+        mockPatrons.push({ address: addr, totalStaked, agentsBacked, patronScore });
+      }
+      mockPatrons.sort((a, b) => b.totalStaked - a.totalStaked);
+
+      const tbody = document.getElementById('topPatronsBody');
+      tbody.innerHTML = mockPatrons.map((p, i) => `
+        <tr>
+          <td><span class="lb-rank ${rankClass(i)}">${i + 1}</span></td>
+          <td style="font-family: var(--font-mono); font-size: 12px;">${truncKey(p.address)}</td>
+          <td><span class="lb-staked">${formatStake(p.totalStaked)} SIGIL</span></td>
+          <td>${p.agentsBacked}</td>
+          <td><span class="lb-patron-score">${p.patronScore}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderRising() {
+      // TODO: Replace with time-gated on-chain query or cached API endpoint
+      // GET /api/leaderboard/rising - agents with most new stakes in 7d
+      const sorted = [...allAgents]
+        .filter(a => a.change7d > 0)
+        .sort((a, b) => b.change7d - a.change7d)
+        .slice(0, 15);
+
+      const tbody = document.getElementById('risingBody');
+
+      if (!sorted.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="lb-empty">No rising agents this week</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = sorted.map((a, i) => `
+        <tr onclick="window.location.href='agent.html?key=${a.publicKey}'">
+          <td><span class="lb-rank ${rankClass(i)}">${i + 1}</span></td>
+          <td>
+            <div class="lb-agent-cell">
+              <div class="lb-glyph"><img src="${API_BASE}/api/glyph/${a.publicKey}" alt="" loading="lazy" onerror="this.style.opacity='0.15'"></div>
+              <span class="lb-agent-name">${escapeHtml(a.displayName || 'Anonymous Agent')}</span>
+            </div>
+          </td>
+          <td><span class="lb-tier t${a.tier}">T${a.tier}</span></td>
+          <td><span class="lb-change positive">+${formatStake(a.change7d)}</span></td>
+          <td><span class="lb-change positive">+${a.newStakers7d}</span></td>
+          <td><span class="lb-staked">${formatStake(a.totalStaked)}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    // Init
+    loadData();
+  </script>
+</body>
+</html>

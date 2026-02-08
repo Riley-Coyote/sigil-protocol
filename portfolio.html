@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIGIL Protocol | Staking Portfolio</title>
+
+  <meta name="description" content="View your SIGIL staking portfolio — positions, rewards, patron score, and governance weight.">
+  <meta name="theme-color" content="#050505">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===== DESIGN TOKENS ===== */
+    :root {
+      --bg: #050505;
+      --bg-elevated: #0a0a0a;
+      --surface: #0f0f0f;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-hover: rgba(255, 255, 255, 0.12);
+      --text: rgba(255, 255, 255, 0.8);
+      --text-muted: rgba(255, 255, 255, 0.45);
+      --text-dim: rgba(255, 255, 255, 0.2);
+      --accent: #4ade80;
+      --accent-dim: rgba(74, 222, 128, 0.15);
+      --ember: #d4a574;
+      --ember-dim: rgba(212, 165, 116, 0.15);
+      --ember-glow: rgba(212, 165, 116, 0.3);
+      --danger: #ef4444;
+      --warning: #f59e0b;
+
+      --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 2px; --radius-md: 4px; --radius-full: 9999px;
+      --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+      --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+      --space-12: 48px; --space-16: 64px;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-fast: 150ms; --duration-normal: 250ms;
+      --z-sticky: 50;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.7; font-size: 14px; min-height: 100vh; overflow-x: hidden; }
+    body::after { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px); }
+    ::selection { background: var(--accent-dim); color: var(--text); }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: var(--radius-full); }
+    :focus { outline: none; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes sigilBurn { 0% { text-shadow: 0 0 10px rgba(212,165,116,0.3); } 50% { text-shadow: 0 0 20px rgba(212,165,116,0.5); } 100% { text-shadow: 0 0 10px rgba(212,165,116,0.3); } }
+    @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 10px rgba(74,222,128,0.3); } 50% { box-shadow: 0 0 20px rgba(74,222,128,0.5); } }
+    @keyframes emberPulse { 0%, 100% { box-shadow: 0 0 15px rgba(212,165,116,0.15); } 50% { box-shadow: 0 0 30px rgba(212,165,116,0.3); } }
+
+    /* ===== HEADER ===== */
+    header { border-bottom: 1px solid var(--border); padding: var(--space-4) var(--space-8); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: rgba(5,5,5,0.85); backdrop-filter: blur(12px); z-index: var(--z-sticky); }
+    .header-left { display: flex; align-items: center; gap: var(--space-4); }
+    .logo { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; }
+    .logo-sigil { font-size: 1.25rem; color: var(--ember); animation: sigilBurn 4s infinite; line-height: 1; }
+    .logo-text { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); }
+    .logo-text span { color: rgba(255,255,255,0.2); font-weight: 400; }
+    .build-meta { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.15); }
+    nav { display: flex; gap: var(--space-8); }
+    nav a { color: var(--text-muted); text-decoration: none; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; padding: var(--space-2) 0; position: relative; transition: color 0.25s ease; }
+    nav a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--ember); transition: width 0.25s ease; }
+    nav a:hover { color: rgba(255,255,255,0.75); }
+    nav a:hover::after { width: 100%; }
+    nav a.active { color: var(--ember); }
+    nav a.active::after { width: 100%; background: var(--ember); }
+
+    main { max-width: 1100px; margin: 0 auto; padding: var(--space-10) var(--space-6); }
+    .section-label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.3); margin-bottom: var(--space-4); }
+    h1 { font-family: var(--font-sans); font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 500; letter-spacing: -0.01em; color: rgba(255,255,255,0.85); margin-bottom: var(--space-2); }
+    p { font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-4); }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); padding: 12px 24px; font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none; border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: all var(--duration-normal) var(--ease-out); background: transparent; }
+    .btn:disabled { opacity: 0.5; pointer-events: none; }
+    .btn--primary { color: var(--accent); border-color: var(--accent); }
+    .btn--primary:hover { background: rgba(74,222,128,0.1); }
+    .btn--ember { color: var(--ember); border-color: var(--ember); }
+    .btn--ember:hover { background: var(--ember-dim); }
+    .btn--secondary { color: var(--text-muted); border: 1px solid rgba(255,255,255,0.2); }
+    .btn--secondary:hover { border-color: rgba(255,255,255,0.4); color: rgba(255,255,255,0.7); }
+    .btn--small { padding: 8px 16px; font-size: 11px; }
+
+    /* ===== CONNECT PROMPT ===== */
+    .connect-prompt {
+      text-align: center;
+      padding: var(--space-16) var(--space-8);
+      animation: fadeInUp 0.5s var(--ease-out);
+    }
+    .connect-sigil { font-size: 64px; color: rgba(255,255,255,0.06); margin-bottom: var(--space-6); }
+    .connect-prompt h2 { font-family: var(--font-sans); font-size: 1.5rem; font-weight: 500; color: var(--text); margin-bottom: var(--space-3); }
+    .connect-prompt p { color: var(--text-muted); max-width: 400px; margin: 0 auto var(--space-6); }
+
+    /* ===== PORTFOLIO STATS ===== */
+    .portfolio-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      margin-bottom: var(--space-8);
+      animation: fadeInUp 0.4s var(--ease-out);
+    }
+
+    .port-stat {
+      background: rgba(255,255,255,0.015);
+      padding: var(--space-5) var(--space-6);
+      transition: background var(--duration-fast);
+    }
+    .port-stat:hover { background: rgba(255,255,255,0.025); }
+
+    .port-stat-value {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+      font-variant-numeric: tabular-nums;
+      line-height: 1.2;
+    }
+    .port-stat-value.ember { color: var(--ember); }
+    .port-stat-value.accent { color: var(--accent); }
+
+    .port-stat-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-top: var(--space-1);
+    }
+
+    /* ===== REPUTATION PANEL ===== */
+    .reputation-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-5);
+      margin-bottom: var(--space-8);
+    }
+
+    .rep-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: var(--space-5) var(--space-6);
+      background: rgba(255,255,255,0.015);
+      transition: border-color var(--duration-fast);
+      animation: fadeInUp 0.5s var(--ease-out);
+    }
+    .rep-card:hover { border-color: var(--border-hover); }
+
+    .rep-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-4);
+    }
+
+    .rep-title {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+    }
+
+    .rep-value {
+      font-family: var(--font-mono);
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--ember);
+      line-height: 1;
+    }
+
+    .rep-bar {
+      height: 4px;
+      background: rgba(255,255,255,0.06);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-bottom: var(--space-3);
+    }
+
+    .rep-bar-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width 1.5s var(--ease-out);
+    }
+    .rep-bar-fill.ember { background: var(--ember); }
+    .rep-bar-fill.accent { background: var(--accent); }
+
+    .rep-details {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .rep-detail {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+    .rep-detail-label { color: var(--text-dim); }
+    .rep-detail-value { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+    /* ===== POSITIONS TABLE ===== */
+    .positions-section {
+      margin-bottom: var(--space-8);
+    }
+
+    .position-table-wrapper {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .position-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .position-table thead { background: rgba(255,255,255,0.03); }
+    .position-table th {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      padding: var(--space-3) var(--space-4);
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .position-table th:last-child { text-align: right; }
+
+    .position-table td {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .position-table td:last-child { text-align: right; }
+
+    .position-table tbody tr { transition: background var(--duration-fast); }
+    .position-table tbody tr:hover td { background: rgba(255,255,255,0.015); }
+    .position-table tr:last-child td { border-bottom: none; }
+
+    .pos-agent-cell {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .pos-agent-glyph {
+      width: 28px; height: 28px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      flex-shrink: 0;
+      background: var(--bg-elevated);
+    }
+    .pos-agent-glyph img { width: 100%; height: 100%; object-fit: cover; }
+
+    .pos-agent-name { color: var(--text); font-family: var(--font-sans); font-weight: 500; }
+    .pos-amount { color: var(--ember); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .pos-status { display: inline-flex; align-items: center; gap: 4px; }
+    .pos-status-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .pos-status-dot.active { background: var(--accent); box-shadow: 0 0 6px rgba(74,222,128,0.5); }
+    .pos-status-dot.cooling { background: var(--warning); box-shadow: 0 0 6px rgba(245,158,11,0.5); }
+
+    .pos-multiplier { color: var(--accent); font-weight: 500; }
+    .pos-governance { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+    .pos-cooldown-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      border-radius: var(--radius-full);
+      color: var(--warning);
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.2);
+    }
+
+    /* ===== CLAIM BAR ===== */
+    .claim-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) var(--space-5);
+      border: 1px solid rgba(74,222,128,0.15);
+      border-radius: var(--radius-sm);
+      background: rgba(74,222,128,0.03);
+      margin-bottom: var(--space-8);
+      animation: fadeInUp 0.5s var(--ease-out);
+    }
+
+    .claim-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .claim-icon {
+      font-size: 20px;
+      color: var(--accent);
+    }
+
+    .claim-text {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .claim-text strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-portfolio {
+      text-align: center;
+      padding: var(--space-16) var(--space-8);
+    }
+    .empty-sigil { font-size: 48px; color: rgba(255,255,255,0.06); margin-bottom: var(--space-6); }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      bottom: var(--space-6);
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--bg-elevated);
+      border: 1px solid var(--accent);
+      padding: var(--space-3) var(--space-5);
+      border-radius: var(--radius-md);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent);
+      z-index: 300;
+      transition: transform 0.3s var(--ease-out), opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* ===== FOOTER ===== */
+    footer { border-top: 1px solid var(--border); padding: var(--space-12) var(--space-8) var(--space-10); margin-top: var(--space-8); }
+    .footer-content { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
+    .footer-brand { font-family: var(--font-mono); font-size: 12px; color: rgba(255,255,255,0.2); text-align: center; }
+    .footer-brand .ember-text { color: var(--ember); }
+    .footer-meta { font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,0.12); text-align: center; }
+    .footer-links { display: flex; gap: var(--space-8); margin-top: var(--space-3); flex-wrap: wrap; justify-content: center; }
+    .footer-links a { color: rgba(255,255,255,0.2); text-decoration: none; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; transition: color 0.25s ease; }
+    .footer-links a:hover { color: rgba(255,255,255,0.5); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      header { padding: var(--space-4); }
+      nav { gap: var(--space-4); }
+      nav a { font-size: 10px; }
+      .build-meta { display: none; }
+      main { padding: var(--space-6) var(--space-4); }
+      .portfolio-stats { grid-template-columns: repeat(2, 1fr); }
+      .reputation-panel { grid-template-columns: 1fr; }
+      .position-table-wrapper { overflow-x: auto; }
+      .claim-bar { flex-direction: column; gap: var(--space-3); align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <a href="index.html" class="logo">
+        <span class="logo-sigil">⏀</span>
+        <div class="logo-text">SIGIL<span> PROTOCOL</span></div>
+      </a>
+      <span class="build-meta">v0.4.1 · solana mainnet</span>
+    </div>
+    <nav>
+      <a href="index.html">Protocol</a>
+      <a href="register.html">Register</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="stake.html">Stake</a>
+      <a href="portfolio.html" class="active">Portfolio</a>
+      <a href="leaderboard.html">Leaderboard</a>
+    </nav>
+  </header>
+
+  <main>
+    <div style="margin-bottom: var(--space-6);">
+      <p class="section-label">Staker Portfolio</p>
+      <h1>Your Staking Portfolio</h1>
+      <p style="max-width: 640px;">Overview of your staking positions, accumulated rewards, patron reputation, and governance weight.</p>
+    </div>
+
+    <!-- Connect Prompt (shown when no wallet) -->
+    <div class="connect-prompt" id="connectPrompt">
+      <div class="connect-sigil">⏀</div>
+      <h2>Connect Your Wallet</h2>
+      <p>Connect a Phantom or Solflare wallet to view your staking portfolio and manage positions.</p>
+      <button class="btn btn--primary" id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+    </div>
+
+    <!-- Portfolio Content (hidden until connected) -->
+    <div id="portfolioContent" style="display:none;">
+
+      <!-- Portfolio Stats -->
+      <div class="portfolio-stats">
+        <div class="port-stat">
+          <div class="port-stat-value ember" id="totalStaked">0</div>
+          <div class="port-stat-label">Total SIGIL Staked</div>
+        </div>
+        <div class="port-stat">
+          <div class="port-stat-value" id="agentCount">0</div>
+          <div class="port-stat-label">Agents Backed</div>
+        </div>
+        <div class="port-stat">
+          <div class="port-stat-value accent" id="pendingRewards">0</div>
+          <div class="port-stat-label">Pending Rewards</div>
+        </div>
+        <div class="port-stat">
+          <div class="port-stat-value" id="totalGovernance">0</div>
+          <div class="port-stat-label">Governance Weight</div>
+        </div>
+      </div>
+
+      <!-- Claim Rewards Bar -->
+      <div class="claim-bar" id="claimBar" style="display:none;">
+        <div class="claim-info">
+          <span class="claim-icon">◆</span>
+          <span class="claim-text">You have <strong id="claimAmount">0 SIGIL</strong> in unclaimed rewards across your positions</span>
+        </div>
+        <button class="btn btn--primary btn--small" onclick="claimAllRewards()">Claim All Rewards</button>
+      </div>
+
+      <!-- Reputation Panel -->
+      <div class="reputation-panel">
+        <!-- Patron Score -->
+        <div class="rep-card">
+          <div class="rep-header">
+            <span class="rep-title">⏀ Patron Score</span>
+            <span class="rep-value" id="patronScore">0</span>
+          </div>
+          <div class="rep-bar">
+            <div class="rep-bar-fill ember" id="patronBar" style="width: 0%;"></div>
+          </div>
+          <div class="rep-details">
+            <div class="rep-detail">
+              <span class="rep-detail-label">Score components</span>
+              <span class="rep-detail-value"></span>
+            </div>
+            <div class="rep-detail">
+              <span class="rep-detail-label">Total staked (weight: 40%)</span>
+              <span class="rep-detail-value" id="patronStakeWeight">0</span>
+            </div>
+            <div class="rep-detail">
+              <span class="rep-detail-label">Duration bonus (weight: 30%)</span>
+              <span class="rep-detail-value" id="patronDurationWeight">0</span>
+            </div>
+            <div class="rep-detail">
+              <span class="rep-detail-label">Diversity (weight: 30%)</span>
+              <span class="rep-detail-value" id="patronDiversityWeight">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Governance Weight -->
+        <div class="rep-card">
+          <div class="rep-header">
+            <span class="rep-title">◆ Governance Weight</span>
+            <span class="rep-value" id="govWeight" style="color: var(--accent);">0</span>
+          </div>
+          <div class="rep-bar">
+            <div class="rep-bar-fill accent" id="govBar" style="width: 0%;"></div>
+          </div>
+          <div class="rep-details">
+            <div class="rep-detail">
+              <span class="rep-detail-label">Formula</span>
+              <span class="rep-detail-value" style="font-size: 9px;">√(staked/1K) × multiplier</span>
+            </div>
+            <div class="rep-detail">
+              <span class="rep-detail-label">Base weight (from stake)</span>
+              <span class="rep-detail-value" id="govBaseWeight">0</span>
+            </div>
+            <div class="rep-detail">
+              <span class="rep-detail-label">Avg time multiplier</span>
+              <span class="rep-detail-value" id="govMultiplier">1.0×</span>
+            </div>
+            <div class="rep-detail">
+              <span class="rep-detail-label">Effective weight</span>
+              <span class="rep-detail-value" id="govEffective">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Positions Table -->
+      <div class="positions-section">
+        <p class="section-label">Staking Positions</p>
+        <div class="position-table-wrapper">
+          <table class="position-table">
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th>Amount</th>
+                <th>Staked</th>
+                <th>Status</th>
+                <th>Multiplier</th>
+                <th>Gov. Weight</th>
+              </tr>
+            </thead>
+            <tbody id="positionsBody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div class="toast" id="toast">✓ Rewards claimed</div>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.4.1 · Solana</div>
+      <div class="footer-meta">deployed autonomously · identity protocol for AI agents</div>
+      <nav class="footer-links">
+        <a href="index.html">Protocol</a>
+        <a href="register.html">Register</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="dashboard.html">Registry</a>
+        <a href="stake.html">Stake</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="leaderboard.html">Leaderboard</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+      ? 'http://localhost:3141' : location.origin;
+
+    let walletConnected = false;
+    let walletPublicKey = null;
+
+    // TODO: Replace with real Anchor program account reads
+    // All positions: program.account.stakePosition.all([{ memcmp: { offset: 8, bytes: publicKey.toBase58() }}])
+    const mockPositions = [
+      {
+        agentId: 'agent1',
+        agentName: 'Vektor',
+        agentKey: '7xKp9a2bDf3kR1qN5mT8wL4cJ6vH9yX3mN3Fq',
+        amount: 25000,
+        stakedAt: new Date(Date.now() - 95 * 86400000).toISOString(),
+        cooldownAmount: 0,
+        cooldownStarted: 0,
+        rewards: 847,
+        status: 'active'
+      },
+      {
+        agentId: 'agent2',
+        agentName: 'Anima',
+        agentKey: '3bFh2kQ7WzYp4mNd8vRt6xCj1sA5eGfLkQ7Wz',
+        amount: 10000,
+        stakedAt: new Date(Date.now() - 45 * 86400000).toISOString(),
+        cooldownAmount: 0,
+        cooldownStarted: 0,
+        rewards: 312,
+        status: 'active'
+      },
+      {
+        agentId: 'agent3',
+        agentName: 'Shade',
+        agentKey: '9fGk4mPq2sLj7wBn3xDy5vHt8cRa1eKz6uN4Xr',
+        amount: 5000,
+        stakedAt: new Date(Date.now() - 15 * 86400000).toISOString(),
+        cooldownAmount: 3000,
+        cooldownStarted: Date.now() - 4 * 86400000,
+        rewards: 98,
+        status: 'cooling'
+      },
+      {
+        agentId: 'agent4',
+        agentName: 'Echo',
+        agentKey: '2cDn5jRs8wLk3mBf6xQt9vGy4pHa7eTz1uK0Mv',
+        amount: 15000,
+        stakedAt: new Date(Date.now() - 200 * 86400000).toISOString(),
+        cooldownAmount: 0,
+        cooldownStarted: 0,
+        rewards: 1205,
+        status: 'active'
+      }
+    ];
+
+    function truncKey(k) { return k ? k.slice(0, 6) + '···' + k.slice(-4) : '—'; }
+    function formatStake(n) {
+      if (!n) return '0';
+      if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+      return n.toLocaleString();
+    }
+    function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('visible');
+      setTimeout(() => t.classList.remove('visible'), 3000);
+    }
+
+    // Time multiplier based on staking duration
+    function getTimeMultiplier(stakedAt) {
+      const days = Math.floor((Date.now() - new Date(stakedAt).getTime()) / 86400000);
+      if (days >= 365) return { mult: 2.5, label: '2.5×' };
+      if (days >= 180) return { mult: 2.0, label: '2.0×' };
+      if (days >= 90) return { mult: 1.5, label: '1.5×' };
+      if (days >= 30) return { mult: 1.25, label: '1.25×' };
+      return { mult: 1.0, label: '1.0×' };
+    }
+
+    // Governance weight: sqrt(staked / 1000) * multiplier
+    function calcGovernanceWeight(amount, multiplier) {
+      return Math.sqrt(amount / 1000) * multiplier;
+    }
+
+    async function connectWallet() {
+      const provider = window.phantom?.solana || window.solflare;
+      if (!provider) {
+        showToast('⚠ No wallet found. Install Phantom or Solflare.');
+        return;
+      }
+
+      try {
+        const resp = await provider.connect();
+        walletPublicKey = resp.publicKey.toString();
+        walletConnected = true;
+
+        document.getElementById('connectPrompt').style.display = 'none';
+        document.getElementById('portfolioContent').style.display = 'block';
+
+        renderPortfolio();
+      } catch (err) {
+        console.error('Wallet connect failed:', err);
+        showToast('⚠ Wallet connection failed');
+      }
+    }
+
+    function renderPortfolio() {
+      // Calculate totals
+      let totalStaked = 0;
+      let totalRewards = 0;
+      let totalGovWeight = 0;
+      let weightedMultiplier = 0;
+
+      mockPositions.forEach(pos => {
+        totalStaked += pos.amount;
+        totalRewards += pos.rewards;
+        const tm = getTimeMultiplier(pos.stakedAt);
+        const gw = calcGovernanceWeight(pos.amount, tm.mult);
+        totalGovWeight += gw;
+        weightedMultiplier += tm.mult * pos.amount;
+      });
+
+      const avgMultiplier = totalStaked > 0 ? weightedMultiplier / totalStaked : 1;
+      const agentCount = mockPositions.length;
+
+      // Patron score (composite: 40% stake amount, 30% duration, 30% diversity)
+      const stakeScore = Math.min(totalStaked / 200000, 1) * 40;
+      const durationScore = Math.min(avgMultiplier / 2.5, 1) * 30;
+      const diversityScore = Math.min(agentCount / 10, 1) * 30;
+      const patronScore = Math.round(stakeScore + durationScore + diversityScore);
+
+      // Update stats
+      animateCount('totalStaked', 0, totalStaked);
+      document.getElementById('agentCount').textContent = agentCount;
+      animateCount('pendingRewards', 0, totalRewards);
+      document.getElementById('totalGovernance').textContent = totalGovWeight.toFixed(1);
+
+      // Patron score
+      document.getElementById('patronScore').textContent = patronScore;
+      setTimeout(() => {
+        document.getElementById('patronBar').style.width = patronScore + '%';
+      }, 200);
+      document.getElementById('patronStakeWeight').textContent = stakeScore.toFixed(1) + ' / 40';
+      document.getElementById('patronDurationWeight').textContent = durationScore.toFixed(1) + ' / 30';
+      document.getElementById('patronDiversityWeight').textContent = diversityScore.toFixed(1) + ' / 30';
+
+      // Governance
+      document.getElementById('govWeight').textContent = totalGovWeight.toFixed(1);
+      setTimeout(() => {
+        document.getElementById('govBar').style.width = Math.min(totalGovWeight / 20 * 100, 100) + '%';
+      }, 300);
+      document.getElementById('govBaseWeight').textContent = Math.sqrt(totalStaked / 1000).toFixed(2);
+      document.getElementById('govMultiplier').textContent = avgMultiplier.toFixed(2) + '×';
+      document.getElementById('govEffective').textContent = totalGovWeight.toFixed(2);
+
+      // Claim bar
+      if (totalRewards > 0) {
+        document.getElementById('claimBar').style.display = 'flex';
+        document.getElementById('claimAmount').textContent = formatStake(totalRewards) + ' SIGIL';
+      }
+
+      // Render positions table
+      renderPositions();
+    }
+
+    function renderPositions() {
+      const tbody = document.getElementById('positionsBody');
+
+      if (!mockPositions.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 48px; color: var(--text-dim);">
+              <div class="empty-sigil" style="font-size: 32px; margin-bottom: 12px;">⏀</div>
+              No staking positions yet. <a href="stake.html" style="color: var(--ember); text-decoration: underline;">Stake now →</a>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = mockPositions.map(pos => {
+        const stakedDate = new Date(pos.stakedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const daysSinceStake = Math.floor((Date.now() - new Date(pos.stakedAt).getTime()) / 86400000);
+        const tm = getTimeMultiplier(pos.stakedAt);
+        const gw = calcGovernanceWeight(pos.amount, tm.mult);
+        const isCooling = pos.cooldownAmount > 0;
+
+        let statusHtml;
+        if (isCooling) {
+          const elapsed = (Date.now() - pos.cooldownStarted) / 1000;
+          const total = 7 * 86400;
+          const remaining = Math.max(0, total - elapsed);
+          const days = Math.floor(remaining / 86400);
+          const hours = Math.floor((remaining % 86400) / 3600);
+          statusHtml = `
+            <span class="pos-status"><span class="pos-status-dot cooling"></span> Cooling</span>
+            <span class="pos-cooldown-badge">${days}d ${hours}h left</span>
+          `;
+        } else {
+          statusHtml = `<span class="pos-status"><span class="pos-status-dot active"></span> Active</span>`;
+        }
+
+        return `
+          <tr onclick="window.location.href='agent.html?key=${pos.agentKey}'" style="cursor: pointer;">
+            <td>
+              <div class="pos-agent-cell">
+                <div class="pos-agent-glyph">
+                  <img src="${API_BASE}/api/glyph/${pos.agentKey}" alt="" loading="lazy" onerror="this.style.opacity='0.15'">
+                </div>
+                <span class="pos-agent-name">${escapeHtml(pos.agentName)}</span>
+              </div>
+            </td>
+            <td><span class="pos-amount">${formatStake(pos.amount)}</span></td>
+            <td>${stakedDate} <span style="color: var(--text-dim);">(${daysSinceStake}d)</span></td>
+            <td>${statusHtml}</td>
+            <td><span class="pos-multiplier">${tm.label}</span></td>
+            <td><span class="pos-governance">${gw.toFixed(2)}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function animateCount(elId, from, to, ms = 800) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      const start = performance.now();
+      (function tick(now) {
+        const p = Math.min((now - start) / ms, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = formatStake(Math.round(from + (to - from) * ease));
+        if (p < 1) requestAnimationFrame(tick);
+      })(start);
+    }
+
+    async function claimAllRewards() {
+      // TODO: Replace with Anchor program calls
+      // For each position where agent vault tier >= 2:
+      //   await program.methods.claimRewards(pos.agentId).accounts({ ... }).rpc();
+      const totalRewards = mockPositions.reduce((sum, p) => sum + p.rewards, 0);
+      mockPositions.forEach(p => p.rewards = 0);
+
+      document.getElementById('claimBar').style.display = 'none';
+      animateCount('pendingRewards', totalRewards, 0);
+      showToast('✓ Claimed ' + formatStake(totalRewards) + ' SIGIL in rewards');
+    }
+
+    // Auto-connect if wallet was previously connected
+    if (window.phantom?.solana?.isConnected || window.solflare?.isConnected) {
+      setTimeout(connectWallet, 500);
+    }
+  </script>
+</body>
+</html>

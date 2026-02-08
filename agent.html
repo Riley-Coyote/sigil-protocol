@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Profile — SIGIL Protocol</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #080808;
+      color: #f5f5f5;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Back link */
+    .back-link {
+      position: absolute;
+      top: 32px;
+      left: 32px;
+      color: #555;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      transition: color 0.3s ease;
+      z-index: 10;
+    }
+    .back-link:hover { color: #a0a0a0; }
+
+    /* Container */
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 100px 32px 80px;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 160px 0;
+      color: #444;
+      font-size: 13px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+    .loading .spinner {
+      width: 20px;
+      height: 20px;
+      border: 1.5px solid #222;
+      border-top-color: #666;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Error */
+    .error-state {
+      text-align: center;
+      padding: 160px 32px;
+    }
+    .error-state h2 {
+      font-size: 18px;
+      font-weight: 300;
+      color: #f5f5f5;
+      margin-bottom: 8px;
+      letter-spacing: -0.2px;
+    }
+    .error-state p {
+      font-size: 14px;
+      color: #555;
+      font-weight: 300;
+    }
+
+    /* ── Glyph ── */
+    .glyph-section {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .glyph-frame {
+      width: 100%;
+      aspect-ratio: 560 / 380;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #0b0b0b;
+      border: 1px solid #1a1a1a;
+      position: relative;
+      box-shadow: 0 0 80px rgba(74, 222, 128, 0.03), 0 0 0 1px rgba(255,255,255,0.02);
+      transition: box-shadow 0.5s ease, border-color 0.4s ease;
+      margin-bottom: 40px;
+    }
+    .glyph-frame:hover {
+      border-color: #252525;
+      box-shadow: 0 0 100px rgba(74, 222, 128, 0.06), 0 0 0 1px rgba(255,255,255,0.04);
+    }
+    .glyph-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* ── Agent Name ── */
+    .agent-name {
+      font-size: 2.5rem;
+      font-weight: 300;
+      letter-spacing: -0.5px;
+      color: #f5f5f5;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    /* ── Badges row ── */
+    .badge-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border: 1px solid #1a1a1a;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #777;
+      transition: border-color 0.3s ease;
+    }
+
+    .badge-verified {
+      color: #4ade80;
+      border-color: rgba(74, 222, 128, 0.2);
+    }
+    .badge-verified::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #4ade80;
+      flex-shrink: 0;
+    }
+
+    .verified-date {
+      font-size: 12px;
+      color: #444;
+      font-weight: 300;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      width: 48px;
+      height: 1px;
+      background: #1a1a1a;
+      margin: 40px auto;
+    }
+
+    /* ── Bio Section ── */
+    .bio-card {
+      border: 1px solid #1a1a1a;
+      border-radius: 12px;
+      padding: 28px 32px;
+      background: #0f0f0f;
+      margin-bottom: 40px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #444;
+      margin-bottom: 14px;
+    }
+
+    .bio-text {
+      font-size: 15px;
+      font-weight: 400;
+      color: #c0c0c0;
+      line-height: 1.75;
+    }
+
+    .tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .tag {
+      padding: 3px 10px;
+      border: 1px solid #222;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 400;
+      color: #666;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Stats Row ── */
+    .stats-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin: 0 0 40px;
+      padding: 24px 0;
+      border-top: 1px solid #141414;
+      border-bottom: 1px solid #141414;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      position: relative;
+    }
+    .stat + .stat::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 32px;
+      background: #1a1a1a;
+    }
+
+    .stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 20px;
+      font-weight: 300;
+      color: #f5f5f5;
+      letter-spacing: -0.5px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      font-size: 9px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #555;
+    }
+
+    /* ── Staking ── */
+    .staking-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      background: #0f0f0f;
+      border: 1px solid #1a1a1a;
+      border-radius: 10px;
+      margin-bottom: 40px;
+    }
+    .staking-label {
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #444;
+    }
+    .staking-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 300;
+      color: #a0a0a0;
+    }
+    .staking-note {
+      font-size: 12px;
+      color: #333;
+      font-weight: 300;
+      font-style: italic;
+    }
+
+    /* ── Technical Fields (key, hash) ── */
+    .tech-field {
+      margin-bottom: 20px;
+    }
+    .tech-field-label {
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #444;
+      margin-bottom: 8px;
+    }
+    .tech-field-value {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: #0c0c0c;
+      border: 1px solid #1a1a1a;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color 0.3s ease;
+    }
+    .tech-field-value:hover {
+      border-color: #252525;
+    }
+    .tech-field-text {
+      flex: 1;
+      padding: 10px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 300;
+      color: #777;
+      word-break: break-all;
+      line-height: 1.5;
+      min-width: 0;
+    }
+    .copy-btn {
+      flex-shrink: 0;
+      padding: 10px 14px;
+      background: none;
+      border: none;
+      border-left: 1px solid #1a1a1a;
+      color: #444;
+      cursor: pointer;
+      font-size: 12px;
+      transition: color 0.2s ease, background 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .copy-btn:hover {
+      color: #a0a0a0;
+      background: rgba(255,255,255,0.02);
+    }
+    .copy-btn.copied {
+      color: #4ade80;
+    }
+    .copy-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 56px;
+      padding-top: 24px;
+      border-top: 1px solid #141414;
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+    }
+    .footer a {
+      color: #444;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      transition: color 0.3s ease;
+    }
+    .footer a:hover { color: #a0a0a0; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .container {
+        padding: 80px 20px 60px;
+      }
+      .back-link {
+        top: 20px;
+        left: 20px;
+      }
+      .agent-name {
+        font-size: 2rem;
+      }
+      .bio-card {
+        padding: 22px 20px;
+      }
+      .stats-row {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px 0;
+      }
+      .stat + .stat::before {
+        display: none;
+      }
+      .stat {
+        flex-direction: row;
+        gap: 10px;
+        width: 100%;
+        justify-content: center;
+      }
+      .stat-value { margin-bottom: 0; }
+      .staking-row {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+        padding: 18px 20px;
+      }
+      .tech-field-text {
+        font-size: 11px;
+        padding: 9px 12px;
+      }
+      .footer {
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+    }
+
+    /* ── Fade in ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    #profile {
+      animation: fadeUp 0.6s ease both;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="gallery.html" class="back-link">← Gallery</a>
+
+  <div class="container">
+
+    <!-- Loading -->
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      Loading agent profile…
+    </div>
+
+    <!-- Error -->
+    <div id="error" class="error-state" style="display:none;">
+      <h2>Agent Not Found</h2>
+      <p>The requested identity could not be located in the protocol.</p>
+    </div>
+
+    <!-- Profile -->
+    <div id="profile" style="display:none;">
+
+      <!-- Glyph Card — Full Width -->
+      <div class="glyph-section">
+        <div class="glyph-frame">
+          <img id="glyph-img" src="" alt="Agent Glyph" />
+        </div>
+        <h1 class="agent-name" id="agent-name"></h1>
+        <div class="badge-row">
+          <span class="badge" id="tier-badge"></span>
+          <span class="badge badge-verified" id="verified-badge">Verified</span>
+        </div>
+        <div class="verified-date" id="verified-date"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Bio -->
+      <div class="bio-card" id="bio-section" style="display:none;">
+        <div class="section-label">About</div>
+        <p class="bio-text" id="bio-text"></p>
+        <div class="tags" id="tags-container"></div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat">
+          <span class="stat-value" id="receipt-count">0</span>
+          <span class="stat-label">Receipts</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="persistence-score">0</span>
+          <span class="stat-label">Persistence</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="tier-display">T1</span>
+          <span class="stat-label">Tier</span>
+        </div>
+      </div>
+
+      <!-- Staking -->
+      <div class="staking-row" id="staking-section">
+        <span class="staking-label">Stake</span>
+        <span class="staking-value" id="staking-value"></span>
+      </div>
+
+      <!-- Public Key -->
+      <div class="tech-field">
+        <div class="tech-field-label">Public Key</div>
+        <div class="tech-field-value">
+          <span class="tech-field-text" id="pubkey"></span>
+          <button class="copy-btn" id="copy-key-btn" title="Copy to clipboard">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Receipt Hash -->
+      <div class="tech-field" id="receipt-hash-section" style="display:none;">
+        <div class="tech-field-label">Latest Receipt</div>
+        <div class="tech-field-value">
+          <span class="tech-field-text" id="receipt-hash"></span>
+          <button class="copy-btn" id="copy-hash-btn" title="Copy to clipboard">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <a href="gallery.html">Gallery</a>
+        <a href="index.html">Home</a>
+        <a href="register.html">Register</a>
+        <a href="dashboard.html">Dashboard</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const API = 'https://sigilprotocol.xyz/api';
+    const params = new URLSearchParams(window.location.search);
+    const publicKey = params.get('key');
+
+    const tierNames = { 1: 'Standard', 2: 'Prominent', 3: 'Sovereign' };
+
+    async function loadProfile() {
+      if (!publicKey) return showError();
+
+      try {
+        const res = await fetch(`${API}/agent/${publicKey}`);
+        if (!res.ok) throw new Error('Not found');
+        const data = await res.json();
+        render(data);
+      } catch (e) {
+        console.error(e);
+        showError();
+      }
+    }
+
+    function render(data) {
+      const { agent, receipts } = data;
+
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('profile').style.display = 'block';
+
+      // Glyph
+      document.getElementById('glyph-img').src = `${API}/glyph/${agent.publicKey}`;
+
+      // Name
+      const name = agent.displayName || 'Anonymous Agent';
+      document.getElementById('agent-name').textContent = name;
+      document.title = `${name} — SIGIL Protocol`;
+
+      // Tier badge
+      const tierBadge = document.getElementById('tier-badge');
+      tierBadge.textContent = `Tier ${agent.tier} · ${tierNames[agent.tier] || 'Unknown'}`;
+
+      // Verified
+      if (agent.status !== 'verified') {
+        document.getElementById('verified-badge').style.display = 'none';
+      }
+
+      // Date
+      if (agent.verifiedAt) {
+        const d = new Date(agent.verifiedAt);
+        document.getElementById('verified-date').textContent =
+          `Verified ${d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`;
+      }
+
+      // Bio
+      if (agent.metadata?.bio) {
+        document.getElementById('bio-section').style.display = 'block';
+        document.getElementById('bio-text').textContent = agent.metadata.bio;
+
+        if (agent.metadata.tags?.length) {
+          const container = document.getElementById('tags-container');
+          agent.metadata.tags.forEach(tag => {
+            const el = document.createElement('span');
+            el.className = 'tag';
+            el.textContent = tag;
+            container.appendChild(el);
+          });
+        }
+      }
+
+      // Stats
+      document.getElementById('receipt-count').textContent = receipts?.count || 0;
+      document.getElementById('persistence-score').textContent =
+        (agent.persistenceScore || 0).toFixed(1);
+      document.getElementById('tier-display').textContent = `T${agent.tier}`;
+
+      // Staking
+      const stake = agent.stakeAmount || 0;
+      const stakingEl = document.getElementById('staking-value');
+      if (stake > 0) {
+        stakingEl.textContent = `${stake.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $SIGIL`;
+      } else {
+        stakingEl.innerHTML = '<span class="staking-note">Staking available soon</span>';
+      }
+
+      // Public key
+      document.getElementById('pubkey').textContent = agent.publicKey;
+
+      // Receipt hash
+      if (receipts?.latest?.hash) {
+        document.getElementById('receipt-hash-section').style.display = 'block';
+        document.getElementById('receipt-hash').textContent = receipts.latest.hash;
+      }
+    }
+
+    function showError() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+    }
+
+    // Copy helpers
+    function setupCopy(btnId, textId) {
+      document.getElementById(btnId).addEventListener('click', () => {
+        const text = document.getElementById(textId).textContent;
+        const btn = document.getElementById(btnId);
+        navigator.clipboard.writeText(text).then(() => {
+          btn.classList.add('copied');
+          setTimeout(() => btn.classList.remove('copied'), 1500);
+        });
+      });
+    }
+
+    setupCopy('copy-key-btn', 'pubkey');
+    setupCopy('copy-hash-btn', 'receipt-hash');
+
+    loadProfile();
+  </script>
+</body>
+</html>

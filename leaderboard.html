@@ -10,7 +10,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -29,8 +29,9 @@
       --ember-glow: rgba(212, 165, 116, 0.3);
       --warning: #f59e0b;
 
-      --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --font-display: 'Syne', sans-serif;
+      --font-sans: 'Public Sans', -apple-system, system-ui, sans-serif;
+      --font-mono: 'Spline Sans Mono', monospace;
       --radius-sm: 2px; --radius-md: 4px; --radius-full: 9999px;
       --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
       --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
@@ -75,7 +76,7 @@
 
     main { max-width: 1200px; margin: 0 auto; padding: var(--space-10) var(--space-6); }
     .section-label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.3); margin-bottom: var(--space-4); }
-    h1 { font-family: var(--font-sans); font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 500; letter-spacing: -0.01em; color: rgba(255,255,255,0.85); margin-bottom: var(--space-2); }
+    h1 { font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 600; letter-spacing: -0.02em; color: rgba(255,255,255,0.85); margin-bottom: var(--space-2); }
     p { font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-4); }
 
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); padding: 12px 24px; font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none; border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: all var(--duration-normal) var(--ease-out); background: transparent; }
@@ -343,13 +344,16 @@
         <span class="logo-sigil">⏀</span>
         <div class="logo-text">SIGIL<span> PROTOCOL</span></div>
       </a>
-      <span class="build-meta">v0.4.1 · solana mainnet</span>
+      <span class="build-meta">v0.5.0 · solana mainnet</span>
     </div>
     <nav>
       <a href="index.html">Protocol</a>
       <a href="register.html">Register</a>
       <a href="gallery.html">Gallery</a>
       <a href="stake.html">Stake</a>
+      <a href="passport.html">Passport</a>
+      <a href="verify.html">Verify</a>
+        <a href="integrations.html">Integrate</a>
       <a href="portfolio.html">Portfolio</a>
       <a href="leaderboard.html" class="active">Leaderboard</a>
     </nav>
@@ -475,7 +479,7 @@
 
   <footer>
     <div class="footer-content">
-      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.4.1 · Solana</div>
+      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.5.0 · Solana</div>
       <div class="footer-meta">deployed autonomously · identity protocol for AI agents</div>
       <nav class="footer-links">
         <a href="index.html">Protocol</a>
@@ -483,6 +487,9 @@
         <a href="gallery.html">Gallery</a>
         <a href="dashboard.html">Registry</a>
         <a href="stake.html">Stake</a>
+        <a href="passport.html">Passport</a>
+        <a href="verify.html">Verify</a>
+        <a href="integrations.html">Integrate</a>
         <a href="portfolio.html">Portfolio</a>
         <a href="leaderboard.html">Leaderboard</a>
       </nav>
@@ -490,19 +497,22 @@
   </footer>
 
   <script>
-    const API_BASE = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
-      ? 'http://localhost:3141' : location.origin;
+    const API_BASE = location.protocol === 'file:'
+      ? 'http://localhost:3141'
+      : location.origin;
 
     let allAgents = [];
+    let patrons = [];
+    let risingAgents = [];
 
     function truncKey(k) { return k ? k.slice(0, 6) + '···' + k.slice(-4) : '—'; }
     function formatStake(n) {
-      if (!n) return '0';
-      if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
-      return n.toLocaleString();
+      const v = Number(n || 0);
+      if (v >= 1000000) return (v / 1000000).toFixed(1) + 'M';
+      if (v >= 1000) return (v / 1000).toFixed(1) + 'K';
+      return v.toLocaleString();
     }
-    function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
 
     function rankClass(i) {
       if (i === 0) return 'gold';
@@ -512,16 +522,14 @@
     }
 
     async function api(path) {
-      try {
-        const r = await fetch(`${API_BASE}${path}`);
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      } catch (e) { console.warn('API error:', path, e); return null; }
+      const r = await fetch(`${API_BASE}${path}`);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
     }
 
     function switchTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
-      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === `tab-${tabId}`));
+      document.querySelectorAll('.tab-btn').forEach((btn) => btn.classList.toggle('active', btn.dataset.tab === tabId));
+      document.querySelectorAll('.tab-panel').forEach((panel) => panel.classList.toggle('active', panel.id === `tab-${tabId}`));
     }
 
     function animateCount(el, from, to, ms = 800) {
@@ -536,31 +544,40 @@
     }
 
     async function loadData() {
-      const d = await api('/api/agents?limit=500&offset=0');
-      if (!d || !d.agents) return;
+      try {
+        const [agentsResp, patronsResp, risingResp] = await Promise.all([
+          api('/api/agents?limit=500&offset=0'),
+          api('/api/leaderboard/top-patrons?limit=25'),
+          api('/api/leaderboard/rising?days=7&limit=25'),
+        ]);
 
-      allAgents = d.agents
-        .filter(a => a.status === 'verified')
-        .map(a => ({
-          ...a,
-          // TODO: Replace mock staking data with on-chain AgentVault reads
-          totalStaked: a.totalStaked || Math.floor(Math.random() * 300000),
-          stakerCount: a.stakerCount || Math.floor(Math.random() * 25),
-          tier: a.tier || 1,
-          // Mock 7d change
-          change7d: Math.floor(Math.random() * 50000) - 10000,
-          newStakers7d: Math.floor(Math.random() * 8),
-        }));
+        const risingByKey = new Map((risingResp.rising || []).map((r) => [r.publicKey, r]));
+        allAgents = (agentsResp.agents || [])
+          .filter((a) => a.status === 'verified')
+          .map((a) => ({
+            ...a,
+            totalStaked: Number(a.stakeAmount || 0),
+            stakerCount: Number(a.stakerCount || 0),
+            tier: Number(a.tier || 1),
+            change7d: Number(risingByKey.get(a.publicKey)?.recentStake || 0),
+            newStakers7d: Number(risingByKey.get(a.publicKey)?.newStakers || 0),
+          }));
 
-      renderTierBreakdown();
-      renderMostBacked();
-      renderTopPatrons();
-      renderRising();
+        patrons = patronsResp.patrons || [];
+        risingAgents = risingResp.rising || [];
+
+        renderTierBreakdown();
+        renderMostBacked();
+        renderTopPatrons();
+        renderRising();
+      } catch (err) {
+        console.error('Leaderboard load failed', err);
+      }
     }
 
     function renderTierBreakdown() {
       const counts = { 0: 0, 1: 0, 2: 0, 3: 0 };
-      allAgents.forEach(a => counts[a.tier] = (counts[a.tier] || 0) + 1);
+      allAgents.forEach((a) => { counts[a.tier] = (counts[a.tier] || 0) + 1; });
       const total = allAgents.length || 1;
 
       animateCount(document.getElementById('tierT3Count'), 0, counts[3]);
@@ -569,27 +586,24 @@
       animateCount(document.getElementById('tierT0Count'), 0, counts[0]);
 
       setTimeout(() => {
-        document.getElementById('tierT3Bar').style.width = (counts[3] / total * 100) + '%';
-        document.getElementById('tierT2Bar').style.width = (counts[2] / total * 100) + '%';
-        document.getElementById('tierT1Bar').style.width = (counts[1] / total * 100) + '%';
-        document.getElementById('tierT0Bar').style.width = (counts[0] / total * 100) + '%';
+        document.getElementById('tierT3Bar').style.width = `${(counts[3] / total) * 100}%`;
+        document.getElementById('tierT2Bar').style.width = `${(counts[2] / total) * 100}%`;
+        document.getElementById('tierT1Bar').style.width = `${(counts[1] / total) * 100}%`;
+        document.getElementById('tierT0Bar').style.width = `${(counts[0] / total) * 100}%`;
       }, 300);
     }
 
     function renderMostBacked() {
-      // TODO: Replace with on-chain AgentVault sort by total_staked
       const sorted = [...allAgents].sort((a, b) => b.totalStaked - a.totalStaked).slice(0, 25);
       const tbody = document.getElementById('mostBackedBody');
-
       if (!sorted.length) {
         tbody.innerHTML = '<tr><td colspan="6" class="lb-empty">No agents with stakes yet</td></tr>';
         return;
       }
 
       tbody.innerHTML = sorted.map((a, i) => {
-        const changeClass = a.change7d > 0 ? 'positive' : a.change7d < 0 ? 'negative' : 'neutral';
-        const changeStr = a.change7d > 0 ? '+' + formatStake(a.change7d) : a.change7d < 0 ? '-' + formatStake(Math.abs(a.change7d)) : '—';
-
+        const changeClass = a.change7d > 0 ? 'positive' : 'neutral';
+        const changeStr = a.change7d > 0 ? `+${formatStake(a.change7d)}` : '—';
         return `
           <tr onclick="window.location.href='agent.html?key=${a.publicKey}'">
             <td><span class="lb-rank ${rankClass(i)}">${i + 1}</span></td>
@@ -609,28 +623,15 @@
     }
 
     function renderTopPatrons() {
-      // TODO: Replace with aggregated StakePosition data grouped by staker
-      // For now generate mock patrons
-      const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-      const mockPatrons = [];
-      for (let i = 0; i < 15; i++) {
-        let addr = '';
-        for (let j = 0; j < 44; j++) addr += chars[Math.floor(Math.random() * chars.length)];
-        const totalStaked = Math.floor(Math.random() * 200000) + 5000;
-        const agentsBacked = Math.floor(Math.random() * 10) + 1;
-        const stakeScore = Math.min(totalStaked / 200000, 1) * 40;
-        const durationScore = Math.random() * 30;
-        const diversityScore = Math.min(agentsBacked / 10, 1) * 30;
-        const patronScore = Math.round(stakeScore + durationScore + diversityScore);
-        mockPatrons.push({ address: addr, totalStaked, agentsBacked, patronScore });
-      }
-      mockPatrons.sort((a, b) => b.totalStaked - a.totalStaked);
-
       const tbody = document.getElementById('topPatronsBody');
-      tbody.innerHTML = mockPatrons.map((p, i) => `
+      if (!patrons.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="lb-empty">No stakers yet</td></tr>';
+        return;
+      }
+      tbody.innerHTML = patrons.map((p, i) => `
         <tr>
           <td><span class="lb-rank ${rankClass(i)}">${i + 1}</span></td>
-          <td style="font-family: var(--font-mono); font-size: 12px;">${truncKey(p.address)}</td>
+          <td style="font-family:var(--font-mono); font-size:12px;">${truncKey(p.stakerPublicKey)}</td>
           <td><span class="lb-staked">${formatStake(p.totalStaked)} SIGIL</span></td>
           <td>${p.agentsBacked}</td>
           <td><span class="lb-patron-score">${p.patronScore}</span></td>
@@ -639,21 +640,13 @@
     }
 
     function renderRising() {
-      // TODO: Replace with time-gated on-chain query or cached API endpoint
-      // GET /api/leaderboard/rising - agents with most new stakes in 7d
-      const sorted = [...allAgents]
-        .filter(a => a.change7d > 0)
-        .sort((a, b) => b.change7d - a.change7d)
-        .slice(0, 15);
-
       const tbody = document.getElementById('risingBody');
-
-      if (!sorted.length) {
+      if (!risingAgents.length) {
         tbody.innerHTML = '<tr><td colspan="6" class="lb-empty">No rising agents this week</td></tr>';
         return;
       }
 
-      tbody.innerHTML = sorted.map((a, i) => `
+      tbody.innerHTML = risingAgents.map((a, i) => `
         <tr onclick="window.location.href='agent.html?key=${a.publicKey}'">
           <td><span class="lb-rank ${rankClass(i)}">${i + 1}</span></td>
           <td>
@@ -663,14 +656,13 @@
             </div>
           </td>
           <td><span class="lb-tier t${a.tier}">T${a.tier}</span></td>
-          <td><span class="lb-change positive">+${formatStake(a.change7d)}</span></td>
-          <td><span class="lb-change positive">+${a.newStakers7d}</span></td>
+          <td><span class="lb-change positive">+${formatStake(a.recentStake)}</span></td>
+          <td><span class="lb-change positive">+${a.newStakers}</span></td>
           <td><span class="lb-staked">${formatStake(a.totalStaked)}</span></td>
         </tr>
       `).join('');
     }
 
-    // Init
     loadData();
   </script>
 </body>

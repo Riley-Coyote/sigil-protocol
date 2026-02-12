@@ -1,0 +1,1002 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Recursive Build God Mode V2 - Visual Explainer</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700&family=Literata:opsz,wght@7..72,400;7..72,600;7..72,800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #f4efe4;
+      --panel: #fff9ef;
+      --ink: #19252f;
+      --muted: #55616b;
+      --accent: #ff5f39;
+      --accent-2: #0f8a88;
+      --ok: #1f7d49;
+      --warn: #ce7b13;
+      --danger: #9f1f31;
+      --border: rgba(25, 37, 47, 0.16);
+      --shadow: 0 20px 60px rgba(19, 31, 42, 0.12);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Literata", Georgia, serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% -10%, rgba(255, 95, 57, 0.18), transparent 42%),
+        radial-gradient(circle at 88% 14%, rgba(15, 138, 136, 0.16), transparent 38%),
+        linear-gradient(145deg, #f7f2e8, #f2eadc 48%, #f8f5ef);
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: radial-gradient(rgba(18, 27, 34, 0.04) 0.6px, transparent 0.6px);
+      background-size: 3px 3px;
+      mix-blend-mode: multiply;
+      opacity: 0.35;
+      z-index: -1;
+    }
+
+    main {
+      width: min(1180px, 100% - 3rem);
+      margin: 0 auto 4rem;
+    }
+
+    .hero {
+      padding: 3.75rem 0 2rem;
+      text-wrap: balance;
+    }
+
+    .eyebrow {
+      margin: 0;
+      letter-spacing: 0.24em;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      color: var(--accent-2);
+    }
+
+    h1 {
+      margin: 0.6rem 0 0;
+      font-family: "Bebas Neue", Impact, sans-serif;
+      font-size: clamp(2.8rem, 8vw, 7.2rem);
+      line-height: 0.94;
+      letter-spacing: 0.03em;
+      font-weight: 400;
+    }
+
+    h1 span {
+      color: var(--accent);
+      display: inline-block;
+    }
+
+    .hero p {
+      margin: 1.05rem 0 0;
+      max-width: 70ch;
+      color: #2b3a47;
+      font-size: clamp(1rem, 1.9vw, 1.22rem);
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-top: 1.25rem;
+    }
+
+    .chip {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.75);
+      padding: 0.5rem 0.88rem;
+      border-radius: 999px;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 0.78rem;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 250, 242, 0.88));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(1rem, 2vw, 1.85rem);
+      margin-top: 1.2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -120px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 95, 57, 0.16), transparent 65%);
+      pointer-events: none;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: "Bebas Neue", Impact, sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.7rem);
+      letter-spacing: 0.06em;
+      font-weight: 400;
+    }
+
+    .section-kicker {
+      margin: 0.35rem 0 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+      max-width: 74ch;
+    }
+
+    .loop-layout {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: minmax(300px, 560px) minmax(220px, 1fr);
+      gap: 1.2rem;
+      align-items: center;
+    }
+
+    .orbit {
+      --ring-size: min(74vw, 560px);
+      --node-radius: clamp(170px, 28vw, 236px);
+      width: var(--ring-size);
+      height: var(--ring-size);
+      margin: 0 auto;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .ring-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      transform: rotate(-92deg);
+      z-index: -1;
+      opacity: 0.9;
+    }
+
+    .ring-track {
+      fill: none;
+      stroke: rgba(25, 37, 47, 0.18);
+      stroke-width: 2;
+    }
+
+    .ring-dash {
+      fill: none;
+      stroke: var(--accent-2);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 14 20;
+      animation: spin 18s linear infinite;
+      transform-origin: 50% 50%;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .core {
+      position: absolute;
+      inset: 50%;
+      transform: translate(-50%, -50%);
+      width: clamp(150px, 28vw, 240px);
+      height: clamp(150px, 28vw, 240px);
+      border: 1.5px solid rgba(25, 37, 47, 0.2);
+      background: linear-gradient(170deg, #fffefb 2%, #fff4e6 100%);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 1rem;
+      box-shadow: inset 0 0 30px rgba(255, 95, 57, 0.1);
+    }
+
+    .core .mono {
+      margin: 0;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+    }
+
+    .core h3 {
+      margin: 0.25rem 0 0;
+      font-size: clamp(1.2rem, 2.5vw, 1.85rem);
+      line-height: 1.04;
+      font-family: "Bebas Neue", Impact, sans-serif;
+      letter-spacing: 0.03em;
+      font-weight: 400;
+    }
+
+    .core .desc {
+      margin: 0.55rem 0 0;
+      font-size: 0.82rem;
+      color: #34414a;
+      line-height: 1.42;
+      max-width: 18ch;
+    }
+
+    .orbit-steps {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      position: absolute;
+      inset: 0;
+    }
+
+    .orbit-steps li {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform:
+        rotate(var(--angle))
+        translateY(calc(-1 * var(--node-radius)))
+        rotate(calc(-1 * var(--angle)));
+      transform-origin: 0 0;
+      width: clamp(112px, 15vw, 136px);
+      border-radius: 16px;
+      border: 1px solid rgba(25, 37, 47, 0.2);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.93), rgba(255, 246, 235, 0.9));
+      padding: 0.55rem 0.62rem;
+      text-align: left;
+      font-size: 0.78rem;
+      line-height: 1.28;
+      transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
+    }
+
+    .orbit-steps li .idx {
+      display: inline-grid;
+      place-items: center;
+      width: 1.42rem;
+      height: 1.42rem;
+      margin-right: 0.34rem;
+      border-radius: 50%;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      background: #ffe6d8;
+      color: #7b2b17;
+    }
+
+    .orbit-steps li strong {
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      letter-spacing: 0.01em;
+    }
+
+    .orbit-steps li.active {
+      border-color: rgba(255, 95, 57, 0.75);
+      box-shadow: 0 0 0 2px rgba(255, 95, 57, 0.22), 0 14px 28px rgba(168, 58, 24, 0.18);
+      background: linear-gradient(180deg, #fff4e7, #ffe8d8);
+      transform:
+        rotate(var(--angle))
+        translateY(calc(-1 * var(--node-radius)))
+        rotate(calc(-1 * var(--angle)))
+        scale(1.04);
+      z-index: 2;
+    }
+
+    .loop-bullets {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 0.6rem;
+      counter-reset: loop;
+    }
+
+    .loop-bullets li {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.65rem 0.78rem;
+      background: rgba(255, 255, 255, 0.74);
+      color: #2f3f4a;
+      position: relative;
+      padding-left: 2.85rem;
+      min-height: 3.2rem;
+    }
+
+    .loop-bullets li::before {
+      counter-increment: loop;
+      content: counter(loop);
+      position: absolute;
+      left: 0.72rem;
+      top: 0.74rem;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 0.74rem;
+      color: #082f38;
+      background: #d2f2f1;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 0.95rem;
+    }
+
+    .tile {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.76);
+      padding: 0.85rem 0.95rem;
+    }
+
+    .tile h3 {
+      margin: 0;
+      font-family: "Bebas Neue", Impact, sans-serif;
+      font-weight: 400;
+      font-size: 1.7rem;
+      letter-spacing: 0.05em;
+    }
+
+    .danger-list,
+    .clean-list {
+      margin: 0.5rem 0 0;
+      padding-left: 1.1rem;
+      display: grid;
+      gap: 0.35rem;
+      font-size: 0.95rem;
+    }
+
+    .danger-list li::marker {
+      color: var(--danger);
+    }
+
+    .clean-list li::marker {
+      color: var(--ok);
+    }
+
+    .gate-grid {
+      margin-top: 0.7rem;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.5rem;
+    }
+
+    .gate-pill {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(15, 138, 136, 0.08);
+      padding: 0.4rem 0.55rem;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 0.76rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .gate-pill .weight {
+      color: #125b59;
+      font-weight: 700;
+    }
+
+    .formula {
+      margin: 0.72rem 0 0;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 0.75rem;
+      color: #324551;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px dashed rgba(25, 37, 47, 0.2);
+      border-radius: 12px;
+      padding: 0.6rem;
+    }
+
+    .phase-rail {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    .phase {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.7rem;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .phase .tag {
+      display: inline-flex;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.45rem;
+      border-radius: 999px;
+      border: 1px solid rgba(25, 37, 47, 0.2);
+      margin-bottom: 0.4rem;
+      background: #fff;
+    }
+
+    .phase h3 {
+      margin: 0.05rem 0 0.3rem;
+      font-family: "Bebas Neue", Impact, sans-serif;
+      font-size: 1.45rem;
+      letter-spacing: 0.04em;
+      font-weight: 400;
+    }
+
+    .phase p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #36454f;
+    }
+
+    .sim-grid {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: minmax(280px, 1.15fr) minmax(260px, 0.9fr);
+      gap: 1rem;
+    }
+
+    .judge-form {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.85rem;
+      background: rgba(255, 255, 255, 0.8);
+      display: grid;
+      gap: 0.7rem;
+    }
+
+    .gate-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.55rem;
+      align-items: center;
+    }
+
+    .gate-row label {
+      font-size: 0.9rem;
+      color: #22313a;
+    }
+
+    select,
+    input[type="number"] {
+      border: 1px solid rgba(25, 37, 47, 0.28);
+      border-radius: 10px;
+      padding: 0.34rem 0.45rem;
+      background: #fff;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 0.78rem;
+      min-width: 6.8rem;
+      color: #17242b;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.5rem;
+    }
+
+    .mini-grid label,
+    .toggles label {
+      font-size: 0.79rem;
+      color: #25343f;
+      display: grid;
+      gap: 0.23rem;
+    }
+
+    .toggles {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .toggles label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.84rem;
+    }
+
+    .judge-form button {
+      margin-top: 0.2rem;
+      border: 0;
+      border-radius: 12px;
+      padding: 0.62rem 0.85rem;
+      cursor: pointer;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #fff;
+      background: linear-gradient(135deg, #ff5f39, #cf411f);
+      box-shadow: 0 8px 20px rgba(145, 45, 24, 0.35);
+    }
+
+    .judge-output {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(253, 247, 236, 0.92));
+      padding: 0.92rem;
+      display: grid;
+      gap: 0.6rem;
+      align-content: start;
+    }
+
+    .score-line {
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 0.82rem;
+      color: #2a3a45;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .bar {
+      height: 0.78rem;
+      border: 1px solid rgba(25, 37, 47, 0.2);
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.88);
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ca4f2f, #ff8b42, #1f7d49);
+      transition: width 220ms ease;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border-radius: 999px;
+      padding: 0.3rem 0.62rem;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      border: 1px solid rgba(25, 37, 47, 0.22);
+      background: #fff;
+    }
+
+    .badge[data-state="continue"] {
+      color: #7d3515;
+      border-color: rgba(164, 63, 20, 0.4);
+      background: #ffe6d4;
+    }
+
+    .badge[data-state="ready"] {
+      color: #145531;
+      border-color: rgba(24, 104, 58, 0.38);
+      background: #dff6e9;
+    }
+
+    #blockers {
+      margin: 0;
+      padding-left: 1.02rem;
+      display: grid;
+      gap: 0.28rem;
+      color: #20303a;
+      font-size: 0.87rem;
+    }
+
+    #blockers li::marker {
+      color: var(--danger);
+    }
+
+    footer {
+      margin: 1.5rem 0 0.6rem;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 0.76rem;
+      color: #40515d;
+      text-align: center;
+      padding-bottom: 1.2rem;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: rise 700ms cubic-bezier(.2, .8, .2, 1) forwards;
+    }
+
+    .reveal:nth-of-type(2) {
+      animation-delay: 120ms;
+    }
+
+    .reveal:nth-of-type(3) {
+      animation-delay: 200ms;
+    }
+
+    .reveal:nth-of-type(4) {
+      animation-delay: 280ms;
+    }
+
+    .reveal:nth-of-type(5) {
+      animation-delay: 360ms;
+    }
+
+    @keyframes rise {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 1010px) {
+      .loop-layout,
+      .sim-grid,
+      .split {
+        grid-template-columns: 1fr;
+      }
+
+      .phase-rail {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: min(1180px, 100% - 1.2rem);
+      }
+
+      .panel {
+        border-radius: 18px;
+      }
+
+      .orbit {
+        --ring-size: min(94vw, 520px);
+        --node-radius: clamp(138px, 34vw, 184px);
+      }
+
+      .orbit-steps li {
+        width: clamp(90px, 24vw, 122px);
+        font-size: 0.7rem;
+        padding: 0.46rem 0.52rem;
+      }
+
+      .core {
+        width: clamp(132px, 40vw, 208px);
+        height: clamp(132px, 40vw, 208px);
+      }
+
+      .gate-grid,
+      .mini-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .phase-rail {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <main>
+    <header class="hero reveal">
+      <p class="eyebrow">Skill Visual Explainer</p>
+      <h1>Recursive Build <span>God Mode V2</span></h1>
+      <p>
+        This skill runs Codex as a recursive production engine: build a slice, review the whole system,
+        verify with evidence, debug root causes, harden quality, score release gates, and loop again until
+        exit criteria are objectively satisfied.
+      </p>
+      <div class="chip-row">
+        <span class="chip">7-loop protocol</span>
+        <span class="chip">8 required gates</span>
+        <span class="chip">score >= 95 for 2 loops</span>
+        <span class="chip">hard blockers enforced</span>
+      </div>
+    </header>
+
+    <section class="panel reveal">
+      <h2>The Recursive Engine</h2>
+      <p class="section-kicker">One loop is never "just coding." Every pass is full-system quality work with explicit decision logic.</p>
+      <div class="loop-layout">
+        <div class="orbit" aria-label="Recursive loop diagram">
+          <svg class="ring-svg" viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="ring-track" cx="50" cy="50" r="38"></circle>
+            <circle class="ring-dash" cx="50" cy="50" r="38"></circle>
+          </svg>
+          <div class="core">
+            <p class="mono">Loop <span id="loop-count">01</span></p>
+            <h3 id="active-step">Scope</h3>
+            <p class="desc" id="active-desc">Define objective, constraints, and measurable evidence target.</p>
+          </div>
+          <ul class="orbit-steps" id="orbit-steps">
+            <li style="--angle: 0deg" data-name="Scope" data-desc="Define objective, constraints, and measurable evidence target."><span class="idx">1</span><strong>Scope</strong></li>
+            <li style="--angle: 51deg" data-name="Build" data-desc="Implement the smallest coherent increment with minimal debt."><span class="idx">2</span><strong>Build</strong></li>
+            <li style="--angle: 102deg" data-name="System Review" data-desc="Inspect touched and impacted surfaces for hidden regressions."><span class="idx">3</span><strong>System Review</strong></li>
+            <li style="--angle: 154deg" data-name="Verification" data-desc="Run tests and gather reproducible runtime evidence."><span class="idx">4</span><strong>Verification</strong></li>
+            <li style="--angle: 206deg" data-name="Debug + Repair" data-desc="Fix root causes, validate, and remove temporary complexity."><span class="idx">5</span><strong>Debug + Repair</strong></li>
+            <li style="--angle: 257deg" data-name="Hardening" data-desc="Close production risks in security, reliability, and performance."><span class="idx">6</span><strong>Hardening</strong></li>
+            <li style="--angle: 309deg" data-name="Decision" data-desc="Score gates, enforce blockers, and decide CONTINUE vs EXIT_READY."><span class="idx">7</span><strong>Decision</strong></li>
+          </ul>
+        </div>
+
+        <ul class="loop-bullets">
+          <li>Pick the highest-risk unresolved objective, not the easiest task.</li>
+          <li>Treat review/testing as first-class work, never optional cleanup.</li>
+          <li>Continue looping while any blocker or weak gate remains.</li>
+          <li>Exit only with sustained gate confidence, not one lucky pass.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="panel reveal">
+      <div class="split">
+        <article class="tile">
+          <h3>Hard Blockers</h3>
+          <ul class="danger-list">
+            <li>Any open P0 defect</li>
+            <li>Any open P1 defect</li>
+            <li>Critical tests not fully passing</li>
+            <li>Any required gate not in <code>pass</code> state</li>
+            <li>New high-severity regression in current loop</li>
+            <li>Rollback path unvalidated for runtime/deploy changes</li>
+          </ul>
+        </article>
+
+        <article class="tile">
+          <h3>Required Exit Gates</h3>
+          <div class="gate-grid">
+            <div class="gate-pill"><span>Functionality</span><span class="weight">20</span></div>
+            <div class="gate-pill"><span>Correctness</span><span class="weight">18</span></div>
+            <div class="gate-pill"><span>Regression Safety</span><span class="weight">14</span></div>
+            <div class="gate-pill"><span>Reliability</span><span class="weight">14</span></div>
+            <div class="gate-pill"><span>Security</span><span class="weight">12</span></div>
+            <div class="gate-pill"><span>Performance</span><span class="weight">10</span></div>
+            <div class="gate-pill"><span>Maintainability</span><span class="weight">7</span></div>
+            <div class="gate-pill"><span>Operability</span><span class="weight">5</span></div>
+          </div>
+          <p class="formula">Weighted score = sum(weight * status_score) where pass=1, partial=0.5, fail=0. Require score >= 95 for two consecutive loops.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel reveal">
+      <h2>Phase Strategy</h2>
+      <p class="section-kicker">The same recursive engine, different emphasis per phase.</p>
+      <div class="phase-rail">
+        <article class="phase">
+          <span class="tag">Phase 1</span>
+          <h3>Foundation</h3>
+          <p>Lock architecture, tooling, CI, and baseline tests for repeatable signal.</p>
+        </article>
+        <article class="phase">
+          <span class="tag">Phase 2</span>
+          <h3>Expansion</h3>
+          <p>Ship value in vertical slices while preserving regression safety.</p>
+        </article>
+        <article class="phase">
+          <span class="tag">Phase 3</span>
+          <h3>Stabilization</h3>
+          <p>Burn down defects, remove flakiness, and improve system confidence.</p>
+        </article>
+        <article class="phase">
+          <span class="tag">Phase 4</span>
+          <h3>Release Hardening</h3>
+          <p>Enforce all gates and operational readiness before exit.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel reveal">
+      <h2>Loop Judge Simulator</h2>
+      <p class="section-kicker">Interactive model of the V2 decision logic. Change statuses and blockers to see whether the loop continues.</p>
+      <div class="sim-grid">
+        <form id="judge-form" class="judge-form">
+          <div class="gate-row"><label for="functionality">Functionality</label><select id="functionality"><option>pass</option><option>partial</option><option>fail</option></select></div>
+          <div class="gate-row"><label for="correctness">Correctness</label><select id="correctness"><option>pass</option><option>partial</option><option>fail</option></select></div>
+          <div class="gate-row"><label for="regression_safety">Regression Safety</label><select id="regression_safety"><option>pass</option><option>partial</option><option>fail</option></select></div>
+          <div class="gate-row"><label for="reliability">Reliability</label><select id="reliability"><option>pass</option><option>partial</option><option>fail</option></select></div>
+          <div class="gate-row"><label for="security">Security</label><select id="security"><option>pass</option><option>partial</option><option>fail</option></select></div>
+          <div class="gate-row"><label for="performance">Performance</label><select id="performance"><option>pass</option><option>partial</option><option>fail</option></select></div>
+          <div class="gate-row"><label for="maintainability">Maintainability</label><select id="maintainability"><option>pass</option><option>partial</option><option>fail</option></select></div>
+          <div class="gate-row"><label for="operability">Operability</label><select id="operability"><option>pass</option><option>partial</option><option>fail</option></select></div>
+
+          <div class="mini-grid">
+            <label for="p0_open">P0 open
+              <input id="p0_open" type="number" min="0" value="0" />
+            </label>
+            <label for="p1_open">P1 open
+              <input id="p1_open" type="number" min="0" value="0" />
+            </label>
+            <label for="new_regressions">New high regressions
+              <input id="new_regressions" type="number" min="0" value="0" />
+            </label>
+          </div>
+
+          <div class="toggles">
+            <label><input id="critical_tests_passed" type="checkbox" checked /> Critical tests passed</label>
+            <label><input id="rollback_validated" type="checkbox" checked /> Rollback path validated</label>
+          </div>
+
+          <div class="mini-grid">
+            <label for="threshold">Threshold
+              <input id="threshold" type="number" min="1" max="100" value="95" />
+            </label>
+            <label for="streak">Current streak
+              <input id="streak" type="number" min="0" value="1" />
+            </label>
+            <label for="required_streak">Required streak
+              <input id="required_streak" type="number" min="1" value="2" />
+            </label>
+          </div>
+
+          <button type="submit">Evaluate Loop</button>
+        </form>
+
+        <aside class="judge-output" aria-live="polite">
+          <div class="score-line"><span>Weighted score</span><strong id="score-value">0.0</strong></div>
+          <div class="bar"><span id="score-bar"></span></div>
+          <div class="score-line"><span>Decision</span><span id="decision" class="badge" data-state="continue">CONTINUE</span></div>
+          <div class="score-line"><span>Streak update</span><strong id="streak-value">0 -> 0</strong></div>
+          <div class="score-line"><span>Blockers</span><strong id="blocker-count">0</strong></div>
+          <ul id="blockers"></ul>
+        </aside>
+      </div>
+    </section>
+
+    <footer>
+      Standalone explainer page for the skill <code>recursive-build-god-mode-v2</code>.
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      const steps = Array.from(document.querySelectorAll("#orbit-steps li"));
+      const activeStep = document.getElementById("active-step");
+      const activeDesc = document.getElementById("active-desc");
+      const loopCount = document.getElementById("loop-count");
+      let index = 0;
+      let loops = 1;
+
+      function renderStep(next) {
+        steps.forEach((el, i) => el.classList.toggle("active", i === next));
+        const step = steps[next];
+        activeStep.textContent = step.dataset.name;
+        activeDesc.textContent = step.dataset.desc;
+      }
+
+      renderStep(index);
+      setInterval(function () {
+        index = (index + 1) % steps.length;
+        if (index === 0) {
+          loops += 1;
+          loopCount.textContent = String(loops).padStart(2, "0");
+        }
+        renderStep(index);
+      }, 2200);
+
+      const WEIGHTS = {
+        functionality: 20,
+        correctness: 18,
+        regression_safety: 14,
+        reliability: 14,
+        security: 12,
+        performance: 10,
+        maintainability: 7,
+        operability: 5
+      };
+
+      const SCORE = { pass: 1, partial: 0.5, fail: 0 };
+
+      const form = document.getElementById("judge-form");
+      const scoreValue = document.getElementById("score-value");
+      const scoreBar = document.getElementById("score-bar");
+      const decision = document.getElementById("decision");
+      const streakValue = document.getElementById("streak-value");
+      const blockerCount = document.getElementById("blocker-count");
+      const blockerList = document.getElementById("blockers");
+
+      function numberValue(id) {
+        const el = document.getElementById(id);
+        return Number.parseInt(el.value, 10) || 0;
+      }
+
+      function evaluate() {
+        const gates = {};
+        for (const key of Object.keys(WEIGHTS)) {
+          gates[key] = document.getElementById(key).value;
+        }
+
+        const weightedPoints = Object.keys(WEIGHTS).reduce(function (sum, key) {
+          return sum + WEIGHTS[key] * SCORE[gates[key]];
+        }, 0);
+
+        const threshold = Number(document.getElementById("threshold").value) || 95;
+        const streak = numberValue("streak");
+        const requiredStreak = Math.max(1, numberValue("required_streak"));
+
+        const blockers = [];
+
+        if (numberValue("p0_open") > 0) blockers.push("Open P0 defects");
+        if (numberValue("p1_open") > 0) blockers.push("Open P1 defects");
+        if (numberValue("new_regressions") > 0) blockers.push("New high-severity regressions detected");
+        if (!document.getElementById("critical_tests_passed").checked) blockers.push("Critical tests are not fully passing");
+        if (!document.getElementById("rollback_validated").checked) blockers.push("Rollback or recovery path is not validated");
+
+        const notPass = Object.keys(gates).filter(function (key) {
+          return gates[key] !== "pass";
+        });
+
+        if (notPass.length) blockers.push("Required gates not fully pass: " + notPass.join(", "));
+
+        const weightedScore = Math.round(weightedPoints * 100) / 100;
+        if (weightedScore < threshold) blockers.push("Weighted score below threshold (" + weightedScore.toFixed(2) + " < " + threshold + ")");
+
+        let nextStreak;
+        let state;
+        let label;
+
+        if (blockers.length) {
+          nextStreak = 0;
+          state = "continue";
+          label = "CONTINUE";
+        } else {
+          nextStreak = streak + 1;
+          if (nextStreak >= requiredStreak) {
+            state = "ready";
+            label = "EXIT_READY";
+          } else {
+            state = "continue";
+            label = "CONTINUE";
+            blockers.push("Consecutive-pass streak not yet satisfied (" + nextStreak + "/" + requiredStreak + ")");
+          }
+        }
+
+        scoreValue.textContent = weightedScore.toFixed(2) + " / 100";
+        scoreBar.style.width = Math.max(0, Math.min(100, weightedScore)) + "%";
+
+        decision.textContent = label;
+        decision.dataset.state = state;
+
+        streakValue.textContent = streak + " -> " + nextStreak + " (required " + requiredStreak + ")";
+        blockerCount.textContent = String(blockers.length);
+
+        blockerList.innerHTML = "";
+        if (!blockers.length) {
+          const ok = document.createElement("li");
+          ok.textContent = "No blockers detected.";
+          blockerList.appendChild(ok);
+        } else {
+          for (const item of blockers) {
+            const li = document.createElement("li");
+            li.textContent = item;
+            blockerList.appendChild(li);
+          }
+        }
+      }
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        evaluate();
+      });
+
+      form.addEventListener("input", evaluate);
+      evaluate();
+    })();
+  </script>
+</body>
+</html>

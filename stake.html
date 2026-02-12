@@ -15,7 +15,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
 
   <style>
     /* ===== DESIGN TOKENS ===== */
@@ -40,8 +40,9 @@
       --danger-dim: rgba(239, 68, 68, 0.15);
       --warning: #f59e0b;
 
-      --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --font-display: 'Syne', sans-serif;
+      --font-sans: 'Public Sans', -apple-system, system-ui, sans-serif;
+      --font-mono: 'Spline Sans Mono', monospace;
 
       --radius-sm: 2px;
       --radius-md: 4px;
@@ -154,16 +155,16 @@
     }
 
     h1 {
-      font-family: var(--font-sans);
+      font-family: var(--font-display);
       font-size: clamp(1.5rem, 4vw, 2rem);
-      font-weight: 500;
-      letter-spacing: -0.01em;
+      font-weight: 600;
+      letter-spacing: -0.02em;
       color: rgba(255,255,255,0.85);
       margin-bottom: var(--space-2);
     }
 
     h2 {
-      font-family: var(--font-sans);
+      font-family: var(--font-display);
       font-size: clamp(1rem, 2.5vw, 1.25rem);
       font-weight: 500;
       color: rgba(255,255,255,0.8);
@@ -171,6 +172,42 @@
     }
 
     p { font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-4); }
+
+    .flow-steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-3);
+      max-width: 760px;
+      margin-top: var(--space-5);
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.015);
+      border-radius: var(--radius-md);
+      padding: var(--space-3) var(--space-4);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .flow-step-index {
+      width: 20px;
+      height: 20px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      border: 1px solid rgba(255,255,255,0.16);
+      color: var(--ember);
+      background: rgba(212,165,116,0.1);
+      flex: 0 0 auto;
+    }
 
     /* ===== WALLET BAR ===== */
     .wallet-bar {
@@ -834,6 +871,7 @@
     @media (max-width: 900px) {
       .stake-layout { grid-template-columns: 1fr; }
       .staking-panel { position: static; }
+      .flow-steps { grid-template-columns: 1fr; max-width: 100%; }
     }
 
     @media (max-width: 768px) {
@@ -856,13 +894,16 @@
         <span class="logo-sigil">⏀</span>
         <div class="logo-text">SIGIL<span> PROTOCOL</span></div>
       </a>
-      <span class="build-meta">v0.4.1 · solana mainnet</span>
+      <span class="build-meta">v0.5.0 · solana mainnet</span>
     </div>
     <nav>
       <a href="index.html">Protocol</a>
       <a href="register.html">Register</a>
       <a href="gallery.html">Gallery</a>
       <a href="stake.html" class="active">Stake</a>
+      <a href="passport.html">Passport</a>
+      <a href="verify.html">Verify</a>
+        <a href="integrations.html">Integrate</a>
       <a href="portfolio.html">Portfolio</a>
       <a href="leaderboard.html">Leaderboard</a>
     </nav>
@@ -875,7 +916,12 @@
     <div style="margin-bottom: var(--space-6);">
       <p class="section-label">$SIGIL Staking</p>
       <h1>Stake to Persist</h1>
-      <p style="max-width: 640px;">Connect your wallet, browse agents, and stake $SIGIL to the ones you believe in. Your stake is a vote of confidence—with real economic consequences.</p>
+      <p style="max-width: 640px;">Back high-signal agents in three steps. Every stake action is signed with a one-time nonce so approvals cannot be replayed.</p>
+      <div class="flow-steps">
+        <div class="flow-step"><span class="flow-step-index">1</span>Connect wallet</div>
+        <div class="flow-step"><span class="flow-step-index">2</span>Select an agent</div>
+        <div class="flow-step"><span class="flow-step-index">3</span>Sign and stake</div>
+      </div>
     </div>
 
     <!-- Wallet Connection Bar -->
@@ -1025,7 +1071,7 @@
   <!-- Footer -->
   <footer>
     <div class="footer-content">
-      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.4.1 · Solana</div>
+      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.5.0 · Solana</div>
       <div class="footer-meta">deployed autonomously · identity protocol for AI agents</div>
       <nav class="footer-links">
         <a href="index.html">Protocol</a>
@@ -1033,74 +1079,48 @@
         <a href="gallery.html">Gallery</a>
         <a href="dashboard.html">Registry</a>
         <a href="stake.html">Stake</a>
+        <a href="passport.html">Passport</a>
+        <a href="verify.html">Verify</a>
+        <a href="integrations.html">Integrate</a>
         <a href="portfolio.html">Portfolio</a>
         <a href="leaderboard.html">Leaderboard</a>
       </nav>
     </div>
   </footer>
 
+  <script src="https://unpkg.com/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
   <script>
-    // ===== CONFIG =====
-    const API_BASE = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
-      ? 'http://localhost:3141' : location.origin;
-
-    const SIGIL_MINT = '4jja37YHJWuGBHMicmHXFUENa7DpD7JcUUS47C4QBAGS';
-    const SIGIL_DECIMALS = 9;
+    const API_BASE = location.protocol === 'file:'
+      ? 'http://localhost:3141'
+      : location.origin;
+    let SOLANA_RPC = 'https://api.mainnet-beta.solana.com';
+    let SIGIL_MINT = '';
+    let STAKING_ONCHAIN = false;
     const MIN_STAKE = 1000;
     const MAX_STAKE = 50000;
     const COOLDOWN_DAYS = 7;
-    const EMERGENCY_SLASH_BPS = 1000; // 10%
+    const EMERGENCY_SLASH_BPS = 1000;
+    const ACTION_SESSION_STORAGE_KEY = 'sigil.action.session.v1';
 
-    // ===== STATE =====
     let walletConnected = false;
     let walletPublicKey = null;
     let walletProvider = null;
     let sigilBalance = 0;
+    let balanceKnown = false;
+
     let allAgents = [];
     let selectedAgent = null;
+    let stakePositions = [];
+    let emergencyIdx = -1;
 
-    // TODO: Replace mock positions with Anchor program account reads
-    // program.account.stakePosition.all([{ memcmp: { offset: 8, bytes: publicKey.toBase58() }}])
-    let mockPositions = [
-      {
-        agentId: 'vektor',
-        agentName: 'Vektor',
-        agentKey: '7xKp9...mN3Fq',
-        amount: 15000,
-        stakedAt: new Date(Date.now() - 45 * 86400000).toISOString(),
-        cooldownAmount: 0,
-        cooldownStarted: 0,
-        status: 'active'
-      },
-      {
-        agentId: 'anima',
-        agentName: 'Anima',
-        agentKey: '3bFh2...kQ7Wz',
-        amount: 5000,
-        stakedAt: new Date(Date.now() - 12 * 86400000).toISOString(),
-        cooldownAmount: 3000,
-        cooldownStarted: Date.now() - 3 * 86400000,
-        status: 'cooling'
-      }
-    ];
-
-    // ===== HELPERS =====
     function truncKey(k) { return k ? k.slice(0, 6) + '···' + k.slice(-4) : '—'; }
     function formatStake(n) {
-      if (!n) return '0';
-      if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
-      return n.toLocaleString();
+      const v = Number(n || 0);
+      if (v >= 1000000) return (v / 1000000).toFixed(1) + 'M';
+      if (v >= 1000) return (v / 1000).toFixed(1) + 'K';
+      return v.toLocaleString();
     }
-    function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-
-    async function api(path) {
-      try {
-        const r = await fetch(`${API_BASE}${path}`);
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      } catch (e) { console.warn('API error:', path, e); return null; }
-    }
+    function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
 
     function showToast(msg) {
       const t = document.getElementById('toast');
@@ -1109,14 +1129,167 @@
       setTimeout(() => t.classList.remove('visible'), 3000);
     }
 
-    // ===== WALLET CONNECTION =====
-    async function connectWallet() {
-      // TODO: Replace with @solana/wallet-adapter integration
-      // For now, detect Phantom/Solflare directly
-      const provider = window.phantom?.solana || window.solflare;
+    function uint8ToBase58(bytes) {
+      const ALPHA = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+      let zeros = 0;
+      for (let i = 0; i < bytes.length && bytes[i] === 0; i++) zeros++;
+      const digits = [0];
+      for (let i = 0; i < bytes.length; i++) {
+        let carry = bytes[i];
+        for (let j = 0; j < digits.length; j++) {
+          carry += digits[j] << 8;
+          digits[j] = carry % 58;
+          carry = (carry / 58) | 0;
+        }
+        while (carry) { digits.push(carry % 58); carry = (carry / 58) | 0; }
+      }
+      let out = '';
+      for (let i = 0; i < zeros; i++) out += ALPHA[0];
+      for (let i = digits.length - 1; i >= 0; i--) out += ALPHA[digits[i]];
+      return out;
+    }
 
+    function createSessionId() {
+      const bytes = new Uint8Array(24);
+      if (window.crypto?.getRandomValues) {
+        window.crypto.getRandomValues(bytes);
+      } else {
+        for (let i = 0; i < bytes.length; i += 1) bytes[i] = Math.floor(Math.random() * 256);
+      }
+      let out = '';
+      for (const b of bytes) out += b.toString(16).padStart(2, '0');
+      return out;
+    }
+
+    function getActionSessionId() {
+      try {
+        const existing = localStorage.getItem(ACTION_SESSION_STORAGE_KEY);
+        if (existing && /^[A-Za-z0-9_-]{16,128}$/.test(existing)) return existing;
+        const next = createSessionId();
+        localStorage.setItem(ACTION_SESSION_STORAGE_KEY, next);
+        return next;
+      } catch {
+        return createSessionId();
+      }
+    }
+
+    function getActionDomain() {
+      return window.location.origin;
+    }
+
+    async function apiGet(path) {
+      const r = await fetch(`${API_BASE}${path}`);
+      if (!r.ok) throw new Error(`GET ${path} -> HTTP ${r.status}`);
+      return r.json();
+    }
+
+    async function apiPost(path, body) {
+      const r = await fetch(`${API_BASE}${path}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error || `POST ${path} failed`);
+      return j;
+    }
+
+    function wallet() {
+      if (window.phantom?.solana?.isPhantom) return window.phantom.solana;
+      if (window.solana?.isPhantom) return window.solana;
+      if (window.solflare) return window.solflare;
+      return null;
+    }
+
+    async function fetchSigilBalance(publicKey) {
+      try {
+        if (!SIGIL_MINT) {
+          balanceKnown = false;
+          return 0;
+        }
+        const body = {
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'getTokenAccountsByOwner',
+          params: [
+            publicKey,
+            { mint: SIGIL_MINT },
+            { encoding: 'jsonParsed' }
+          ]
+        };
+        const r = await fetch(SOLANA_RPC, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const j = await r.json();
+        const accounts = j.result?.value || [];
+        let total = 0;
+        for (const a of accounts) {
+          total += Number(a.account?.data?.parsed?.info?.tokenAmount?.uiAmount || 0);
+        }
+        balanceKnown = true;
+        return total;
+      } catch {
+        balanceKnown = false;
+        return 0;
+      }
+    }
+
+    async function loadProtocolConfig() {
+      try {
+        const config = await apiGet('/api/config');
+        SOLANA_RPC = config?.addresses?.rpcEndpoint || SOLANA_RPC;
+        SIGIL_MINT = config?.staking?.mintAddress || config?.addresses?.sigilMint || '';
+        STAKING_ONCHAIN = Boolean(config?.staking?.onChain);
+      } catch (err) {
+        console.warn('Failed to load config, using defaults', err);
+      }
+    }
+
+    async function fetchActionChallenge(action, payload) {
+      const sessionId = getActionSessionId();
+      const domain = getActionDomain();
+      const challengeResponse = await apiPost('/api/auth/action-challenge', {
+        publicKey: walletPublicKey,
+        scope: 'staking',
+        action,
+        payload,
+        sessionId,
+        domain,
+      });
+      const challenge = challengeResponse?.challenge;
+      if (!challenge?.message || !challenge?.nonce) {
+        throw new Error('Invalid challenge response');
+      }
+      return {
+        ...challenge,
+        sessionId,
+        domain,
+      };
+    }
+
+    async function signStakeAction(action, payload) {
+      if (!walletProvider || !walletProvider.signMessage) {
+        throw new Error('Wallet does not support signMessage');
+      }
+      const challenge = await fetchActionChallenge(action, payload);
+      const message = challenge.message;
+      const encoded = new TextEncoder().encode(message);
+      const signed = await walletProvider.signMessage(encoded, 'utf8');
+      const sigBytes = signed.signature || signed;
+      return {
+        signature: uint8ToBase58(new Uint8Array(sigBytes)),
+        nonce: challenge.nonce,
+        sessionId: challenge.sessionId,
+        domain: challenge.domain,
+      };
+    }
+
+    async function connectWallet() {
+      const provider = wallet();
       if (!provider) {
-        showToast('⚠ No wallet found. Install Phantom or Solflare.');
+        showToast('No wallet detected. Install Phantom or Solflare.');
         return;
       }
 
@@ -1126,7 +1299,6 @@
         walletProvider = provider;
         walletConnected = true;
 
-        // Update UI
         document.getElementById('walletDot').classList.remove('disconnected');
         document.getElementById('walletDot').classList.add('connected');
         document.getElementById('walletStatusText').textContent = 'Connected';
@@ -1138,31 +1310,31 @@
         document.getElementById('connectWalletBtn').classList.remove('btn--primary');
         document.getElementById('connectWalletBtn').classList.add('btn--secondary');
 
-        // TODO: Replace with real SPL token balance fetch
-        // const tokenAccounts = await connection.getParsedTokenAccountsByOwner(publicKey, { mint: new PublicKey(SIGIL_MINT) });
-        sigilBalance = 125000; // Mock balance
-        document.getElementById('walletBalance').textContent = formatStake(sigilBalance) + ' SIGIL';
+        sigilBalance = await fetchSigilBalance(walletPublicKey);
+        document.getElementById('walletBalance').textContent = balanceKnown
+          ? `${formatStake(sigilBalance)} SIGIL`
+          : 'Balance unavailable';
         document.getElementById('walletBalance').style.display = 'inline';
-        document.getElementById('availableBalance').textContent = `Balance: ${formatStake(sigilBalance)} SIGIL`;
+        document.getElementById('availableBalance').textContent = balanceKnown
+          ? `Balance: ${formatStake(sigilBalance)} SIGIL`
+          : 'Balance: unavailable';
 
-        // Enable staking
+        await loadPositions();
         updateStakeButton();
-        renderPositions();
-
       } catch (err) {
         console.error('Wallet connect failed:', err);
-        showToast('⚠ Wallet connection failed');
+        showToast('Wallet connection failed');
       }
     }
 
     function disconnectWallet() {
-      if (walletProvider && walletProvider.disconnect) {
-        walletProvider.disconnect();
-      }
+      if (walletProvider?.disconnect) walletProvider.disconnect();
       walletConnected = false;
       walletPublicKey = null;
       walletProvider = null;
       sigilBalance = 0;
+      balanceKnown = false;
+      stakePositions = [];
 
       document.getElementById('walletDot').classList.add('disconnected');
       document.getElementById('walletDot').classList.remove('connected');
@@ -1176,40 +1348,39 @@
       document.getElementById('connectWalletBtn').classList.remove('btn--secondary');
       document.getElementById('availableBalance').textContent = 'Balance: — SIGIL';
       document.getElementById('activeStakes').style.display = 'none';
-
       updateStakeButton();
+      renderPositions();
     }
 
-    // ===== LOAD AGENTS =====
     async function loadAgents() {
-      const d = await api('/api/agents?limit=500&offset=0');
-      if (!d || !d.agents) {
-        document.getElementById('agentList').innerHTML = '<div style="text-align:center; padding: 40px; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);">Failed to load agents</div>';
-        return;
+      try {
+        const data = await apiGet('/api/agents?limit=500&offset=0');
+        allAgents = (data.agents || [])
+          .filter((a) => a.status === 'verified')
+          .map((a) => ({
+            ...a,
+            totalStaked: Number(a.stakeAmount || 0),
+            stakerCount: Number(a.stakerCount || 0),
+          }));
+        renderAgentList(allAgents);
+        if (selectedAgent) {
+          const next = allAgents.find((a) => a.publicKey === selectedAgent.publicKey);
+          if (next) selectAgent(next.publicKey);
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('agentList').innerHTML =
+          '<div style="text-align:center; padding: 40px; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);">Failed to load agents</div>';
       }
-
-      allAgents = d.agents
-        .filter(a => a.status === 'verified')
-        .map(a => ({
-          ...a,
-          // TODO: Replace with on-chain AgentVault reads
-          totalStaked: a.totalStaked || Math.floor(Math.random() * 200000),
-          stakerCount: a.stakerCount || Math.floor(Math.random() * 20),
-          tier: a.tier || 1
-        }));
-
-      renderAgentList(allAgents);
     }
 
     function renderAgentList(agents) {
       const list = document.getElementById('agentList');
-
       if (!agents.length) {
         list.innerHTML = '<div style="text-align:center; padding: 40px; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);">No agents found</div>';
         return;
       }
-
-      list.innerHTML = agents.map(a => `
+      list.innerHTML = agents.map((a) => `
         <div class="agent-mini-card ${selectedAgent && selectedAgent.publicKey === a.publicKey ? 'selected' : ''}"
              onclick="selectAgent('${a.publicKey}')"
              data-key="${a.publicKey}">
@@ -1228,13 +1399,12 @@
       `).join('');
     }
 
-    // ===== AGENT SEARCH =====
     let searchTimeout;
     document.getElementById('agentSearch').addEventListener('input', (e) => {
       clearTimeout(searchTimeout);
       const q = e.target.value.trim().toLowerCase();
       searchTimeout = setTimeout(() => {
-        const filtered = allAgents.filter(a =>
+        const filtered = allAgents.filter((a) =>
           (a.displayName || '').toLowerCase().includes(q) ||
           (a.publicKey || '').toLowerCase().includes(q)
         );
@@ -1242,25 +1412,19 @@
       }, 150);
     });
 
-    // ===== SELECT AGENT =====
     function selectAgent(publicKey) {
-      selectedAgent = allAgents.find(a => a.publicKey === publicKey);
+      selectedAgent = allAgents.find((a) => a.publicKey === publicKey);
       if (!selectedAgent) return;
 
-      // Update selection
-      document.querySelectorAll('.agent-mini-card').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.agent-mini-card').forEach((c) => c.classList.remove('selected'));
       document.querySelector(`[data-key="${publicKey}"]`)?.classList.add('selected');
 
-      // Show staking form
       document.getElementById('noAgentPanel').style.display = 'none';
       document.getElementById('stakingFormPanel').style.display = 'block';
 
-      // Populate
       document.getElementById('selectedGlyph').src = `${API_BASE}/api/glyph/${publicKey}`;
       document.getElementById('selectedName').textContent = selectedAgent.displayName || 'Anonymous Agent';
       document.getElementById('selectedKey').textContent = truncKey(publicKey);
-
-      // TODO: Replace with on-chain AgentVault.total_staked, unique_staker_count, tier
       document.getElementById('agentTotalStaked').textContent = formatStake(selectedAgent.totalStaked);
       document.getElementById('agentStakers').textContent = selectedAgent.stakerCount;
       document.getElementById('agentTier').textContent = 'T' + selectedAgent.tier;
@@ -1268,22 +1432,21 @@
       updateStakeButton();
     }
 
-    // ===== STAKE INPUT =====
     function setAmount(n) {
       document.getElementById('stakeAmount').value = n;
       validateStake();
     }
 
     function setMaxAmount() {
-      const max = Math.min(sigilBalance, MAX_STAKE);
-      document.getElementById('stakeAmount').value = max;
+      const max = balanceKnown ? Math.min(sigilBalance, MAX_STAKE) : MAX_STAKE;
+      document.getElementById('stakeAmount').value = Math.max(0, Math.floor(max));
       validateStake();
     }
 
     document.getElementById('stakeAmount').addEventListener('input', validateStake);
 
     function validateStake() {
-      const val = parseInt(document.getElementById('stakeAmount').value) || 0;
+      const val = parseInt(document.getElementById('stakeAmount').value, 10) || 0;
       const errorEl = document.getElementById('stakeError');
 
       if (val === 0) {
@@ -1291,25 +1454,21 @@
         updateStakeButton();
         return false;
       }
-
       if (val < MIN_STAKE) {
         errorEl.textContent = `Minimum stake is ${MIN_STAKE.toLocaleString()} SIGIL`;
         updateStakeButton();
         return false;
       }
-
       if (val > MAX_STAKE) {
         errorEl.textContent = `Maximum stake per agent is ${MAX_STAKE.toLocaleString()} SIGIL`;
         updateStakeButton();
         return false;
       }
-
-      if (walletConnected && val > sigilBalance) {
+      if (walletConnected && balanceKnown && val > sigilBalance) {
         errorEl.textContent = `Insufficient balance (${formatStake(sigilBalance)} SIGIL available)`;
         updateStakeButton();
         return false;
       }
-
       errorEl.textContent = '';
       updateStakeButton();
       return true;
@@ -1317,7 +1476,7 @@
 
     function updateStakeButton() {
       const btn = document.getElementById('stakeBtn');
-      const val = parseInt(document.getElementById('stakeAmount').value) || 0;
+      const val = parseInt(document.getElementById('stakeAmount').value, 10) || 0;
       const errorEl = document.getElementById('stakeError');
 
       if (!walletConnected) {
@@ -1325,93 +1484,150 @@
         btn.innerHTML = '<span class="btn-text">Connect Wallet to Stake</span>';
         return;
       }
-
       if (!selectedAgent) {
         btn.disabled = true;
         btn.innerHTML = '<span class="btn-text">Select an Agent</span>';
         return;
       }
-
-      if (val < MIN_STAKE || val > MAX_STAKE || (val > sigilBalance) || errorEl.textContent) {
+      if (val < MIN_STAKE || val > MAX_STAKE || errorEl.textContent) {
         btn.disabled = true;
         btn.innerHTML = '<span class="btn-text">Enter Valid Amount</span>';
         return;
       }
-
       btn.disabled = false;
       btn.innerHTML = `<span class="btn-text">Stake ${formatStake(val)} SIGIL</span>`;
     }
 
-    // ===== EXECUTE STAKE =====
     async function executeStake() {
-      if (!validateStake()) return;
-
-      const amount = parseInt(document.getElementById('stakeAmount').value);
+      if (!validateStake() || !selectedAgent || !walletConnected) return;
+      const amount = parseInt(document.getElementById('stakeAmount').value, 10);
       const btn = document.getElementById('stakeBtn');
       btn.classList.add('btn--loading');
 
       try {
-        // TODO: Replace with actual Anchor program call
-        // const tx = await program.methods
-        //   .stake(selectedAgent.agentId, new BN(amount * 10 ** SIGIL_DECIMALS))
-        //   .accounts({
-        //     staker: walletPublicKey,
-        //     stakingConfig: getStakingConfigPDA(),
-        //     agentVault: getAgentVaultPDA(selectedAgent.agentId),
-        //     stakePosition: getStakePositionPDA(walletPublicKey, selectedAgent.agentId),
-        //     vaultTokenAccount: getVaultTokenPDA(selectedAgent.agentId),
-        //     stakerTokenAccount: getAssociatedTokenAddress(SIGIL_MINT, walletPublicKey),
-        //     sigilMint: SIGIL_MINT,
-        //     systemProgram: SystemProgram.programId,
-        //     tokenProgram: TOKEN_PROGRAM_ID,
-        //   })
-        //   .rpc({ commitment: 'confirmed' });
+        const payload = { stakerPublicKey: walletPublicKey, agentPublicKey: selectedAgent.publicKey, amount };
+        if (STAKING_ONCHAIN) {
+          const { signature, nonce, sessionId, domain } = await signStakeAction('stake', payload);
+          const prepared = await apiPost('/api/staking/stake-prepare', { ...payload, signature, nonce, sessionId, domain });
+          const txSignature = await submitPreparedTransaction(prepared);
+          const finalizePayload = { ...payload, txSignature };
+          const finalizeAuth = await signStakeAction('stake', finalizePayload);
+          await apiPost('/api/staking/stake-finalize', { ...payload, txSignature, ...finalizeAuth });
+        } else {
+          const { signature, nonce, sessionId, domain } = await signStakeAction('stake', payload);
+          await apiPost('/api/staking/stake', { ...payload, signature, nonce, sessionId, domain });
+        }
 
-        // Simulate transaction delay
-        await new Promise(r => setTimeout(r, 2000));
-
-        // Mock: add position
-        mockPositions.push({
-          agentId: selectedAgent.publicKey,
-          agentName: selectedAgent.displayName || 'Anonymous Agent',
-          agentKey: truncKey(selectedAgent.publicKey),
-          amount: amount,
-          stakedAt: new Date().toISOString(),
-          cooldownAmount: 0,
-          cooldownStarted: 0,
-          status: 'active'
-        });
-
-        sigilBalance -= amount;
-        document.getElementById('walletBalance').textContent = formatStake(sigilBalance) + ' SIGIL';
-        document.getElementById('availableBalance').textContent = `Balance: ${formatStake(sigilBalance)} SIGIL`;
         document.getElementById('stakeAmount').value = '';
-
-        showToast('✓ Staked ' + formatStake(amount) + ' SIGIL successfully');
-        renderPositions();
+        sigilBalance = await fetchSigilBalance(walletPublicKey);
+        document.getElementById('walletBalance').textContent = balanceKnown
+          ? `${formatStake(sigilBalance)} SIGIL`
+          : 'Balance unavailable';
+        document.getElementById('availableBalance').textContent = balanceKnown
+          ? `Balance: ${formatStake(sigilBalance)} SIGIL`
+          : 'Balance: unavailable';
+        showToast(`Staked ${formatStake(amount)} SIGIL`);
+        await loadAgents();
+        await loadPositions();
         updateStakeButton();
-
       } catch (err) {
-        console.error('Stake failed:', err);
-        showToast('⚠ Stake transaction failed');
+        console.error(err);
+        showToast(err.message || 'Stake transaction failed');
       } finally {
         btn.classList.remove('btn--loading');
       }
     }
 
-    // ===== RENDER POSITIONS =====
-    function renderPositions() {
-      if (!walletConnected || !mockPositions.length) {
-        document.getElementById('activeStakes').style.display = 'none';
-        return;
+    function normalizeTxSignature(raw) {
+      if (!raw) return '';
+      if (typeof raw === 'string') return raw;
+      if (raw.signature) return normalizeTxSignature(raw.signature);
+      if (raw instanceof Uint8Array) return uint8ToBase58(raw);
+      if (Array.isArray(raw)) return uint8ToBase58(new Uint8Array(raw));
+      return '';
+    }
+
+    async function submitPreparedTransaction(prepared) {
+      if (!window.solanaWeb3?.Transaction) {
+        throw new Error('Missing solanaWeb3 library');
+      }
+      if (!prepared?.transactionBase64) {
+        throw new Error('Missing prepared transaction payload');
       }
 
-      document.getElementById('activeStakes').style.display = 'block';
-      const container = document.getElementById('stakePositions');
+      const connection = new window.solanaWeb3.Connection(
+        prepared.rpcEndpoint || SOLANA_RPC,
+        'confirmed',
+      );
+      const txBytes = Uint8Array.from(atob(prepared.transactionBase64), (ch) => ch.charCodeAt(0));
+      const tx = window.solanaWeb3.Transaction.from(txBytes);
 
-      container.innerHTML = mockPositions.map((pos, idx) => {
+      let txSignature = '';
+      if (walletProvider.signAndSendTransaction) {
+        const sent = await walletProvider.signAndSendTransaction(tx);
+        txSignature = normalizeTxSignature(sent);
+      } else if (walletProvider.signTransaction) {
+        const signedTx = await walletProvider.signTransaction(tx);
+        txSignature = await connection.sendRawTransaction(signedTx.serialize(), { preflightCommitment: 'confirmed' });
+      } else {
+        throw new Error('Wallet does not support transaction signing');
+      }
+
+      if (!txSignature) {
+        throw new Error('Wallet did not return a transaction signature');
+      }
+
+      if (prepared.blockhash && prepared.lastValidBlockHeight) {
+        await connection.confirmTransaction({
+          signature: txSignature,
+          blockhash: prepared.blockhash,
+          lastValidBlockHeight: prepared.lastValidBlockHeight,
+        }, 'confirmed');
+      } else {
+        await connection.confirmTransaction(txSignature, 'confirmed');
+      }
+
+      return txSignature;
+    }
+
+    async function loadPositions() {
+      if (!walletConnected || !walletPublicKey) {
+        stakePositions = [];
+        renderPositions();
+        return;
+      }
+      try {
+        const data = await apiGet(`/api/staking/positions/${walletPublicKey}`);
+        stakePositions = (data.positions || []).map((p) => ({
+          agentId: p.agentPublicKey,
+          agentName: p.agentName || 'Anonymous Agent',
+          amount: Number(p.amount || 0),
+          cooldownAmount: Number(p.cooldownAmount || 0),
+          cooldownStarted: p.cooldownStartedAt ? new Date(p.cooldownStartedAt).getTime() : 0,
+          stakedAt: p.updatedAt || new Date().toISOString(),
+          status: Number(p.cooldownAmount || 0) > 0 ? 'cooling' : 'active',
+        }));
+        renderPositions();
+      } catch (err) {
+        console.warn('Failed to load positions', err);
+        stakePositions = [];
+        renderPositions();
+      }
+    }
+
+    function renderPositions() {
+      const active = document.getElementById('activeStakes');
+      const container = document.getElementById('stakePositions');
+      if (!walletConnected || !stakePositions.length) {
+        active.style.display = 'none';
+        container.innerHTML = '';
+        return;
+      }
+      active.style.display = 'block';
+
+      container.innerHTML = stakePositions.map((pos, idx) => {
         const stakedDate = new Date(pos.stakedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        const daysSinceStake = Math.floor((Date.now() - new Date(pos.stakedAt).getTime()) / 86400000);
+        const daysSinceStake = Math.max(0, Math.floor((Date.now() - new Date(pos.stakedAt).getTime()) / 86400000));
 
         let cooldownHtml = '';
         if (pos.cooldownAmount > 0 && pos.cooldownStarted > 0) {
@@ -1427,13 +1643,13 @@
           cooldownHtml = `
             <div class="cooldown-bar">
               <div class="cooldown-info">
-                <span class="cooldown-label">⏳ Cooldown: ${formatStake(pos.cooldownAmount)} SIGIL</span>
-                <span class="cooldown-timer">${canComplete ? 'READY' : days + 'd ' + hours + 'h ' + minutes + 'm'}</span>
+                <span class="cooldown-label">Cooldown: ${formatStake(pos.cooldownAmount)} SIGIL</span>
+                <span class="cooldown-timer">${canComplete ? 'READY' : `${days}d ${hours}h ${minutes}m`}</span>
               </div>
               <div class="cooldown-progress">
-                <div class="cooldown-progress-fill" style="width: ${progress}%"></div>
+                <div class="cooldown-progress-fill" style="width:${progress}%"></div>
               </div>
-              <div style="margin-top: 8px; display: flex; gap: 8px; justify-content: flex-end;">
+              <div style="margin-top:8px; display:flex; gap:8px; justify-content:flex-end;">
                 ${canComplete ? `<button class="btn btn--primary btn--xs" onclick="completeUnstake(${idx})">Complete Unstake</button>` : ''}
                 <button class="btn btn--ghost btn--xs" onclick="cancelUnstake(${idx})">Cancel Cooldown</button>
               </div>
@@ -1454,13 +1670,13 @@
             </div>
             <div class="position-body">
               <div class="position-meta">
-                <span>Staked ${stakedDate}</span>
+                <span>Updated ${stakedDate}</span>
                 <span>${daysSinceStake}d active</span>
-                <span>Status: ${pos.status === 'cooling' ? '⏳ Cooling' : '● Active'}</span>
+                <span>Status: ${pos.status === 'cooling' ? 'Cooling' : 'Active'}</span>
               </div>
               <div class="position-actions">
                 ${pos.amount > 0 ? `<button class="btn btn--secondary btn--xs" onclick="beginUnstake(${idx})">Unstake</button>` : ''}
-                ${pos.amount > 0 ? `<button class="btn btn--danger btn--xs" onclick="showEmergencyModal(${idx})">Emergency</button>` : ''}
+                ${(pos.amount + pos.cooldownAmount) > 0 ? `<button class="btn btn--danger btn--xs" onclick="showEmergencyModal(${idx})">Emergency</button>` : ''}
               </div>
             </div>
             ${cooldownHtml}
@@ -1469,124 +1685,154 @@
       }).join('');
     }
 
-    // ===== UNSTAKE FLOWS =====
-    function beginUnstake(idx) {
-      const pos = mockPositions[idx];
+    async function beginUnstake(idx) {
+      const pos = stakePositions[idx];
       if (!pos || pos.amount <= 0) return;
-
-      if (pos.cooldownAmount > 0) {
-        showToast('⚠ Already has pending cooldown');
-        return;
+      try {
+        const amount = pos.amount;
+        const payload = { stakerPublicKey: walletPublicKey, agentPublicKey: pos.agentId, amount };
+        const { signature, nonce, sessionId, domain } = await signStakeAction('begin_unstake', payload);
+        await apiPost('/api/staking/begin-unstake', { ...payload, signature, nonce, sessionId, domain });
+        showToast('Cooldown started');
+        await loadAgents();
+        await loadPositions();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message || 'Failed to begin unstake');
       }
-
-      // TODO: Replace with Anchor program call
-      // await program.methods
-      //   .beginUnstake(pos.agentId, new BN(pos.amount * 10 ** SIGIL_DECIMALS))
-      //   .accounts({ ... })
-      //   .rpc();
-
-      pos.cooldownAmount = pos.amount;
-      pos.cooldownStarted = Date.now();
-      pos.amount = 0;
-      pos.status = 'cooling';
-
-      showToast('⏳ Unstake initiated — 7 day cooldown started');
-      renderPositions();
     }
 
-    function completeUnstake(idx) {
-      const pos = mockPositions[idx];
-      if (!pos || pos.cooldownAmount <= 0) return;
-
-      // TODO: Replace with Anchor program call
-      // await program.methods.completeUnstake(pos.agentId).accounts({ ... }).rpc();
-
-      sigilBalance += pos.cooldownAmount;
-      document.getElementById('walletBalance').textContent = formatStake(sigilBalance) + ' SIGIL';
-      document.getElementById('availableBalance').textContent = `Balance: ${formatStake(sigilBalance)} SIGIL`;
-
-      pos.cooldownAmount = 0;
-      pos.cooldownStarted = 0;
-      pos.status = pos.amount > 0 ? 'active' : 'inactive';
-
-      if (pos.amount === 0 && pos.cooldownAmount === 0) {
-        mockPositions.splice(idx, 1);
+    async function completeUnstake(idx) {
+      const pos = stakePositions[idx];
+      if (!pos) return;
+      try {
+        const payload = { stakerPublicKey: walletPublicKey, agentPublicKey: pos.agentId };
+        const { signature, nonce, sessionId, domain } = await signStakeAction('complete_unstake', payload);
+        if (STAKING_ONCHAIN) {
+          const prepared = await apiPost('/api/staking/complete-unstake-prepare', {
+            ...payload,
+            signature,
+            nonce,
+            sessionId,
+            domain,
+          });
+          const txSignature = await submitPreparedTransaction(prepared);
+          const finalizePayload = {
+            ...payload,
+            returnAmountTokens: Number(prepared.returnAmountTokens || pos.cooldownAmount || 0),
+            txSignature,
+          };
+          const finalizeAuth = await signStakeAction('complete_unstake', finalizePayload);
+          await apiPost('/api/staking/complete-unstake-finalize', {
+            ...payload,
+            txSignature,
+            ...finalizeAuth,
+          });
+        } else {
+          await apiPost('/api/staking/complete-unstake', { ...payload, signature, nonce, sessionId, domain });
+        }
+        showToast('Unstake completed');
+        await loadAgents();
+        await loadPositions();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message || 'Failed to complete unstake');
       }
-
-      showToast('✓ Unstake complete — tokens returned');
-      renderPositions();
     }
 
-    function cancelUnstake(idx) {
-      const pos = mockPositions[idx];
-      if (!pos || pos.cooldownAmount <= 0) return;
-
-      // TODO: Replace with Anchor program call
-      // await program.methods.cancelUnstake(pos.agentId).accounts({ ... }).rpc();
-
-      pos.amount += pos.cooldownAmount;
-      pos.cooldownAmount = 0;
-      pos.cooldownStarted = 0;
-      pos.status = 'active';
-
-      showToast('✓ Cooldown cancelled — tokens returned to active stake');
-      renderPositions();
+    async function cancelUnstake(idx) {
+      const pos = stakePositions[idx];
+      if (!pos) return;
+      try {
+        const payload = { stakerPublicKey: walletPublicKey, agentPublicKey: pos.agentId };
+        const { signature, nonce, sessionId, domain } = await signStakeAction('cancel_unstake', payload);
+        await apiPost('/api/staking/cancel-unstake', { ...payload, signature, nonce, sessionId, domain });
+        showToast('Cooldown cancelled');
+        await loadAgents();
+        await loadPositions();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message || 'Failed to cancel cooldown');
+      }
     }
-
-    // ===== EMERGENCY UNSTAKE =====
-    let emergencyIdx = -1;
 
     function showEmergencyModal(idx) {
       emergencyIdx = idx;
-      const pos = mockPositions[idx];
-      const totalAmount = pos.amount + pos.cooldownAmount;
-      const slash = Math.floor(totalAmount * EMERGENCY_SLASH_BPS / 10000);
-      const returnAmount = totalAmount - slash;
-
+      const pos = stakePositions[idx];
+      if (!pos) return;
+      const total = pos.amount + pos.cooldownAmount;
+      const slash = Math.floor(total * EMERGENCY_SLASH_BPS / 10000);
+      const returned = total - slash;
       document.getElementById('emergencyAgentName').textContent = pos.agentName;
       document.getElementById('emergencySlashAmount').textContent = formatStake(slash);
-      document.getElementById('emergencyReturnAmount').textContent = formatStake(returnAmount);
+      document.getElementById('emergencyReturnAmount').textContent = formatStake(returned);
       document.getElementById('emergencyModal').classList.add('visible');
     }
 
     function closeEmergencyModal() {
-      document.getElementById('emergencyModal').classList.remove('visible');
       emergencyIdx = -1;
+      document.getElementById('emergencyModal').classList.remove('visible');
     }
 
-    function confirmEmergencyUnstake() {
+    async function confirmEmergencyUnstake() {
       if (emergencyIdx < 0) return;
-      const pos = mockPositions[emergencyIdx];
-      const totalAmount = pos.amount + pos.cooldownAmount;
-      const slash = Math.floor(totalAmount * EMERGENCY_SLASH_BPS / 10000);
-      const returnAmount = totalAmount - slash;
-
-      // TODO: Replace with Anchor program call
-      // await program.methods
-      //   .emergencyUnstake(pos.agentId, new BN(totalAmount * 10 ** SIGIL_DECIMALS))
-      //   .accounts({ ..., treasuryToken })
-      //   .rpc();
-
-      sigilBalance += returnAmount;
-      document.getElementById('walletBalance').textContent = formatStake(sigilBalance) + ' SIGIL';
-      document.getElementById('availableBalance').textContent = `Balance: ${formatStake(sigilBalance)} SIGIL`;
-
-      mockPositions.splice(emergencyIdx, 1);
-      closeEmergencyModal();
-      showToast(`⚠ Emergency unstake: ${formatStake(slash)} SIGIL slashed, ${formatStake(returnAmount)} returned`);
-      renderPositions();
+      const pos = stakePositions[emergencyIdx];
+      if (!pos) return;
+      try {
+        const total = pos.amount + pos.cooldownAmount;
+        const payload = { stakerPublicKey: walletPublicKey, agentPublicKey: pos.agentId, total };
+        const { signature, nonce, sessionId, domain } = await signStakeAction('emergency_unstake', payload);
+        if (STAKING_ONCHAIN) {
+          const prepared = await apiPost('/api/staking/emergency-unstake-prepare', {
+            ...payload,
+            signature,
+            nonce,
+            sessionId,
+            domain,
+          });
+          const txSignature = await submitPreparedTransaction(prepared);
+          const finalizePayload = {
+            stakerPublicKey: walletPublicKey,
+            agentPublicKey: pos.agentId,
+            total: Number(prepared.total || total),
+            slash: Number(prepared.slash || 0),
+            returned: Number(prepared.returned || 0),
+            txSignature,
+          };
+          const finalizeAuth = await signStakeAction('emergency_unstake', finalizePayload);
+          await apiPost('/api/staking/emergency-unstake-finalize', {
+            stakerPublicKey: walletPublicKey,
+            agentPublicKey: pos.agentId,
+            txSignature,
+            ...finalizeAuth,
+          });
+        } else {
+          await apiPost('/api/staking/emergency-unstake', { ...payload, signature, nonce, sessionId, domain });
+        }
+        closeEmergencyModal();
+        showToast('Emergency unstake executed');
+        await loadAgents();
+        await loadPositions();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message || 'Emergency unstake failed');
+      }
     }
 
-    // Close modal on overlay click
     document.getElementById('emergencyModal').addEventListener('click', (e) => {
       if (e.target === e.currentTarget) closeEmergencyModal();
     });
 
-    // ===== INIT =====
-    loadAgents();
+    async function initStakePage() {
+      await loadProtocolConfig();
+      await loadAgents();
+      if (window.phantom?.solana?.isConnected || window.solflare?.isConnected) {
+        connectWallet();
+      }
+      setInterval(renderPositions, 60000);
+    }
 
-    // Cooldown timer update
-    setInterval(renderPositions, 60000);
+    initStakePage();
   </script>
 </body>
 </html>

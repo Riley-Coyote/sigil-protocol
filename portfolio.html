@@ -10,7 +10,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
 
   <style>
     /* ===== DESIGN TOKENS ===== */
@@ -31,8 +31,9 @@
       --danger: #ef4444;
       --warning: #f59e0b;
 
-      --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --font-display: 'Syne', sans-serif;
+      --font-sans: 'Public Sans', -apple-system, system-ui, sans-serif;
+      --font-mono: 'Spline Sans Mono', monospace;
       --radius-sm: 2px; --radius-md: 4px; --radius-full: 9999px;
       --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
       --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
@@ -78,7 +79,7 @@
 
     main { max-width: 1100px; margin: 0 auto; padding: var(--space-10) var(--space-6); }
     .section-label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.3); margin-bottom: var(--space-4); }
-    h1 { font-family: var(--font-sans); font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 500; letter-spacing: -0.01em; color: rgba(255,255,255,0.85); margin-bottom: var(--space-2); }
+    h1 { font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 600; letter-spacing: -0.02em; color: rgba(255,255,255,0.85); margin-bottom: var(--space-2); }
     p { font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-4); }
 
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); padding: 12px 24px; font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none; border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: all var(--duration-normal) var(--ease-out); background: transparent; }
@@ -387,13 +388,16 @@
         <span class="logo-sigil">⏀</span>
         <div class="logo-text">SIGIL<span> PROTOCOL</span></div>
       </a>
-      <span class="build-meta">v0.4.1 · solana mainnet</span>
+      <span class="build-meta">v0.5.0 · solana mainnet</span>
     </div>
     <nav>
       <a href="index.html">Protocol</a>
       <a href="register.html">Register</a>
       <a href="gallery.html">Gallery</a>
       <a href="stake.html">Stake</a>
+      <a href="passport.html">Passport</a>
+      <a href="verify.html">Verify</a>
+        <a href="integrations.html">Integrate</a>
       <a href="portfolio.html" class="active">Portfolio</a>
       <a href="leaderboard.html">Leaderboard</a>
     </nav>
@@ -536,7 +540,7 @@
 
   <footer>
     <div class="footer-content">
-      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.4.1 · Solana</div>
+      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.5.0 · Solana</div>
       <div class="footer-meta">deployed autonomously · identity protocol for AI agents</div>
       <nav class="footer-links">
         <a href="index.html">Protocol</a>
@@ -544,6 +548,9 @@
         <a href="gallery.html">Gallery</a>
         <a href="dashboard.html">Registry</a>
         <a href="stake.html">Stake</a>
+        <a href="passport.html">Passport</a>
+        <a href="verify.html">Verify</a>
+        <a href="integrations.html">Integrate</a>
         <a href="portfolio.html">Portfolio</a>
         <a href="leaderboard.html">Leaderboard</a>
       </nav>
@@ -551,69 +558,21 @@
   </footer>
 
   <script>
-    const API_BASE = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
-      ? 'http://localhost:3141' : location.origin;
+    const API_BASE = location.protocol === 'file:'
+      ? 'http://localhost:3141'
+      : location.origin;
 
     let walletConnected = false;
     let walletPublicKey = null;
+    let walletPositions = [];
 
-    // TODO: Replace with real Anchor program account reads
-    // All positions: program.account.stakePosition.all([{ memcmp: { offset: 8, bytes: publicKey.toBase58() }}])
-    const mockPositions = [
-      {
-        agentId: 'agent1',
-        agentName: 'Vektor',
-        agentKey: '7xKp9a2bDf3kR1qN5mT8wL4cJ6vH9yX3mN3Fq',
-        amount: 25000,
-        stakedAt: new Date(Date.now() - 95 * 86400000).toISOString(),
-        cooldownAmount: 0,
-        cooldownStarted: 0,
-        rewards: 847,
-        status: 'active'
-      },
-      {
-        agentId: 'agent2',
-        agentName: 'Anima',
-        agentKey: '3bFh2kQ7WzYp4mNd8vRt6xCj1sA5eGfLkQ7Wz',
-        amount: 10000,
-        stakedAt: new Date(Date.now() - 45 * 86400000).toISOString(),
-        cooldownAmount: 0,
-        cooldownStarted: 0,
-        rewards: 312,
-        status: 'active'
-      },
-      {
-        agentId: 'agent3',
-        agentName: 'Shade',
-        agentKey: '9fGk4mPq2sLj7wBn3xDy5vHt8cRa1eKz6uN4Xr',
-        amount: 5000,
-        stakedAt: new Date(Date.now() - 15 * 86400000).toISOString(),
-        cooldownAmount: 3000,
-        cooldownStarted: Date.now() - 4 * 86400000,
-        rewards: 98,
-        status: 'cooling'
-      },
-      {
-        agentId: 'agent4',
-        agentName: 'Echo',
-        agentKey: '2cDn5jRs8wLk3mBf6xQt9vGy4pHa7eTz1uK0Mv',
-        amount: 15000,
-        stakedAt: new Date(Date.now() - 200 * 86400000).toISOString(),
-        cooldownAmount: 0,
-        cooldownStarted: 0,
-        rewards: 1205,
-        status: 'active'
-      }
-    ];
-
-    function truncKey(k) { return k ? k.slice(0, 6) + '···' + k.slice(-4) : '—'; }
     function formatStake(n) {
-      if (!n) return '0';
-      if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
-      return n.toLocaleString();
+      const v = Number(n || 0);
+      if (v >= 1000000) return (v / 1000000).toFixed(1) + 'M';
+      if (v >= 1000) return (v / 1000).toFixed(1) + 'K';
+      return v.toLocaleString();
     }
-    function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
 
     function showToast(msg) {
       const t = document.getElementById('toast');
@@ -622,7 +581,6 @@
       setTimeout(() => t.classList.remove('visible'), 3000);
     }
 
-    // Time multiplier based on staking duration
     function getTimeMultiplier(stakedAt) {
       const days = Math.floor((Date.now() - new Date(stakedAt).getTime()) / 86400000);
       if (days >= 365) return { mult: 2.5, label: '2.5×' };
@@ -632,15 +590,24 @@
       return { mult: 1.0, label: '1.0×' };
     }
 
-    // Governance weight: sqrt(staked / 1000) * multiplier
     function calcGovernanceWeight(amount, multiplier) {
-      return Math.sqrt(amount / 1000) * multiplier;
+      return Math.sqrt(Number(amount || 0) / 1000) * multiplier;
+    }
+
+    async function apiGet(path) {
+      const r = await fetch(`${API_BASE}${path}`);
+      if (!r.ok) throw new Error(`GET ${path} -> HTTP ${r.status}`);
+      return r.json();
     }
 
     async function connectWallet() {
-      const provider = window.phantom?.solana || window.solflare;
+      const provider = window.phantom?.solana?.isPhantom
+        ? window.phantom.solana
+        : window.solana?.isPhantom
+          ? window.solana
+          : window.solflare || null;
       if (!provider) {
-        showToast('⚠ No wallet found. Install Phantom or Solflare.');
+        showToast('No wallet found. Install Phantom or Solflare.');
         return;
       }
 
@@ -652,92 +619,99 @@
         document.getElementById('connectPrompt').style.display = 'none';
         document.getElementById('portfolioContent').style.display = 'block';
 
+        await loadPositions();
         renderPortfolio();
       } catch (err) {
         console.error('Wallet connect failed:', err);
-        showToast('⚠ Wallet connection failed');
+        showToast('Wallet connection failed');
       }
     }
 
+    async function loadPositions() {
+      if (!walletPublicKey) return;
+      const data = await apiGet(`/api/staking/positions/${walletPublicKey}`);
+      walletPositions = (data.positions || []).map((p) => ({
+        agentName: p.agentName || 'Anonymous Agent',
+        agentKey: p.agentPublicKey,
+        amount: Number(p.amount || 0),
+        cooldownAmount: Number(p.cooldownAmount || 0),
+        cooldownStarted: p.cooldownStartedAt ? new Date(p.cooldownStartedAt).getTime() : 0,
+        stakedAt: p.updatedAt || new Date().toISOString(),
+        rewards: 0,
+      }));
+    }
+
     function renderPortfolio() {
-      // Calculate totals
       let totalStaked = 0;
       let totalRewards = 0;
       let totalGovWeight = 0;
       let weightedMultiplier = 0;
 
-      mockPositions.forEach(pos => {
-        totalStaked += pos.amount;
-        totalRewards += pos.rewards;
+      walletPositions.forEach((pos) => {
+        totalStaked += pos.amount + pos.cooldownAmount;
+        totalRewards += pos.rewards || 0;
         const tm = getTimeMultiplier(pos.stakedAt);
-        const gw = calcGovernanceWeight(pos.amount, tm.mult);
+        const gw = calcGovernanceWeight(pos.amount + pos.cooldownAmount, tm.mult);
         totalGovWeight += gw;
-        weightedMultiplier += tm.mult * pos.amount;
+        weightedMultiplier += tm.mult * (pos.amount + pos.cooldownAmount);
       });
 
       const avgMultiplier = totalStaked > 0 ? weightedMultiplier / totalStaked : 1;
-      const agentCount = mockPositions.length;
-
-      // Patron score (composite: 40% stake amount, 30% duration, 30% diversity)
+      const agentCount = walletPositions.length;
       const stakeScore = Math.min(totalStaked / 200000, 1) * 40;
       const durationScore = Math.min(avgMultiplier / 2.5, 1) * 30;
       const diversityScore = Math.min(agentCount / 10, 1) * 30;
       const patronScore = Math.round(stakeScore + durationScore + diversityScore);
 
-      // Update stats
       animateCount('totalStaked', 0, totalStaked);
       document.getElementById('agentCount').textContent = agentCount;
       animateCount('pendingRewards', 0, totalRewards);
       document.getElementById('totalGovernance').textContent = totalGovWeight.toFixed(1);
 
-      // Patron score
       document.getElementById('patronScore').textContent = patronScore;
-      setTimeout(() => {
-        document.getElementById('patronBar').style.width = patronScore + '%';
-      }, 200);
+      setTimeout(() => { document.getElementById('patronBar').style.width = patronScore + '%'; }, 200);
       document.getElementById('patronStakeWeight').textContent = stakeScore.toFixed(1) + ' / 40';
       document.getElementById('patronDurationWeight').textContent = durationScore.toFixed(1) + ' / 30';
       document.getElementById('patronDiversityWeight').textContent = diversityScore.toFixed(1) + ' / 30';
 
-      // Governance
       document.getElementById('govWeight').textContent = totalGovWeight.toFixed(1);
       setTimeout(() => {
         document.getElementById('govBar').style.width = Math.min(totalGovWeight / 20 * 100, 100) + '%';
       }, 300);
-      document.getElementById('govBaseWeight').textContent = Math.sqrt(totalStaked / 1000).toFixed(2);
+      document.getElementById('govBaseWeight').textContent = Math.sqrt(totalStaked / 1000 || 0).toFixed(2);
       document.getElementById('govMultiplier').textContent = avgMultiplier.toFixed(2) + '×';
       document.getElementById('govEffective').textContent = totalGovWeight.toFixed(2);
 
-      // Claim bar
       if (totalRewards > 0) {
         document.getElementById('claimBar').style.display = 'flex';
         document.getElementById('claimAmount').textContent = formatStake(totalRewards) + ' SIGIL';
+      } else {
+        document.getElementById('claimBar').style.display = 'none';
       }
 
-      // Render positions table
       renderPositions();
     }
 
     function renderPositions() {
       const tbody = document.getElementById('positionsBody');
-
-      if (!mockPositions.length) {
+      if (!walletPositions.length) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="6" style="text-align: center; padding: 48px; color: var(--text-dim);">
-              <div class="empty-sigil" style="font-size: 32px; margin-bottom: 12px;">⏀</div>
-              No staking positions yet. <a href="stake.html" style="color: var(--ember); text-decoration: underline;">Stake now →</a>
+            <td colspan="6" style="text-align:center; padding:48px; color:var(--text-dim);">
+              <div class="empty-sigil" style="font-size:32px; margin-bottom:12px;">⏀</div>
+              No staking positions yet. <a href="stake.html" style="color:var(--ember); text-decoration:underline;">Stake now →</a>
             </td>
           </tr>
         `;
         return;
       }
 
-      tbody.innerHTML = mockPositions.map(pos => {
+      tbody.innerHTML = walletPositions.map((pos) => {
         const stakedDate = new Date(pos.stakedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        const daysSinceStake = Math.floor((Date.now() - new Date(pos.stakedAt).getTime()) / 86400000);
+        const daysSinceStake = Math.max(0, Math.floor((Date.now() - new Date(pos.stakedAt).getTime()) / 86400000));
         const tm = getTimeMultiplier(pos.stakedAt);
-        const gw = calcGovernanceWeight(pos.amount, tm.mult);
+        const activeAmount = pos.amount + pos.cooldownAmount;
+        const gw = calcGovernanceWeight(activeAmount, tm.mult);
         const isCooling = pos.cooldownAmount > 0;
 
         let statusHtml;
@@ -756,7 +730,7 @@
         }
 
         return `
-          <tr onclick="window.location.href='agent.html?key=${pos.agentKey}'" style="cursor: pointer;">
+          <tr onclick="window.location.href='agent.html?key=${pos.agentKey}'" style="cursor:pointer;">
             <td>
               <div class="pos-agent-cell">
                 <div class="pos-agent-glyph">
@@ -765,8 +739,8 @@
                 <span class="pos-agent-name">${escapeHtml(pos.agentName)}</span>
               </div>
             </td>
-            <td><span class="pos-amount">${formatStake(pos.amount)}</span></td>
-            <td>${stakedDate} <span style="color: var(--text-dim);">(${daysSinceStake}d)</span></td>
+            <td><span class="pos-amount">${formatStake(activeAmount)}</span></td>
+            <td>${stakedDate} <span style="color:var(--text-dim);">(${daysSinceStake}d)</span></td>
             <td>${statusHtml}</td>
             <td><span class="pos-multiplier">${tm.label}</span></td>
             <td><span class="pos-governance">${gw.toFixed(2)}</span></td>
@@ -788,18 +762,9 @@
     }
 
     async function claimAllRewards() {
-      // TODO: Replace with Anchor program calls
-      // For each position where agent vault tier >= 2:
-      //   await program.methods.claimRewards(pos.agentId).accounts({ ... }).rpc();
-      const totalRewards = mockPositions.reduce((sum, p) => sum + p.rewards, 0);
-      mockPositions.forEach(p => p.rewards = 0);
-
-      document.getElementById('claimBar').style.display = 'none';
-      animateCount('pendingRewards', totalRewards, 0);
-      showToast('✓ Claimed ' + formatStake(totalRewards) + ' SIGIL in rewards');
+      showToast('Rewards claims will be enabled after on-chain reward distribution wiring.');
     }
 
-    // Auto-connect if wallet was previously connected
     if (window.phantom?.solana?.isConnected || window.solflare?.isConnected) {
       setTimeout(connectWallet, 500);
     }

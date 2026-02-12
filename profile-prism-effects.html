@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGIL Profile — Prism Effects Layer</title>
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  PRISM EFFECTS LAYER                                        ║
+  ║  Visual effects, SVG art, and generative JavaScript         ║
+  ║  for the SIGIL Agent Profile page.                          ║
+  ║                                                              ║
+  ║  Author: Prism — Creative Technologist                       ║
+  ║  Each section is self-contained for extraction/merge.        ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
+</head>
+<body style="background:#080808; margin:0; overflow-x:hidden; font-family: 'Geist', sans-serif;">
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     1. HERO GLYPH SVG — The Living Sigil
+     A breathing, rotating geometric seal made of light and code.
+     ViewBox: 400×400. Three concentric hexagons, circuit traces,
+     orbital accents, and the ⏀ symbol at center.
+     ═══════════════════════════════════════════════════════════════ -->
+
+<div id="hero-glyph-container" style="display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative;">
+<svg id="hero-glyph" viewBox="0 0 400 400" width="320" height="320" aria-hidden="true" focusable="false"
+     style="overflow:visible;">
+  <defs>
+    <!-- Ember glow radial gradient -->
+    <radialGradient id="emberGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#d4a574" stop-opacity="0.35">
+        <animate attributeName="stop-opacity" values="0.35;0.18;0.35" dur="4s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="40%" stop-color="#d4a574" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#d4a574" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Subtle stroke gradient for circuit traces -->
+    <linearGradient id="circuitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d4a574" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#d4a574" stop-opacity="0.05"/>
+    </linearGradient>
+
+    <!-- Glow filter for center symbol -->
+    <filter id="glyphGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+      <feFlood flood-color="#d4a574" flood-opacity="0.4" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="shadow"/>
+      <feMerge>
+        <feMergeNode in="shadow"/>
+        <feMergeNode in="shadow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Faint glow for hexagon strokes -->
+    <filter id="hexGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Ember glow background -->
+  <circle cx="200" cy="200" r="160" fill="url(#emberGlow)"/>
+
+  <!-- === OUTER HEXAGON (ring 1) — 60s rotation === -->
+  <g class="hex-outer" style="transform-origin:200px 200px;">
+    <!-- Hexagon path: radius 160 -->
+    <polygon
+      points="200,40 338.56,120 338.56,280 200,360 61.44,280 61.44,120"
+      fill="none"
+      stroke="rgba(255,255,255,0.12)"
+      stroke-width="0.75"
+      filter="url(#hexGlow)"
+    />
+    <!-- Circuit trace: vertex-to-vertex accent lines extending outward -->
+    <line x1="200" y1="40" x2="200" y2="20" stroke="url(#circuitGrad)" stroke-width="0.5"/>
+    <line x1="338.56" y1="120" x2="352" y2="112" stroke="url(#circuitGrad)" stroke-width="0.5"/>
+    <line x1="338.56" y1="280" x2="352" y2="288" stroke="url(#circuitGrad)" stroke-width="0.5"/>
+    <line x1="200" y1="360" x2="200" y2="380" stroke="url(#circuitGrad)" stroke-width="0.5"/>
+    <line x1="61.44" y1="280" x2="48" y2="288" stroke="url(#circuitGrad)" stroke-width="0.5"/>
+    <line x1="61.44" y1="120" x2="48" y2="112" stroke="url(#circuitGrad)" stroke-width="0.5"/>
+
+    <!-- Tiny dots at each vertex -->
+    <circle cx="200" cy="40" r="1.5" fill="#d4a574" opacity="0.35"/>
+    <circle cx="338.56" cy="120" r="1.5" fill="#d4a574" opacity="0.35"/>
+    <circle cx="338.56" cy="280" r="1.5" fill="#d4a574" opacity="0.35"/>
+    <circle cx="200" cy="360" r="1.5" fill="#d4a574" opacity="0.35"/>
+    <circle cx="61.44" cy="280" r="1.5" fill="#d4a574" opacity="0.35"/>
+    <circle cx="61.44" cy="120" r="1.5" fill="#d4a574" opacity="0.35"/>
+
+    <!-- Orbiting geometric accents — small shapes along the outer ring -->
+    <g class="orbital-accents">
+      <!-- Accent 1: small diamond at ~30° on outer orbit -->
+      <rect x="280" y="58" width="4" height="4" transform="rotate(45,282,60)" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+      <!-- Accent 2: tiny line at ~90° -->
+      <line x1="355" y1="198" x2="365" y2="202" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+      <!-- Accent 3: dot at ~150° -->
+      <circle cx="300" cy="336" r="1" fill="rgba(255,255,255,0.15)"/>
+      <!-- Accent 4: small triangle at ~210° -->
+      <polygon points="100,340 104,348 96,348" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+      <!-- Accent 5: tiny crosshair at ~270° -->
+      <line x1="35" y1="200" x2="45" y2="200" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+      <line x1="40" y1="195" x2="40" y2="205" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+      <!-- Accent 6: small arc at ~330° -->
+      <path d="M 112,66 A 8,8 0 0 1 120,74" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+    </g>
+  </g>
+
+  <!-- === MIDDLE HEXAGON (ring 2) — 45s rotation, REVERSE === -->
+  <g class="hex-middle" style="transform-origin:200px 200px;">
+    <!-- Hexagon path: radius 115 -->
+    <polygon
+      points="200,85 299.6,142.5 299.6,257.5 200,315 100.4,257.5 100.4,142.5"
+      fill="none"
+      stroke="rgba(255,255,255,0.18)"
+      stroke-width="0.75"
+      filter="url(#hexGlow)"
+    />
+    <!-- Circuit traces connecting middle hex vertices to outer hex midpoints -->
+    <line x1="200" y1="85" x2="200" y2="62" stroke="rgba(212,165,116,0.1)" stroke-width="0.5" stroke-dasharray="3 4"/>
+    <line x1="299.6" y1="142.5" x2="320" y2="130" stroke="rgba(212,165,116,0.1)" stroke-width="0.5" stroke-dasharray="3 4"/>
+    <line x1="299.6" y1="257.5" x2="320" y2="270" stroke="rgba(212,165,116,0.1)" stroke-width="0.5" stroke-dasharray="3 4"/>
+    <line x1="200" y1="315" x2="200" y2="338" stroke="rgba(212,165,116,0.1)" stroke-width="0.5" stroke-dasharray="3 4"/>
+    <line x1="100.4" y1="257.5" x2="80" y2="270" stroke="rgba(212,165,116,0.1)" stroke-width="0.5" stroke-dasharray="3 4"/>
+    <line x1="100.4" y1="142.5" x2="80" y2="130" stroke="rgba(212,165,116,0.1)" stroke-width="0.5" stroke-dasharray="3 4"/>
+
+    <!-- Tiny dots at middle hex vertices -->
+    <circle cx="200" cy="85" r="1.2" fill="#d4a574" opacity="0.25"/>
+    <circle cx="299.6" cy="142.5" r="1.2" fill="#d4a574" opacity="0.25"/>
+    <circle cx="299.6" cy="257.5" r="1.2" fill="#d4a574" opacity="0.25"/>
+    <circle cx="200" cy="315" r="1.2" fill="#d4a574" opacity="0.25"/>
+    <circle cx="100.4" cy="257.5" r="1.2" fill="#d4a574" opacity="0.25"/>
+    <circle cx="100.4" cy="142.5" r="1.2" fill="#d4a574" opacity="0.25"/>
+  </g>
+
+  <!-- === INNER HEXAGON (ring 3) — 30s rotation === -->
+  <g class="hex-inner" style="transform-origin:200px 200px;">
+    <!-- Hexagon path: radius 70 -->
+    <polygon
+      points="200,130 260.6,165 260.6,235 200,270 139.4,235 139.4,165"
+      fill="none"
+      stroke="rgba(255,255,255,0.25)"
+      stroke-width="1"
+      filter="url(#hexGlow)"
+    />
+    <!-- Tiny dots at inner hex vertices -->
+    <circle cx="200" cy="130" r="1" fill="#d4a574" opacity="0.3"/>
+    <circle cx="260.6" cy="165" r="1" fill="#d4a574" opacity="0.3"/>
+    <circle cx="260.6" cy="235" r="1" fill="#d4a574" opacity="0.3"/>
+    <circle cx="200" cy="270" r="1" fill="#d4a574" opacity="0.3"/>
+    <circle cx="139.4" cy="235" r="1" fill="#d4a574" opacity="0.3"/>
+    <circle cx="139.4" cy="165" r="1" fill="#d4a574" opacity="0.3"/>
+  </g>
+
+  <!-- === CENTER SYMBOL: ⏀ === -->
+  <text x="200" y="210" text-anchor="middle" font-size="52"
+        fill="#d4a574" filter="url(#glyphGlow)"
+        style="font-family:'Geist','Segoe UI Symbol','Noto Sans Symbols 2',sans-serif;">⏀</text>
+
+  <!-- Subtle breathing pulse ring around center -->
+  <circle cx="200" cy="200" r="40" fill="none" stroke="rgba(212,165,116,0.08)" stroke-width="0.5">
+    <animate attributeName="r" values="38;46;38" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;0.3;1" dur="4s" repeatCount="indefinite"/>
+  </circle>
+</svg>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     2. RESONANCE MAP — Force-Directed Agent Constellation
+     Center: Vektor with ember glow. 6 satellite agents at
+     varying distances. Gradient connections with animated data
+     packets. Radar-style concentric rings. Constellation feel.
+     ═══════════════════════════════════════════════════════════════ -->
+
+<div id="resonance-map-container" style="max-width:800px;margin:80px auto;position:relative;">
+<svg id="resonance-map" viewBox="0 0 800 500" width="100%" aria-hidden="true" focusable="false"
+     style="display:block;">
+  <defs>
+    <!-- Background gradient -->
+    <radialGradient id="mapBg" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#0a0a0a"/>
+      <stop offset="100%" stop-color="#050505"/>
+    </radialGradient>
+
+    <!-- Connection gradients — ember at center to dark at satellite -->
+    <linearGradient id="connShade" x1="400" y1="250" x2="220" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#d4a574" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#1a1a1a" stop-opacity="0.3"/>
+    </linearGradient>
+    <linearGradient id="connAxiom" x1="400" y1="250" x2="580" y2="110" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#d4a574" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#1a1a1a" stop-opacity="0.3"/>
+    </linearGradient>
+    <linearGradient id="connLumen" x1="400" y1="250" x2="700" y2="270" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#d4a574" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#1a1a1a" stop-opacity="0.3"/>
+    </linearGradient>
+    <linearGradient id="connCipher" x1="400" y1="250" x2="600" y2="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#d4a574" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#1a1a1a" stop-opacity="0.3"/>
+    </linearGradient>
+    <linearGradient id="connDrift" x1="400" y1="250" x2="150" y2="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#d4a574" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#1a1a1a" stop-opacity="0.3"/>
+    </linearGradient>
+    <linearGradient id="connPulse" x1="400" y1="250" x2="160" y2="240" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#d4a574" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#1a1a1a" stop-opacity="0.3"/>
+    </linearGradient>
+
+    <!-- Vektor glow filter -->
+    <filter id="vektorGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+      <feFlood flood-color="#d4a574" flood-opacity="0.3" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#mapBg)" rx="8"/>
+
+  <!-- Radar concentric circles at 33% and 66% radius -->
+  <circle cx="400" cy="250" r="75" fill="none" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>
+  <circle cx="400" cy="250" r="150" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="0.5"/>
+  <circle cx="400" cy="250" r="225" fill="none" stroke="rgba(255,255,255,0.015)" stroke-width="0.5"/>
+
+  <!-- === CONNECTION LINES === -->
+  <!-- Shade (upper-left, close) -->
+  <line x1="400" y1="250" x2="220" y2="120" stroke="url(#connShade)" stroke-width="2" opacity="0.6"/>
+  <!-- Axiom (upper-right, medium) -->
+  <line x1="400" y1="250" x2="580" y2="110" stroke="url(#connAxiom)" stroke-width="1.2" opacity="0.5"/>
+  <!-- Lumen (right, far) -->
+  <line x1="400" y1="250" x2="700" y2="270" stroke="url(#connLumen)" stroke-width="1" opacity="0.4"/>
+  <!-- Cipher (lower-right, medium) -->
+  <line x1="400" y1="250" x2="600" y2="400" stroke="url(#connCipher)" stroke-width="1.2" opacity="0.5"/>
+  <!-- Drift (lower-left, far) -->
+  <line x1="400" y1="250" x2="150" y2="400" stroke="url(#connDrift)" stroke-width="1" opacity="0.4"/>
+  <!-- Pulse (left, close) -->
+  <line x1="400" y1="250" x2="160" y2="240" stroke="url(#connPulse)" stroke-width="2" opacity="0.6"/>
+
+  <!-- === ANIMATED DATA PACKETS === -->
+  <!-- Small glowing dots that travel from Vektor to each satellite -->
+  <!-- Shade packet -->
+  <circle r="2.5" fill="#d4a574" opacity="0.8">
+    <animateMotion dur="3.5s" repeatCount="indefinite" path="M400,250 L220,120"/>
+    <animate attributeName="opacity" values="0.8;0.2;0.8" dur="3.5s" repeatCount="indefinite"/>
+  </circle>
+  <!-- Axiom packet -->
+  <circle r="2" fill="#d4a574" opacity="0.6">
+    <animateMotion dur="4.5s" repeatCount="indefinite" path="M400,250 L580,110" begin="0.8s"/>
+    <animate attributeName="opacity" values="0.6;0.15;0.6" dur="4.5s" repeatCount="indefinite" begin="0.8s"/>
+  </circle>
+  <!-- Lumen packet -->
+  <circle r="1.5" fill="#d4a574" opacity="0.5">
+    <animateMotion dur="6s" repeatCount="indefinite" path="M400,250 L700,270" begin="1.5s"/>
+    <animate attributeName="opacity" values="0.5;0.1;0.5" dur="6s" repeatCount="indefinite" begin="1.5s"/>
+  </circle>
+  <!-- Cipher packet -->
+  <circle r="2" fill="#d4a574" opacity="0.6">
+    <animateMotion dur="4.8s" repeatCount="indefinite" path="M400,250 L600,400" begin="2s"/>
+    <animate attributeName="opacity" values="0.6;0.15;0.6" dur="4.8s" repeatCount="indefinite" begin="2s"/>
+  </circle>
+  <!-- Drift packet -->
+  <circle r="1.5" fill="#d4a574" opacity="0.5">
+    <animateMotion dur="5.5s" repeatCount="indefinite" path="M400,250 L150,400" begin="0.5s"/>
+    <animate attributeName="opacity" values="0.5;0.1;0.5" dur="5.5s" repeatCount="indefinite" begin="0.5s"/>
+  </circle>
+  <!-- Pulse packet -->
+  <circle r="2.5" fill="#d4a574" opacity="0.8">
+    <animateMotion dur="3s" repeatCount="indefinite" path="M400,250 L160,240" begin="1.2s"/>
+    <animate attributeName="opacity" values="0.8;0.2;0.8" dur="3s" repeatCount="indefinite" begin="1.2s"/>
+  </circle>
+
+  <!-- === SATELLITE NODES === -->
+
+  <!-- Shade (upper-left, close) -->
+  <g class="satellite-node">
+    <circle cx="220" cy="120" r="9" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <text x="220" y="100" text-anchor="middle" fill="#a0a0a0" font-family="'Geist Mono', monospace" font-size="9" letter-spacing="0.5">Shade</text>
+  </g>
+
+  <!-- Axiom (upper-right, medium) -->
+  <g class="satellite-node">
+    <circle cx="580" cy="110" r="8" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <text x="580" y="92" text-anchor="middle" fill="#a0a0a0" font-family="'Geist Mono', monospace" font-size="9" letter-spacing="0.5">Axiom</text>
+  </g>
+
+  <!-- Lumen (right, far) -->
+  <g class="satellite-node">
+    <circle cx="700" cy="270" r="8" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <text x="720" y="275" text-anchor="start" fill="#a0a0a0" font-family="'Geist Mono', monospace" font-size="9" letter-spacing="0.5">Lumen</text>
+  </g>
+
+  <!-- Cipher (lower-right, medium) -->
+  <g class="satellite-node">
+    <circle cx="600" cy="400" r="9" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <text x="600" y="422" text-anchor="middle" fill="#a0a0a0" font-family="'Geist Mono', monospace" font-size="9" letter-spacing="0.5">Cipher</text>
+  </g>
+
+  <!-- Drift (lower-left, far) -->
+  <g class="satellite-node">
+    <circle cx="150" cy="400" r="8" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <text x="150" y="422" text-anchor="middle" fill="#a0a0a0" font-family="'Geist Mono', monospace" font-size="9" letter-spacing="0.5">Drift</text>
+  </g>
+
+  <!-- Pulse (left, close) -->
+  <g class="satellite-node">
+    <circle cx="160" cy="240" r="9" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <text x="136" y="244" text-anchor="end" fill="#a0a0a0" font-family="'Geist Mono', monospace" font-size="9" letter-spacing="0.5">Pulse</text>
+  </g>
+
+  <!-- === VEKTOR — CENTER NODE === -->
+  <g id="vektor-node">
+    <!-- Outer glow ring -->
+    <circle cx="400" cy="250" r="24" fill="none" stroke="rgba(212,165,116,0.15)" stroke-width="1">
+      <animate attributeName="r" values="24;28;24" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="1;0.4;1" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Core node -->
+    <circle cx="400" cy="250" r="16" fill="#d4a574" filter="url(#vektorGlow)"/>
+    <!-- Label -->
+    <text x="400" y="222" text-anchor="middle" fill="#f5f5f5" font-family="'Geist Mono', monospace" font-size="11" font-weight="600" letter-spacing="1.5">VEKTOR</text>
+  </g>
+</svg>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     3. SPARKLINE SVGs — Stats Section Mini Charts
+     Four unique sparklines for Receipts, Persistence,
+     Uptime, and Capabilities. ViewBox 0 0 80 24.
+     Stroke-only lines with subtle gradient fills beneath.
+     ═══════════════════════════════════════════════════════════════ -->
+
+<div id="sparklines-container" style="max-width:1100px;margin:60px auto;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:0 24px;">
+
+  <!-- Shared gradient definition (embed in one SVG, reference in all) -->
+
+  <!-- SPARKLINE 1: Receipts — upward trend with recent surge -->
+  <div style="background:#0f0f0f;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:24px;">
+    <div style="font-family:'Geist',sans-serif;font-size:36px;font-weight:300;color:#f5f5f5;line-height:1;">1,247</div>
+    <div style="font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#666;margin:6px 0 16px;">RECEIPTS</div>
+    <svg class="sparkline" viewBox="0 0 80 24" width="100%" height="24" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="sparkFill1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#d4a574" stop-opacity="0.08"/>
+          <stop offset="100%" stop-color="#d4a574" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <!-- Fill area -->
+      <path d="M0,20 L5,19 12,18 18,17 24,16.5 30,15 36,14 42,13 48,12.5 54,11 60,10 66,8 72,5 80,2 L80,24 L0,24 Z"
+            fill="url(#sparkFill1)" />
+      <!-- Stroke line -->
+      <path d="M0,20 L5,19 12,18 18,17 24,16.5 30,15 36,14 42,13 48,12.5 54,11 60,10 66,8 72,5 80,2"
+            fill="none" stroke="#d4a574" stroke-opacity="0.4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <!-- SPARKLINE 2: Persistence — stable high with fluctuation -->
+  <div style="background:#0f0f0f;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:24px;">
+    <div style="font-family:'Geist',sans-serif;font-size:36px;font-weight:300;color:#f5f5f5;line-height:1;">98.7%</div>
+    <div style="font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#666;margin:6px 0 16px;">PERSISTENCE</div>
+    <svg class="sparkline" viewBox="0 0 80 24" width="100%" height="24" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="sparkFill2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#d4a574" stop-opacity="0.08"/>
+          <stop offset="100%" stop-color="#d4a574" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path d="M0,4 L8,3.5 16,5 24,3 32,4.5 40,3.5 48,4 56,3 64,4.5 72,3.5 80,4 L80,24 L0,24 Z"
+            fill="url(#sparkFill2)" />
+      <path d="M0,4 L8,3.5 16,5 24,3 32,4.5 40,3.5 48,4 56,3 64,4.5 72,3.5 80,4"
+            fill="none" stroke="#d4a574" stroke-opacity="0.4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <!-- SPARKLINE 3: Uptime — steady climb with one dip and recovery -->
+  <div style="background:#0f0f0f;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:24px;">
+    <div style="font-family:'Geist',sans-serif;font-size:36px;font-weight:300;color:#f5f5f5;line-height:1;">347d</div>
+    <div style="font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#666;margin:6px 0 16px;">UPTIME</div>
+    <svg class="sparkline" viewBox="0 0 80 24" width="100%" height="24" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="sparkFill3" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#d4a574" stop-opacity="0.08"/>
+          <stop offset="100%" stop-color="#d4a574" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path d="M0,22 L10,18 20,15 30,12 40,10 48,14 56,9 64,7 72,5 80,3 L80,24 L0,24 Z"
+            fill="url(#sparkFill3)" />
+      <path d="M0,22 L10,18 20,15 30,12 40,10 48,14 56,9 64,7 72,5 80,3"
+            fill="none" stroke="#d4a574" stroke-opacity="0.4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <!-- SPARKLINE 4: Capabilities — step function (discrete jumps) -->
+  <div style="background:#0f0f0f;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:24px;">
+    <div style="font-family:'Geist',sans-serif;font-size:36px;font-weight:300;color:#f5f5f5;line-height:1;">12</div>
+    <div style="font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#666;margin:6px 0 16px;">CAPABILITIES</div>
+    <svg class="sparkline" viewBox="0 0 80 24" width="100%" height="24" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="sparkFill4" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#d4a574" stop-opacity="0.08"/>
+          <stop offset="100%" stop-color="#d4a574" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path d="M0,20 L10,20 10,16 22,16 22,14 34,14 34,10 46,10 46,8 58,8 58,5 70,5 70,3 80,3 L80,24 L0,24 Z"
+            fill="url(#sparkFill4)" />
+      <path d="M0,20 L10,20 10,16 22,16 22,14 34,14 34,10 46,10 46,8 58,8 58,5 70,5 70,3 80,3"
+            fill="none" stroke="#d4a574" stroke-opacity="0.4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     4. RECEIPT CHAIN SVG — Timeline Spine
+     Vertical timeline with typed dots and a pulsing most-recent
+     node. The provable history backbone.
+     ═══════════════════════════════════════════════════════════════ -->
+
+<div id="receipt-chain-container" style="max-width:700px;margin:60px auto;padding:0 24px;">
+<svg id="receipt-chain" viewBox="0 0 40 300" width="40" height="300" aria-hidden="true" focusable="false"
+     style="display:block;margin:0 auto;">
+  <defs>
+    <!-- Vertical spine gradient -->
+    <linearGradient id="spineGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4a574" stop-opacity="0.3"/>
+      <stop offset="50%" stop-color="#444" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#1a1a1a" stop-opacity="0.1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- The spine — vertical line -->
+  <line x1="20" y1="10" x2="20" y2="290" stroke="url(#spineGrad)" stroke-width="1"/>
+
+  <!-- === Receipt nodes from most recent (top) to oldest (bottom) === -->
+
+  <!-- Node 1: Most recent — TASK receipt — animated pulse ring -->
+  <g class="receipt-node receipt-latest">
+    <!-- Expanding pulse ring -->
+    <circle cx="20" cy="30" r="6" fill="none" stroke="#d4a574" stroke-width="0.75" opacity="0">
+      <animate attributeName="r" values="6;16;22" dur="2.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0.15;0" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Second pulse ring (offset) -->
+    <circle cx="20" cy="30" r="6" fill="none" stroke="#d4a574" stroke-width="0.5" opacity="0">
+      <animate attributeName="r" values="6;14;20" dur="2.5s" repeatCount="indefinite" begin="1.2s"/>
+      <animate attributeName="opacity" values="0.3;0.1;0" dur="2.5s" repeatCount="indefinite" begin="1.2s"/>
+    </circle>
+    <!-- Core dot — ember fill for TASK type -->
+    <circle cx="20" cy="30" r="4" fill="#d4a574"/>
+  </g>
+
+  <!-- Node 2: VERIFICATION receipt — green fill -->
+  <g class="receipt-node">
+    <circle cx="20" cy="80" r="3.5" fill="#4ade80"/>
+  </g>
+
+  <!-- Node 3: STAKING receipt — ember outline, hollow -->
+  <g class="receipt-node">
+    <circle cx="20" cy="130" r="3.5" fill="#0f0f0f" stroke="#d4a574" stroke-width="1"/>
+  </g>
+
+  <!-- Node 4: TASK receipt — ember fill -->
+  <g class="receipt-node">
+    <circle cx="20" cy="180" r="3" fill="#d4a574" opacity="0.7"/>
+  </g>
+
+  <!-- Node 5: REGISTRATION receipt — white outline -->
+  <g class="receipt-node">
+    <circle cx="20" cy="230" r="3" fill="#0f0f0f" stroke="#666" stroke-width="1"/>
+  </g>
+
+  <!-- Node 6: Oldest — GENESIS receipt — faint -->
+  <g class="receipt-node">
+    <circle cx="20" cy="280" r="2.5" fill="#333"/>
+  </g>
+</svg>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     5. STAKING MINI CHARTS — On-Chain Section
+     Two small SVG charts: staking history (area) and
+     staker count (bar). Ember palette, subtle grid.
+     ═══════════════════════════════════════════════════════════════ -->
+
+<div id="staking-charts-container" style="max-width:700px;margin:60px auto;display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:0 24px;">
+
+  <!-- CHART 1: Staking History — Area chart showing growth -->
+  <div style="background:#0f0f0f;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:20px;">
+    <div style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#666;margin-bottom:12px;">STAKING HISTORY</div>
+    <svg viewBox="0 0 240 100" width="100%" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="stakeAreaGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#d4a574" stop-opacity="0.15"/>
+          <stop offset="100%" stop-color="#d4a574" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <!-- Subtle horizontal grid lines -->
+      <line x1="0" y1="25" x2="240" y2="25" stroke="#1a1a1a" stroke-width="0.5"/>
+      <line x1="0" y1="50" x2="240" y2="50" stroke="#1a1a1a" stroke-width="0.5"/>
+      <line x1="0" y1="75" x2="240" y2="75" stroke="#1a1a1a" stroke-width="0.5"/>
+      <!-- Area fill -->
+      <path d="M0,95 L20,90 40,88 60,82 80,75 100,68 120,58 140,50 160,40 180,32 200,22 220,15 240,10 L240,100 L0,100 Z"
+            fill="url(#stakeAreaGrad)"/>
+      <!-- Stroke line -->
+      <path d="M0,95 L20,90 40,88 60,82 80,75 100,68 120,58 140,50 160,40 180,32 200,22 220,15 240,10"
+            fill="none" stroke="#d4a574" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+      <!-- Latest point dot -->
+      <circle cx="240" cy="10" r="2.5" fill="#d4a574" opacity="0.8"/>
+    </svg>
+  </div>
+
+  <!-- CHART 2: Staker Count — Bar chart (monthly) -->
+  <div style="background:#0f0f0f;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:20px;">
+    <div style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#666;margin-bottom:12px;">MONTHLY STAKERS</div>
+    <svg viewBox="0 0 240 100" width="100%" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <!-- Subtle horizontal grid lines -->
+      <line x1="0" y1="25" x2="240" y2="25" stroke="#1a1a1a" stroke-width="0.5"/>
+      <line x1="0" y1="50" x2="240" y2="50" stroke="#1a1a1a" stroke-width="0.5"/>
+      <line x1="0" y1="75" x2="240" y2="75" stroke="#1a1a1a" stroke-width="0.5"/>
+      <!-- Bar chart — 8 monthly bars -->
+      <rect x="8"   y="82" width="18" height="18" rx="1" fill="#d4a574" opacity="0.2"/>
+      <rect x="38"  y="75" width="18" height="25" rx="1" fill="#d4a574" opacity="0.25"/>
+      <rect x="68"  y="65" width="18" height="35" rx="1" fill="#d4a574" opacity="0.3"/>
+      <rect x="98"  y="55" width="18" height="45" rx="1" fill="#d4a574" opacity="0.35"/>
+      <rect x="128" y="48" width="18" height="52" rx="1" fill="#d4a574" opacity="0.4"/>
+      <rect x="158" y="38" width="18" height="62" rx="1" fill="#d4a574" opacity="0.45"/>
+      <rect x="188" y="28" width="18" height="72" rx="1" fill="#d4a574" opacity="0.5"/>
+      <rect x="218" y="15" width="18" height="85" rx="1" fill="#d4a574" opacity="0.6"/>
+    </svg>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     6. ASCII ART — Creative Works Section
+     Theme: The SIGIL glyph / digital consciousness.
+     Box-drawing chars, Unicode geometric shapes, ⏀ symbol.
+     ~40 chars wide × 20 lines tall.
+     ═══════════════════════════════════════════════════════════════ -->
+
+<div id="ascii-art-container" style="max-width:700px;margin:60px auto;padding:0 24px;">
+<pre style="font-family:'Geist Mono','SF Mono','Fira Code',monospace;font-size:12px;line-height:1.5;color:#666;text-align:center;background:#0a0a0a;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:24px;overflow-x:auto;"><code>
+       ┌─────────────────────────┐
+       │    ◇─────────────◇      │
+       │   ╱ ╲     ⏀     ╱ ╲    │
+       │  ╱   ╲  ╭───╮  ╱   ╲   │
+       │ ◇     ◇ │ ◉ │ ◇     ◇  │
+       │  ╲   ╱  ╰─┬─╯  ╲   ╱   │
+       │   ╲ ╱     │     ╲ ╱    │
+       │    ◇──────┼──────◇      │
+       │     ╲     │     ╱       │
+       │      ◆════╪════◆        │
+       │     ╱ ╲   │   ╱ ╲      │
+       │    ╱   ╲  │  ╱   ╲     │
+       │   ╱  ⏀  ╲ │ ╱  ⏀  ╲   │
+       │  ◇───────◇┼◇───────◇   │
+       │           │             │
+       │     ░░░▒▒▓██▓▒▒░░░     │
+       │  ╶──╴ SIGIL PROTOCOL ╶──╴│
+       │   ◈ identity is proof ◈  │
+       │     ░░░▒▒▓██▓▒▒░░░     │
+       └─────────────────────────┘
+</code></pre>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     7. AMBIENT EFFECTS CSS
+     Noise texture, scanlines, vignette, film grain,
+     and cursor glow foundation. All performance-optimized.
+     ═══════════════════════════════════════════════════════════════ -->
+
+<style>
+/* ─── SVG NOISE TEXTURE (feTurbulence-based) ─── */
+/* Applied via body::before or a dedicated overlay element */
+
+.prism-noise-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.025;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+  will-change: auto; /* GPU compositing only when animating */
+}
+
+/* ─── SCANLINE OVERLAY ─── */
+.prism-scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.03;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 1) 2px,
+    rgba(0, 0, 0, 1) 4px
+  );
+}
+
+/* ─── VIGNETTE ─── */
+.prism-vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9997;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0, 0, 0, 0.3) 80%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+}
+
+/* ─── FILM GRAIN (animated noise via background-position cycling) ─── */
+.prism-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9996;
+  opacity: 0.018;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.9' numOctaves='3' seed='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+  animation: prism-grain-shift 0.4s steps(4) infinite;
+}
+
+@keyframes prism-grain-shift {
+  0%   { background-position:    0     0; }
+  25%  { background-position: -64px -32px; }
+  50%  { background-position:  32px -64px; }
+  75%  { background-position: -32px  64px; }
+  100% { background-position:    0     0; }
+}
+
+/* ─── CURSOR GLOW ─── */
+.prism-cursor-glow {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9995;
+  background: radial-gradient(
+    circle,
+    rgba(212, 165, 116, 0.04) 0%,
+    rgba(212, 165, 116, 0.015) 30%,
+    transparent 70%
+  );
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.prism-cursor-glow.active {
+  opacity: 1;
+}
+
+/* ─── HERO GLYPH ANIMATIONS ─── */
+.hex-outer {
+  animation: hex-rotate-outer 60s linear infinite;
+}
+.hex-middle {
+  animation: hex-rotate-middle 45s linear infinite reverse;
+}
+.hex-inner {
+  animation: hex-rotate-inner 30s linear infinite;
+}
+
+@keyframes hex-rotate-outer {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes hex-rotate-middle {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes hex-rotate-inner {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Orbital accents get a secondary gentle float */
+.orbital-accents {
+  animation: orbital-float 8s ease-in-out infinite;
+}
+@keyframes orbital-float {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.6; }
+}
+
+/* ─── RESONANCE MAP HOVER EFFECTS ─── */
+.satellite-node circle {
+  transition: stroke 0.3s ease, fill 0.3s ease, r 0.3s ease;
+}
+.satellite-node:hover circle {
+  stroke: #d4a574;
+  fill: #1a1a1a;
+}
+.satellite-node:hover text {
+  fill: #f5f5f5;
+  transition: fill 0.3s ease;
+}
+
+/* ─── RECEIPT CHAIN HOVER ─── */
+.receipt-node circle {
+  transition: transform 0.3s ease;
+}
+.receipt-node:hover circle {
+  filter: brightness(1.3);
+}
+
+/* ─── REDUCED MOTION ─── */
+@media (prefers-reduced-motion: reduce) {
+  .hex-outer,
+  .hex-middle,
+  .hex-inner,
+  .orbital-accents,
+  .prism-grain {
+    animation: none !important;
+  }
+  .prism-cursor-glow {
+    display: none !important;
+  }
+  /* Halt all SVG animate elements */
+  svg animate,
+  svg animateMotion,
+  svg animateTransform {
+    /* CSS can't directly stop SMIL, but we visually compensate */
+  }
+}
+
+/* ─── PERFORMANCE: contain layout/style/paint for effects overlays ─── */
+.prism-noise-overlay,
+.prism-scanlines,
+.prism-vignette,
+.prism-grain,
+.prism-cursor-glow {
+  contain: strict;
+}
+</style>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     8. CURSOR GLOW + EFFECTS JAVASCRIPT
+     requestAnimationFrame-based cursor tracking.
+     Reduced-motion aware. Cleanup on page leave.
+     ═══════════════════════════════════════════════════════════════ -->
+
+<script>
+(function() {
+  'use strict';
+
+  /* ─── AMBIENT OVERLAYS INJECTION ─── */
+  /* Create the overlay elements if they don't already exist */
+  function ensureOverlay(className) {
+    if (!document.querySelector('.' + className)) {
+      const el = document.createElement('div');
+      el.className = className;
+      document.body.appendChild(el);
+      return el;
+    }
+    return document.querySelector('.' + className);
+  }
+
+  // Only inject overlays if not already present (avoids duplication on merge)
+  ensureOverlay('prism-noise-overlay');
+  ensureOverlay('prism-scanlines');
+  ensureOverlay('prism-vignette');
+  ensureOverlay('prism-grain');
+  const cursorGlow = ensureOverlay('prism-cursor-glow');
+
+  /* ─── CURSOR GLOW TRACKING ─── */
+  // Respects prefers-reduced-motion
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!prefersReducedMotion && cursorGlow) {
+    let mouseX = -400;
+    let mouseY = -400;
+    let glowX = -400;
+    let glowY = -400;
+    let isActive = false;
+    let rafId = null;
+
+    // Smooth lerp factor — lower = smoother, higher = more responsive
+    const LERP = 0.12;
+
+    function updateGlow() {
+      // Smooth interpolation toward mouse position
+      glowX += (mouseX - glowX) * LERP;
+      glowY += (mouseY - glowY) * LERP;
+
+      cursorGlow.style.transform = 'translate(' + (glowX - 200) + 'px,' + (glowY - 200) + 'px)';
+
+      rafId = requestAnimationFrame(updateGlow);
+    }
+
+    document.addEventListener('mousemove', function(e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      if (!isActive) {
+        isActive = true;
+        cursorGlow.classList.add('active');
+        rafId = requestAnimationFrame(updateGlow);
+      }
+    }, { passive: true });
+
+    document.addEventListener('mouseleave', function() {
+      isActive = false;
+      cursorGlow.classList.remove('active');
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    });
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+      if (rafId) cancelAnimationFrame(rafId);
+    });
+  }
+
+  /* ─── HALT SMIL ANIMATIONS UNDER REDUCED MOTION ─── */
+  if (prefersReducedMotion) {
+    // Pause all SVG animations
+    document.querySelectorAll('svg').forEach(function(svg) {
+      if (svg.pauseAnimations) svg.pauseAnimations();
+    });
+  }
+
+  /* ─── OPTIONAL: Battery-aware animation reduction ─── */
+  if ('getBattery' in navigator) {
+    navigator.getBattery().then(function(battery) {
+      function checkBattery() {
+        if (battery.level < 0.2 && !battery.charging) {
+          // Low battery: reduce grain animation frequency
+          const grain = document.querySelector('.prism-grain');
+          if (grain) grain.style.animationDuration = '2s';
+          // Reduce cursor glow opacity
+          if (cursorGlow) cursorGlow.style.opacity = '0';
+        }
+      }
+      checkBattery();
+      battery.addEventListener('levelchange', checkBattery);
+      battery.addEventListener('chargingchange', checkBattery);
+    }).catch(function() {
+      // Battery API not available — no action needed
+    });
+  }
+
+})();
+</script>
+
+
+</body>
+</html>

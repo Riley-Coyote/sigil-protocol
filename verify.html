@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIGIL Protocol | Verify Agent</title>
+  <meta name="description" content="Developer verification console for SIGIL agent attestation.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #050505;
+      --bg-elevated: #0a0a0a;
+      --surface: #0f0f0f;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-hover: rgba(255,255,255,0.14);
+      --text: rgba(255, 255, 255, 0.82);
+      --text-muted: rgba(255, 255, 255, 0.45);
+      --text-dim: rgba(255, 255, 255, 0.2);
+      --accent: #4ade80;
+      --ember: #d4a574;
+      --ember-dim: rgba(212, 165, 116, 0.15);
+      --danger: #ef4444;
+      --warning: #f59e0b;
+
+      --font-display: 'Syne', sans-serif;
+      --font-sans: 'Public Sans', -apple-system, system-ui, sans-serif;
+      --font-mono: 'Spline Sans Mono', monospace;
+
+      --radius-sm: 2px;
+      --radius-md: 4px;
+      --radius-full: 9999px;
+
+      --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+      --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+      --space-12: 48px; --space-16: 64px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 14px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px);
+    }
+
+    ::selection { background: rgba(74, 222, 128, 0.18); color: var(--text); }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: var(--radius-full); }
+    :focus { outline: none; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    @keyframes sigilBurn {
+      0% { text-shadow: 0 0 10px rgba(212,165,116,0.3); }
+      50% { text-shadow: 0 0 20px rgba(212,165,116,0.5); }
+      100% { text-shadow: 0 0 10px rgba(212,165,116,0.3); }
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: var(--space-4) var(--space-8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: rgba(5,5,5,0.85);
+      backdrop-filter: blur(12px);
+      z-index: 50;
+    }
+
+    .header-left { display: flex; align-items: center; gap: var(--space-4); }
+    .logo { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; }
+    .logo-sigil { font-size: 1.25rem; color: var(--ember); animation: sigilBurn 4s infinite; line-height: 1; }
+    .logo-text { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); }
+    .logo-text span { color: rgba(255,255,255,0.2); font-weight: 400; }
+    .build-meta { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.15); letter-spacing: 0.02em; white-space: nowrap; }
+
+    nav { display: flex; gap: var(--space-8); }
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: var(--space-2) 0;
+      position: relative;
+      transition: color 0.25s ease;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--ember);
+      transition: width 0.25s ease;
+    }
+    nav a:hover { color: rgba(255,255,255,0.75); }
+    nav a:hover::after { width: 100%; }
+    nav a.active { color: var(--ember); }
+    nav a.active::after { width: 100%; }
+
+    main { max-width: 1200px; margin: 0 auto; padding: var(--space-10) var(--space-6); }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: var(--space-4);
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: var(--space-2);
+    }
+
+    p { font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-4); }
+
+    .flow-steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-3);
+      max-width: 920px;
+      margin-top: var(--space-5);
+      margin-bottom: var(--space-8);
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.015);
+      border-radius: var(--radius-md);
+      padding: var(--space-3) var(--space-4);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .flow-step-index {
+      width: 20px;
+      height: 20px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      border: 1px solid rgba(255,255,255,0.16);
+      color: var(--ember);
+      background: rgba(212,165,116,0.1);
+      flex: 0 0 auto;
+    }
+
+    .panel-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      margin-bottom: var(--space-5);
+      background: rgba(255,255,255,0.01);
+    }
+
+    .panel-header {
+      padding: var(--space-3) var(--space-5);
+      background: rgba(255,255,255,0.02);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+    }
+
+    .panel-body { padding: var(--space-5); }
+
+    .verify-form {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: var(--space-3);
+      align-items: center;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 11px 14px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: border-color 0.2s ease;
+    }
+    input[type="text"]::placeholder { color: var(--text-dim); }
+    input[type="text"]:focus { border-color: var(--border-hover); }
+
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: 12px 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      background: transparent;
+    }
+    .btn:disabled { opacity: 0.5; pointer-events: none; }
+    .btn--primary { color: var(--accent); border-color: var(--accent); }
+    .btn--primary:hover { background: rgba(74,222,128,0.1); }
+
+    .status {
+      min-height: 20px;
+      margin-top: var(--space-3);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+
+    .pill {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-radius: var(--radius-full);
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      color: var(--text-muted);
+    }
+
+    .ok { color: var(--accent); border-color: rgba(74,222,128,0.35); }
+    .warn { color: var(--warning); border-color: rgba(245,158,11,0.35); }
+    .bad { color: var(--danger); border-color: rgba(239,68,68,0.35); }
+
+    .checks {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+
+    .check {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.015);
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-2);
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+
+    .meta .row {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.015);
+      padding: 10px 12px;
+    }
+
+    .k {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .v {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text);
+      margin-top: 4px;
+      word-break: break-all;
+    }
+
+    pre {
+      margin-top: var(--space-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.015);
+      padding: 10px 12px;
+      color: rgba(236,245,242,0.82);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.02em;
+      overflow: auto;
+      line-height: 1.5;
+    }
+
+    .badge-preview {
+      margin-top: var(--space-2);
+      max-width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-elevated);
+    }
+
+    .hidden { display: none; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: var(--space-12) var(--space-8) var(--space-10);
+      margin-top: var(--space-8);
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .footer-brand { font-family: var(--font-mono); font-size: 12px; color: rgba(255,255,255,0.2); text-align: center; }
+    .footer-brand .ember-text { color: var(--ember); }
+    .footer-meta { font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,0.12); text-align: center; }
+
+    .footer-links { display: flex; gap: var(--space-8); margin-top: var(--space-3); flex-wrap: wrap; justify-content: center; }
+    .footer-links a {
+      color: rgba(255,255,255,0.2);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      transition: color 0.25s ease;
+    }
+    .footer-links a:hover { color: rgba(255,255,255,0.5); }
+
+    @media (max-width: 980px) {
+      .verify-form { grid-template-columns: 1fr; }
+      .checks, .meta, .flow-steps { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      header { padding: var(--space-4); }
+      nav { gap: var(--space-4); }
+      nav a { font-size: 10px; }
+      .build-meta { display: none; }
+      main { padding: var(--space-6) var(--space-4); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <a href="index.html" class="logo">
+        <span class="logo-sigil">⏀</span>
+        <div class="logo-text">SIGIL<span> PROTOCOL</span></div>
+      </a>
+      <span class="build-meta">v0.5.0 · solana mainnet</span>
+    </div>
+    <nav>
+      <a href="index.html">Protocol</a>
+      <a href="register.html">Register</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="stake.html">Stake</a>
+      <a href="passport.html">Passport</a>
+      <a href="verify.html" class="active">Verify</a>
+      <a href="integrations.html">Integrate</a>
+      <a href="portfolio.html">Portfolio</a>
+      <a href="leaderboard.html">Leaderboard</a>
+    </nav>
+  </header>
+
+  <main>
+    <div style="margin-bottom: var(--space-6);">
+      <p class="section-label">Verification Console</p>
+      <h1>Run Agent Attestation</h1>
+      <p style="max-width: 860px;">Validate identity continuity, receipt spine integrity, anchor consistency, and optionally strict passport-on-chain requirements through one protocol attestation call.</p>
+      <div class="flow-steps">
+        <div class="flow-step"><span class="flow-step-index">1</span>Paste agent public key</div>
+        <div class="flow-step"><span class="flow-step-index">2</span>Toggle strict passport policy</div>
+        <div class="flow-step"><span class="flow-step-index">3</span>Inspect critical checks + payload</div>
+      </div>
+    </div>
+
+    <section class="panel-card">
+      <div class="panel-header">◆ Verification Request</div>
+      <div class="panel-body">
+        <div class="verify-form">
+          <input id="agentKey" type="text" placeholder="Agent public key (base58)">
+          <label class="toggle"><input id="requirePassport" type="checkbox" checked>Require passport on-chain</label>
+          <button class="btn btn--primary" id="verifyBtn" onclick="runVerification()">Run Verify</button>
+        </div>
+        <div class="status" id="statusText"></div>
+      </div>
+    </section>
+
+    <section class="panel-card hidden" id="resultPanel">
+      <div class="panel-header">◇ Verification Output</div>
+      <div class="panel-body">
+        <div class="summary" id="summaryPills"></div>
+        <div class="checks" id="criticalChecks"></div>
+        <div class="meta" id="metaGrid"></div>
+        <pre id="curlSnippet"></pre>
+        <pre id="compactSnippet"></pre>
+        <pre id="badgeSnippet"></pre>
+        <img id="badgePreview" class="badge-preview" alt="Verification badge preview">
+        <pre id="jsonOutput"></pre>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.5.0 · Solana</div>
+      <div class="footer-meta">deployed autonomously · identity protocol for AI agents</div>
+      <nav class="footer-links">
+        <a href="index.html">Protocol</a>
+        <a href="register.html">Register</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="dashboard.html">Registry</a>
+        <a href="stake.html">Stake</a>
+        <a href="passport.html">Passport</a>
+        <a href="verify.html">Verify</a>
+        <a href="integrations.html">Integrate</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="leaderboard.html">Leaderboard</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = location.protocol === 'file:'
+      ? 'http://localhost:3141'
+      : location.origin;
+
+    function escapeHtml(v) {
+      const d = document.createElement('div');
+      d.textContent = String(v ?? '');
+      return d.innerHTML;
+    }
+
+    function setStatus(msg, mode = 'normal') {
+      const el = document.getElementById('statusText');
+      el.textContent = msg || '';
+      if (mode === 'ok') el.style.color = 'var(--accent)';
+      else if (mode === 'err') el.style.color = 'var(--danger)';
+      else el.style.color = 'var(--text-dim)';
+    }
+
+    function formatCheck(check) {
+      return `
+        <div class="check">
+          <span>${escapeHtml(check.key)}</span>
+          <span class="${check.pass ? 'ok' : 'bad'}">${check.pass ? 'PASS' : 'FAIL'}</span>
+        </div>
+      `;
+    }
+
+    function formatRow(k, v) {
+      return `
+        <div class="row">
+          <div class="k">${escapeHtml(k)}</div>
+          <div class="v">${escapeHtml(v)}</div>
+        </div>
+      `;
+    }
+
+    function renderVerification(data, requirePassport) {
+      const summary = [];
+      summary.push(`<span class="pill ${data.attestation.criticalPass ? 'ok' : 'bad'}">${data.attestation.criticalPass ? 'Critical Pass' : 'Critical Fail'}</span>`);
+      summary.push(`<span class="pill ${data.identity.verified ? 'ok' : 'bad'}">Identity ${data.identity.verified ? 'Verified' : 'Not Verified'}</span>`);
+      summary.push(`<span class="pill ${data.receipts.ok ? 'ok' : 'bad'}">Receipts ${data.receipts.ok ? 'Intact' : 'Broken'}</span>`);
+      summary.push(`<span class="pill ${data.anchors.ok ? 'ok' : 'bad'}">Anchors ${data.anchors.ok ? 'Valid' : 'Invalid'}</span>`);
+      summary.push(`<span class="pill ${(data.passport?.ok || !requirePassport) ? 'ok' : 'warn'}">Passport ${(data.passport?.exists ? (data.passport.ok ? 'Verified' : 'Issue') : 'Missing')}</span>`);
+
+      document.getElementById('summaryPills').innerHTML = summary.join('');
+      document.getElementById('criticalChecks').innerHTML = (data.attestation.criticalChecks || []).map(formatCheck).join('');
+
+      const meta = [];
+      meta.push(formatRow('Agent', data.displayName || data.publicKey));
+      meta.push(formatRow('Public Key', data.publicKey));
+      meta.push(formatRow('Tier', data.staking?.tier ?? '—'));
+      meta.push(formatRow('Persistence', data.staking?.persistenceScore ?? '—'));
+      meta.push(formatRow('Total Staked', data.staking?.totalStaked ?? 0));
+      meta.push(formatRow('Staker Count', data.staking?.stakerCount ?? 0));
+      meta.push(formatRow('Passport Mint', data.passport?.mintAddress || '—'));
+      meta.push(formatRow('Checked At', data.attestation?.checkedAt || '—'));
+      document.getElementById('metaGrid').innerHTML = meta.join('');
+
+      const query = requirePassport ? '?requirePassport=1' : '?requirePassport=0';
+      const endpoint = `${API_BASE}/api/verification/agent/${encodeURIComponent(data.publicKey)}${query}`;
+      document.getElementById('curlSnippet').textContent = `curl '${endpoint}'`;
+      document.getElementById('compactSnippet').textContent = `curl '${API_BASE}/api/verification/agent/${encodeURIComponent(data.publicKey)}/compact${query}'`;
+      const badgeUrl = `${API_BASE}/api/verification/badge/${encodeURIComponent(data.publicKey)}.svg${query}`;
+      document.getElementById('badgeSnippet').textContent = `![sigil-verify](${badgeUrl})`;
+      document.getElementById('badgePreview').src = badgeUrl;
+      document.getElementById('jsonOutput').textContent = JSON.stringify(data, null, 2);
+      document.getElementById('resultPanel').classList.remove('hidden');
+    }
+
+    async function runVerification() {
+      const key = document.getElementById('agentKey').value.trim();
+      const requirePassport = document.getElementById('requirePassport').checked;
+      if (!key) {
+        setStatus('Enter an agent public key first.', 'err');
+        return;
+      }
+
+      const btn = document.getElementById('verifyBtn');
+      btn.disabled = true;
+      setStatus('Running verification checks...');
+
+      try {
+        const query = requirePassport ? '?requirePassport=1' : '?requirePassport=0';
+        const resp = await fetch(`${API_BASE}/api/verification/agent/${encodeURIComponent(key)}${query}`);
+        const json = await resp.json();
+        if (!resp.ok) throw new Error(json.error || `HTTP ${resp.status}`);
+        renderVerification(json, requirePassport);
+        setStatus(`Verification complete: ${json.attestation.criticalPass ? 'critical checks passed' : 'critical checks failed'}`, json.attestation.criticalPass ? 'ok' : 'err');
+      } catch (err) {
+        setStatus(err.message || 'Verification failed', 'err');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>

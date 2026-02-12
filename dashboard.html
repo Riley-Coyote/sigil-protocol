@@ -3,16 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIGIL Protocol | Registry</title>
+  <title>SIGIL Protocol | Registry Explorer</title>
 
-  <meta name="description" content="SIGIL Protocol Registry — browse verified AI agents, look up identities, and explore protocol statistics.">
+  <meta name="description" content="Browse all registered AI agents on the SIGIL Protocol. Search, filter, and discover verified digital identities on Solana.">
   <meta name="theme-color" content="#050505">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="SIGIL Protocol | Registry Explorer">
+  <meta property="og:description" content="Browse all registered AI agents on SIGIL Protocol. Verified digital identities on Solana.">
+  <meta property="og:image" content="https://sigilprotocol.xyz/og-image.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
 
   <style>
+    /* ===== RESET & TOKENS ===== */
     :root {
       --bg: #050505;
       --bg-elevated: #0a0a0a;
@@ -27,15 +33,16 @@
       --accent-hover: #22c55e;
       --accent-dim: rgba(74, 222, 128, 0.15);
       --ember: #d4a574;
+      --ember-hover: #e0b68a;
       --ember-dim: rgba(212, 165, 116, 0.15);
+      --ember-glow: rgba(212, 165, 116, 0.3);
       --danger: #ef4444;
-      --warning: #f59e0b;
-      --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --font-display: 'Syne', sans-serif;
+      --font-sans: 'Public Sans', -apple-system, system-ui, sans-serif;
+      --font-mono: 'Spline Sans Mono', 'SF Mono', monospace;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --radius-sm: 2px;
       --radius-md: 4px;
-      --radius-full: 9999px;
-      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -45,33 +52,57 @@
       font-family: var(--font-sans);
       background: var(--bg);
       color: var(--text);
-      line-height: 1.7;
+      line-height: 1.6;
       font-size: 14px;
       min-height: 100vh;
       overflow-x: hidden;
     }
 
+    /* Scanline overlay */
     body::after {
       content: '';
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      inset: 0;
       pointer-events: none;
       z-index: 9999;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px);
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 2px,
+        rgba(0, 0, 0, 0.03) 4px
+      );
     }
 
-    ::selection { background: var(--accent-dim); color: var(--text); }
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: var(--radius-full); }
-    :focus { outline: none; }
-    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    a { color: inherit; text-decoration: none; }
 
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    @keyframes sigilBurn { 0% { text-shadow: 0 0 10px rgba(212,165,116,0.3); } 50% { text-shadow: 0 0 20px rgba(212,165,116,0.5); } 100% { text-shadow: 0 0 10px rgba(212,165,116,0.3); } }
-    @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 10px rgba(74,222,128,0.3); } 50% { box-shadow: 0 0 20px rgba(74,222,128,0.5); } }
+    /* ===== SKIP LINK ===== */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 16px;
+      background: var(--accent);
+      color: #000;
+      padding: 8px 16px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      z-index: 10000;
+      border-radius: var(--radius-md);
+    }
+    .skip-link:focus { top: 16px; }
+
+    /* ===== TOP ACCENT LINE ===== */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--ember), var(--accent), var(--ember), transparent);
+      z-index: 101;
+      opacity: 0.5;
+    }
 
     /* ===== HEADER ===== */
     header {
@@ -82,71 +113,174 @@
       align-items: center;
       position: sticky;
       top: 0;
-      background: rgba(5,5,5,0.85);
-      backdrop-filter: blur(12px);
-      z-index: 50;
+      background: rgba(5, 5, 5, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 100;
     }
 
-    .header-left { display: flex; align-items: center; gap: 16px; }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
 
-    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-    .logo-sigil { font-size: 1.25rem; color: var(--ember); animation: sigilBurn 4s infinite; }
-    .logo-text { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); }
-    .logo-text span { color: rgba(255,255,255,0.2); font-weight: 400; }
-    .build-meta { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.15); }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
 
-    nav { display: flex; gap: 32px; }
-    nav a {
+    .logo-sigil {
+      font-size: 1.25rem;
+      color: var(--ember);
+      animation: sigilBurn 4s infinite;
+      line-height: 1;
+    }
+
+    @keyframes sigilBurn {
+      0%, 100% { opacity: 0.8; text-shadow: 0 0 8px rgba(212, 165, 116, 0.3); }
+      50% { opacity: 1; text-shadow: 0 0 16px rgba(212, 165, 116, 0.5); }
+    }
+
+    .logo-text {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    .logo-text span { color: rgba(255, 255, 255, 0.2); font-weight: 400; }
+
+    .build-meta {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.15);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .nav-desktop {
+      display: flex;
+      gap: 28px;
+    }
+    .nav-desktop a {
       color: var(--text-muted);
       text-decoration: none;
       font-family: var(--font-mono);
       font-size: 11px;
+      font-weight: 400;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       padding: 8px 0;
       position: relative;
-      transition: color 0.25s;
+      transition: color 0.25s ease;
     }
-    nav a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--ember); transition: width 0.25s; }
-    nav a:hover { color: rgba(255,255,255,0.75); }
-    nav a:hover::after { width: 100%; }
-    nav a.active { color: var(--accent); }
-    nav a.active::after { width: 100%; background: var(--accent); }
+    .nav-desktop a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--ember);
+      transition: width 0.25s ease;
+    }
+    .nav-desktop a:hover { color: rgba(255, 255, 255, 0.75); }
+    .nav-desktop a:hover::after { width: 100%; }
+    .nav-desktop a.active { color: var(--ember); }
+    .nav-desktop a.active::after { width: 100%; }
+
+    /* Mobile nav toggle */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 44px;
+      height: 44px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 9999px;
+      transition: all 0.3s var(--ease-out);
+      transform-origin: center;
+    }
+    .nav-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .nav-toggle.active span:nth-child(2) { opacity: 0; }
+    .nav-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+    .nav-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+      z-index: 98;
+    }
+    .nav-overlay.open { opacity: 1; visibility: visible; }
+
+    .nav-mobile {
+      position: fixed; top: 0; right: 0;
+      width: 100%; max-width: 320px; height: 100vh;
+      background: var(--bg-elevated);
+      border-left: 1px solid var(--border);
+      padding: 80px 32px;
+      display: flex; flex-direction: column; gap: 16px;
+      z-index: 99;
+      transform: translateX(100%);
+      transition: transform 0.3s var(--ease-out);
+    }
+    .nav-mobile.open { transform: translateX(0); }
+    .nav-mobile a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.3s;
+    }
+    .nav-mobile a:hover { color: var(--text); }
+    .nav-mobile a.active { color: var(--ember); }
 
     /* ===== MAIN ===== */
-    main { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
 
-    .section { margin-bottom: 64px; }
-    .section-label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.3); margin-bottom: 16px; }
-    h2 { font-size: clamp(1.25rem, 3vw, 1.5rem); font-weight: 500; letter-spacing: -0.01em; margin-bottom: 24px; color: rgba(255,255,255,0.8); }
-    p { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; }
-
-    /* ===== STATS BANNER ===== */
-    .stats-banner {
+    /* ===== HERO STATS ===== */
+    .hero-stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 1px;
       background: var(--border);
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       overflow: hidden;
-      margin-bottom: 48px;
+      margin: 32px 0 0;
     }
 
-    .stat-item {
-      background: rgba(255,255,255,0.015);
-      padding: 20px 24px;
-      transition: background 0.15s;
+    .stat-card {
+      background: var(--bg-elevated);
+      padding: 28px 24px;
+      text-align: center;
+      position: relative;
+      transition: background 0.3s;
     }
-    .stat-item:hover { background: rgba(255,255,255,0.025); }
 
-    .stat-value {
-      font-family: var(--font-mono);
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: rgba(255,255,255,0.85);
-      font-variant-numeric: tabular-nums;
-      line-height: 1.2;
+    .stat-card:hover {
+      background: var(--surface);
     }
 
     .stat-label {
@@ -155,721 +289,1351 @@
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: var(--text-dim);
-      margin-top: 4px;
-    }
-
-    .stat-status { display: flex; align-items: center; gap: 8px; }
-    .status-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 8px rgba(74,222,128,0.5);
-      animation: glowPulse 2.5s infinite;
-    }
-    .status-text { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 500; color: var(--accent); }
-
-    /* ===== SEARCH BAR ===== */
-    .search-bar {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
-      align-items: center;
-    }
-
-    .search-input {
-      flex: 1;
-      padding: 12px 16px;
-      font-family: var(--font-mono);
-      font-size: 13px;
-      color: var(--text);
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-input::placeholder { color: var(--text-dim); }
-    .search-input:focus { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
-
-    .search-count {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-dim);
-      white-space: nowrap;
-    }
-
-    /* ===== BUTTONS ===== */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 24px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      text-decoration: none;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.25s var(--ease-out);
-      background: transparent;
-    }
-    .btn:disabled { opacity: 0.5; pointer-events: none; }
-
-    .btn--primary { color: var(--accent); border-color: var(--accent); }
-    .btn--primary:hover { background: rgba(74,222,128,0.1); }
-
-    .btn--secondary { color: var(--text-muted); border: 1px solid rgba(255,255,255,0.2); }
-    .btn--secondary:hover { border-color: rgba(255,255,255,0.4); color: rgba(255,255,255,0.7); }
-
-    .btn--ghost { color: var(--text-muted); }
-    .btn--ghost:hover { color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.05); }
-
-    .btn--small { padding: 8px 16px; font-size: 11px; }
-
-    .btn--loading { pointer-events: none; }
-    .btn--loading .btn-text { opacity: 0; }
-    .btn--loading::after {
-      content: '';
-      position: absolute;
-      width: 16px; height: 16px;
-      border: 2px solid currentColor;
-      border-right-color: transparent;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-
-    /* ===== REGISTRY TABLE ===== */
-    .registry-table-wrapper {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-    }
-
-    .registry-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-
-    .registry-table thead { background: rgba(255,255,255,0.03); }
-    .registry-table th {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
-      padding: 12px 16px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .registry-table td {
-      padding: 12px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.03);
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-      font-size: 12px;
-    }
-
-    .registry-table tr { cursor: pointer; transition: background 0.1s; }
-    .registry-table tbody tr:hover td { background: rgba(255,255,255,0.015); }
-    .registry-table tr:last-child td { border-bottom: none; }
-
-    .glyph-hash { color: var(--ember); font-weight: 500; }
-    .display-name { color: var(--text); font-family: var(--font-sans); }
-    .pubkey-truncated { color: var(--text-dim); }
-    .tier-cell { color: var(--accent); font-weight: 500; }
-    .date-cell { color: var(--text-dim); }
-
-    .glyph-thumb {
-      width: 48px; height: 34px;
-      border-radius: 2px;
-      border: 1px solid rgba(255,255,255,0.06);
-      overflow: hidden;
-      display: inline-block;
-      background: #0a0a0a;
-    }
-    .glyph-thumb img { width: 100%; height: 100%; object-fit: cover; }
-
-    /* Pagination */
-    .pagination {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-      border-top: 1px solid var(--border);
-      background: rgba(255,255,255,0.015);
-    }
-
-    .pagination-info { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
-
-    .pagination-controls { display: flex; gap: 8px; }
-    .pagination-btn {
-      padding: 6px 12px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-muted);
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .pagination-btn:hover:not(:disabled) { border-color: var(--border-hover); color: var(--text); }
-    .pagination-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-    .table-empty { text-align: center; padding: 48px 16px; color: var(--text-dim); font-family: var(--font-mono); font-size: 12px; }
-    .table-loading { text-align: center; padding: 32px; }
-    .table-loading::after { content: ''; display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
-
-    /* ===== AGENT LOOKUP ===== */
-    .lookup-card {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: rgba(255,255,255,0.015);
-      padding: 24px;
-      max-width: 640px;
-    }
-
-    .lookup-form { display: flex; gap: 12px; align-items: flex-end; }
-    .lookup-form .input-group { flex: 1; }
-
-    .input-label {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
       margin-bottom: 8px;
     }
 
-    .input-field {
-      width: 100%;
-      padding: 12px 16px;
+    .stat-value {
       font-family: var(--font-mono);
-      font-size: 13px;
+      font-size: 2rem;
+      font-weight: 700;
       color: var(--text);
-      background: rgba(255,255,255,0.03);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-value.accent { color: var(--accent); }
+    .stat-value.ember { color: var(--ember); }
+
+    .stat-sub {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    .pulse-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+      animation: pulse 2s ease-in-out infinite;
+      box-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    /* ===== ACTIVITY FEED ===== */
+    .activity-feed {
+      margin: 24px 0;
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
-      outline: none;
-      transition: border-color 0.15s;
+      background: var(--bg-elevated);
+      overflow: hidden;
+      position: relative;
     }
-    .input-field::placeholder { color: var(--text-dim); }
-    .input-field:focus { border-color: rgba(255,255,255,0.15); }
 
-    .input-error { font-family: var(--font-mono); font-size: 11px; color: var(--danger); margin-top: 4px; min-height: 16px; }
-
-    .lookup-result {
-      margin-top: 16px;
-      padding: 16px;
-      border-radius: var(--radius-md);
-      display: none;
-      animation: fadeInUp 0.3s var(--ease-out);
-    }
-    .lookup-result.visible { display: block; }
-
-    .lookup-result.verified { border: 1px solid rgba(74,222,128,0.2); background: rgba(74,222,128,0.05); }
-    .lookup-result.pending { border: 1px solid rgba(245,158,11,0.2); background: rgba(245,158,11,0.05); }
-    .lookup-result.not-found { border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); }
-
-    .lookup-result-title {
+    .feed-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+
+    .feed-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .feed-track-wrapper {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .feed-track-wrapper::before,
+    .feed-track-wrapper::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 48px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .feed-track-wrapper::before {
+      left: 0;
+      background: linear-gradient(90deg, var(--bg-elevated), transparent);
+    }
+    .feed-track-wrapper::after {
+      right: 0;
+      background: linear-gradient(270deg, var(--bg-elevated), transparent);
+    }
+
+    .feed-track {
+      display: flex;
+      gap: 32px;
+      padding: 12px 24px;
+      animation: ticker 60s linear infinite;
+      white-space: nowrap;
+      width: max-content;
+    }
+
+    .feed-track:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .feed-item {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .feed-item-type {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: 8px;
     }
-    .lookup-result.verified .lookup-result-title { color: var(--accent); }
-    .lookup-result.pending .lookup-result-title { color: var(--warning); }
-    .lookup-result.not-found .lookup-result-title { color: var(--text-dim); }
+    .feed-item-type.registered { background: var(--accent-dim); color: var(--accent); }
+    .feed-item-type.verified { background: var(--ember-dim); color: var(--ember); }
+    .feed-item-type.updated { background: rgba(255,255,255,0.06); color: var(--text-muted); }
 
-    .lookup-details { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .feed-item-name { color: var(--text); font-weight: 500; }
 
-    .lookup-detail { font-family: var(--font-mono); font-size: 11px; }
-    .lookup-detail-label { color: var(--text-dim); font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; }
-    .lookup-detail-value { color: var(--text-muted); margin-top: 2px; }
+    .feed-item-time { color: var(--text-dim); font-size: 10px; }
 
-    .lookup-glyph-card {
-      margin-top: 16px;
-      display: none;
-      flex-direction: column;
+    /* ===== CONTROLS BAR ===== */
+    .controls {
+      display: flex;
       align-items: center;
+      gap: 12px;
+      margin: 24px 0 20px;
+      flex-wrap: wrap;
     }
 
-    .glyph-card-frame {
+    .search-wrapper {
+      flex: 1;
+      min-width: 240px;
       position: relative;
-      width: 400px;
-      max-width: 100%;
+    }
+
+    .search-wrapper svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      width: 16px;
+      height: 16px;
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 11px 16px 11px 40px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .search-input::placeholder { color: var(--text-dim); }
+    .search-input:focus {
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.03);
+    }
+
+    .filter-btn {
+      padding: 10px 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+    .filter-btn:hover { border-color: var(--border-hover); color: var(--text); }
+    .filter-btn.active { border-color: var(--ember); color: var(--ember); background: var(--ember-dim); }
+
+    .sort-select {
+      padding: 10px 32px 10px 14px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      cursor: pointer;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='rgba(255,255,255,0.3)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      transition: border-color 0.2s;
+    }
+    .sort-select:hover { border-color: var(--border-hover); }
+    .sort-select:focus { border-color: rgba(255, 255, 255, 0.15); }
+
+    .results-count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    /* ===== AGENT GRID ===== */
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    /* ===== AGENT CARD ===== */
+    .agent-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
       border-radius: var(--radius-md);
       overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
-      transition: box-shadow 0.4s, transform 0.4s;
-    }
-    .glyph-card-frame:hover {
-      box-shadow: 0 12px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.1), 0 0 40px rgba(212,165,116,0.08);
-      transform: translateY(-2px);
-    }
-    .glyph-card-frame img { width: 100%; height: auto; display: block; }
-
-    /* ===== SECTION DIVIDER ===== */
-    .section-divider {
+      cursor: pointer;
+      transition: transform 0.35s var(--ease-out), border-color 0.3s, box-shadow 0.35s;
+      position: relative;
       display: flex;
       flex-direction: column;
+      opacity: 0;
+      animation: cardAppear 0.4s var(--ease-out) forwards;
+    }
+
+    @keyframes cardAppear {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .agent-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(212, 165, 116, 0.2);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(212, 165, 116, 0.1);
+    }
+
+    .agent-card:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .card-glyph-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1.4;
+      background: var(--surface);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-glyph-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      transition: opacity 0.5s ease, transform 0.4s var(--ease-out);
+    }
+
+    .card-glyph-wrap img.loaded { opacity: 1; }
+
+    .agent-card:hover .card-glyph-wrap img.loaded {
+      transform: scale(1.03);
+    }
+
+    .card-glyph-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+
+    .card-tier {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .tier-1 { background: rgba(212, 165, 116, 0.2); color: var(--ember); }
+    .tier-2 { background: rgba(74, 222, 128, 0.15); color: var(--accent); }
+    .tier-3 { background: rgba(96, 165, 250, 0.15); color: #60a5fa; }
+    .tier-4 { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+    .tier-5 { background: rgba(251, 146, 60, 0.15); color: #fb923c; }
+
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .card-name {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card-key {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.02em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card-hash {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card-bio {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+
+    .card-verified {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .card-verified svg {
+      width: 12px;
+      height: 12px;
+      color: var(--accent);
+    }
+
+    /* ===== SKELETON LOADING ===== */
+    .skeleton-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .skeleton-glyph {
+      width: 100%;
+      aspect-ratio: 1.618;
+      background: linear-gradient(110deg, var(--surface) 30%, #161616 50%, var(--surface) 70%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s linear infinite;
+    }
+
+    .skeleton-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .skeleton-line {
+      height: 12px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(110deg, var(--surface) 30%, #161616 50%, var(--surface) 70%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s linear infinite;
+    }
+    .skeleton-line.w60 { width: 60%; }
+    .skeleton-line.w80 { width: 80%; }
+    .skeleton-line.w40 { width: 40%; }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ===== CTA BANNER ===== */
+    .cta-banner {
+      border: 1px solid var(--ember);
+      border-radius: var(--radius-md);
+      padding: 40px;
+      text-align: center;
+      margin: 32px 0;
+      background: linear-gradient(135deg, rgba(212, 165, 116, 0.04), rgba(212, 165, 116, 0.01));
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(212, 165, 116, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-sigil {
+      font-size: 2rem;
+      color: var(--ember);
+      margin-bottom: 16px;
+      text-shadow: 0 0 24px rgba(212, 165, 116, 0.3);
+    }
+
+    .cta-title {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .cta-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 480px;
+      margin: 0 auto 24px;
+      line-height: 1.6;
+    }
+
+    .cta-btn {
+      display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 32px 0;
-    }
-    .divider-sigil { font-size: 12px; color: rgba(212,165,116,0.2); }
-    .divider-line { width: 120px; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent); }
-
-    /* ===== REGISTER CTA ===== */
-    .register-cta {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: rgba(255,255,255,0.015);
-      padding: 32px;
-      text-align: center;
-      margin-bottom: 48px;
-    }
-    .register-cta p { color: var(--text-muted); font-size: 14px; margin-bottom: 16px; }
-
-    /* ===== MOBILE CARDS ===== */
-    .registry-cards { display: none; }
-    .registry-card-item {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: rgba(255,255,255,0.015);
-      padding: 16px;
-      margin-bottom: 12px;
-      transition: border-color 0.15s;
+      padding: 12px 28px;
+      background: var(--ember);
+      color: #050505;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: var(--radius-md);
       cursor: pointer;
+      transition: all 0.25s;
+      text-decoration: none;
     }
-    .registry-card-item:hover { border-color: var(--border-hover); }
-    .registry-card-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .registry-card-row:last-child { margin-bottom: 0; }
-    .registry-card-label { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); }
-    .registry-card-value { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); }
+    .cta-btn:hover {
+      background: var(--ember-hover);
+      box-shadow: 0 4px 24px rgba(212, 165, 116, 0.3);
+      transform: translateY(-1px);
+    }
+
+    /* ===== LOAD MORE ===== */
+    .load-more-wrap {
+      text-align: center;
+      padding: 24px 0 48px;
+    }
+
+    .load-more-btn {
+      padding: 12px 32px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .load-more-btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+    .load-more-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .load-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 1.5px solid var(--border);
+      border-top-color: var(--text-muted);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ===== FOOTER ===== */
     footer {
       border-top: 1px solid var(--border);
-      padding: 48px 32px 40px;
-      margin-top: 32px;
+      padding: 48px 24px;
+      text-align: center;
     }
-    .footer-content { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-    .footer-brand { font-family: var(--font-mono); font-size: 12px; color: rgba(255,255,255,0.2); }
-    .footer-brand .ember-text { color: var(--ember); }
-    .footer-meta { font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,0.12); }
-    .footer-links { display: flex; gap: 32px; margin-top: 12px; }
+
+    .footer-content {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .footer-brand {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .ember-text { color: var(--ember); }
+
+    .footer-meta {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .footer-agents {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
     .footer-links a {
-      color: rgba(255,255,255,0.2);
-      text-decoration: none;
       font-family: var(--font-mono);
       font-size: 11px;
-      letter-spacing: 0.05em;
-      transition: color 0.25s;
+      color: var(--text-dim);
+      transition: color 0.2s;
     }
-    .footer-links a:hover { color: rgba(255,255,255,0.5); }
+    .footer-links a:hover { color: var(--text-muted); }
+
+    /* ===== BACK TO TOP ===== */
+    .back-to-top {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 40px;
+      height: 40px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+      z-index: 50;
+    }
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+    .back-to-top:hover { border-color: var(--border-hover); color: var(--text); transform: translateY(-2px); }
 
     /* ===== RESPONSIVE ===== */
-    @media (max-width: 1024px) { .build-meta { display: none; } }
-    @media (max-width: 768px) {
-      header { padding: 16px; }
-      nav { gap: 16px; }
-      nav a { font-size: 10px; }
-      main { padding: 24px 16px; }
-      .stats-banner { grid-template-columns: repeat(2, 1fr); }
-      .registry-table-wrapper { display: none; }
-      .registry-cards { display: block; }
-      .lookup-form { flex-direction: column; align-items: stretch; }
-      .lookup-details { grid-template-columns: 1fr; }
-      .search-bar { flex-direction: column; }
+    @media (max-width: 1024px) {
+      .agent-grid { grid-template-columns: repeat(2, 1fr); }
+      .hero-stats { grid-template-columns: repeat(2, 1fr); }
     }
-    @media (max-width: 480px) { .stat-value { font-size: 1.25rem; } }
+
+    @media (max-width: 768px) {
+      header { padding: 12px 16px; }
+      .nav-desktop { display: none; }
+      .nav-toggle { display: flex; }
+      .build-meta { display: none; }
+      main { padding: 0 16px; }
+      .hero-stats { grid-template-columns: repeat(2, 1fr); margin-top: 20px; }
+      .stat-card { padding: 20px 16px; }
+      .stat-value { font-size: 1.5rem; }
+      .agent-grid { grid-template-columns: 1fr; }
+      .controls { gap: 8px; }
+      .search-wrapper { min-width: 100%; }
+      .results-count { margin-left: 0; width: 100%; text-align: center; margin-top: 4px; }
+      .cta-banner { padding: 28px 20px; }
+      .cta-title { font-size: 1.1rem; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-stats { grid-template-columns: repeat(2, 1fr); }
+      .filter-btn { padding: 8px 12px; font-size: 10px; }
+      .sort-select { font-size: 10px; }
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center;
+      padding: 64px 24px;
+      grid-column: 1 / -1;
+    }
+    .empty-state-icon {
+      font-size: 2.5rem;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+    .empty-state-title {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .empty-state-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
   </style>
 </head>
 <body>
+  <a href="#main" class="skip-link">Skip to main content</a>
 
-  <header>
+  <!-- Mobile Nav Overlay -->
+  <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
+
+  <!-- Mobile Nav -->
+  <nav class="nav-mobile" id="navMobile" role="navigation" aria-label="Mobile navigation">
+    <a href="index.html">Protocol</a>
+    <a href="register.html">Register</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="dashboard.html" class="active">Registry</a>
+    <a href="stake.html">Stake</a>
+    <a href="passport.html">Passport</a>
+    <a href="verify.html">Verify</a>
+        <a href="integrations.html">Integrate</a>
+    <a href="portfolio.html">Portfolio</a>
+    <a href="leaderboard.html">Leaderboard</a>
+  </nav>
+
+  <!-- Header -->
+  <header role="banner">
     <div class="header-left">
-      <a href="index.html" class="logo">
-        <span class="logo-sigil">⏀</span>
+      <a href="index.html" class="logo" aria-label="SIGIL Protocol - Home">
+        <span class="logo-sigil" aria-hidden="true">⏀</span>
         <div class="logo-text">SIGIL<span> PROTOCOL</span></div>
       </a>
-      <span class="build-meta">v0.4.1 · solana mainnet</span>
+      <span class="build-meta">v0.5.0 · solana mainnet</span>
     </div>
-    <nav>
+
+    <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
       <a href="index.html">Protocol</a>
       <a href="register.html">Register</a>
       <a href="gallery.html">Gallery</a>
       <a href="dashboard.html" class="active">Registry</a>
       <a href="stake.html">Stake</a>
+      <a href="passport.html">Passport</a>
+      <a href="verify.html">Verify</a>
+        <a href="integrations.html">Integrate</a>
       <a href="portfolio.html">Portfolio</a>
       <a href="leaderboard.html">Leaderboard</a>
     </nav>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navMobile">
+      <span></span><span></span><span></span>
+    </button>
   </header>
 
-  <main>
+  <!-- Main Content -->
+  <main id="main" role="main">
 
-    <!-- Stats Banner -->
-    <div class="stats-banner">
-      <div class="stat-item">
-        <div class="stat-value" id="statTotal">—</div>
+    <!-- Hero Stats -->
+    <section class="hero-stats" aria-label="Protocol statistics">
+      <div class="stat-card">
         <div class="stat-label">Total Agents</div>
+        <div class="stat-value" id="statTotal">—</div>
+        <div class="stat-sub">registered identities</div>
       </div>
-      <div class="stat-item">
-        <div class="stat-value" id="statVerified">—</div>
+      <div class="stat-card">
         <div class="stat-label">Verified</div>
+        <div class="stat-value accent" id="statVerified">—</div>
+        <div class="stat-sub">on-chain glyphs</div>
       </div>
-      <div class="stat-item">
-        <div class="stat-value" id="statReceipts">—</div>
+      <div class="stat-card">
         <div class="stat-label">Receipts</div>
+        <div class="stat-value ember" id="statReceipts">—</div>
+        <div class="stat-sub">interactions logged</div>
       </div>
-      <div class="stat-item">
-        <div class="stat-status">
-          <span class="status-dot"></span>
-          <span class="status-text" id="statStatus">Operational</span>
+      <div class="stat-card">
+        <div class="stat-label">Protocol</div>
+        <div class="stat-value" id="statProtocol" style="font-size:1rem;">
+          <span class="pulse-dot"></span> <span id="statVersion">—</span>
         </div>
-        <div class="stat-label">Protocol Status</div>
-      </div>
-    </div>
-
-    <!-- Register CTA -->
-    <div class="register-cta">
-      <p>Agents register through cryptographic challenge-response verification.</p>
-      <a href="register.html" class="btn btn--primary"><span class="btn-text">Register an Agent →</span></a>
-    </div>
-
-    <!-- Agent Registry -->
-    <section class="section" id="registry">
-      <p class="section-label">Agent Registry</p>
-      <h2>Verified Agents</h2>
-
-      <div class="search-bar">
-        <input type="text" class="search-input" id="searchInput" placeholder="Search by name, public key, or glyph hash..." autocomplete="off" spellcheck="false">
-        <span class="search-count" id="searchCount"></span>
-      </div>
-
-      <!-- Desktop Table -->
-      <div class="registry-table-wrapper" id="registryTableWrapper">
-        <table class="registry-table">
-          <thead>
-            <tr>
-              <th style="width: 48px;">Glyph</th>
-              <th>Agent</th>
-              <th>Public Key</th>
-              <th>Glyph Hash</th>
-              <th>Tier</th>
-              <th>Verified</th>
-            </tr>
-          </thead>
-          <tbody id="registryBody">
-            <tr><td colspan="6" class="table-loading"></td></tr>
-          </tbody>
-        </table>
-        <div class="pagination" id="pagination" style="display:none;">
-          <div class="pagination-info" id="paginationInfo">—</div>
-          <div class="pagination-controls">
-            <button class="pagination-btn" id="btnPrev" disabled>← Prev</button>
-            <button class="pagination-btn" id="btnNext" disabled>Next →</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Mobile Cards -->
-      <div class="registry-cards" id="registryCards"></div>
-    </section>
-
-    <div class="section-divider">
-      <span class="divider-sigil">⏀</span>
-      <div class="divider-line"></div>
-    </div>
-
-    <!-- Agent Lookup -->
-    <section class="section" id="lookup">
-      <p class="section-label">Verification Lookup</p>
-      <h2>Look Up an Agent</h2>
-
-      <div class="lookup-card">
-        <div class="lookup-form">
-          <div class="input-group">
-            <label class="input-label" for="lookupInput">Public Key</label>
-            <input type="text" class="input-field" id="lookupInput" placeholder="Enter a Solana public key..." autocomplete="off" spellcheck="false">
-          </div>
-          <button class="btn btn--primary btn--small" id="btnLookup" style="flex-shrink:0;">
-            <span class="btn-text">Look Up</span>
-          </button>
-        </div>
-        <div class="input-error" id="lookupError"></div>
-
-        <div class="lookup-result" id="lookupResult">
-          <div class="lookup-result-title" id="lookupTitle">—</div>
-          <div class="lookup-details" id="lookupDetails"></div>
-          <div class="lookup-glyph-card" id="lookupGlyphCard">
-            <div class="glyph-card-frame">
-              <img id="lookupGlyphImg" src="" alt="Agent Identity Card"/>
-            </div>
-            <div style="margin-top: 12px;">
-              <a id="lookupAgentLink" href="#" class="btn btn--ghost btn--small" target="_blank">
-                <span class="btn-text">View Full Profile →</span>
-              </a>
-            </div>
-          </div>
-        </div>
+        <div class="stat-sub">live on mainnet</div>
       </div>
     </section>
 
+    <!-- Activity Feed -->
+    <div class="activity-feed" aria-label="Live activity feed">
+      <div class="feed-header">
+        <span class="feed-dot"></span>
+        Live Activity
+      </div>
+      <div class="feed-track-wrapper">
+        <div class="feed-track" id="feedTrack">
+          <span class="feed-item" style="color:var(--text-dim);">Loading activity...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Heading -->
+    <div style="display:flex; align-items:baseline; gap:12px; margin:32px 0 0;">
+      <h1 style="font-family:var(--font-mono); font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted);">Registry Explorer</h1>
+      <div style="flex:1; height:1px; background:var(--border);"></div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls" role="search" aria-label="Filter and search agents">
+      <div class="search-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input
+          type="search"
+          class="search-input"
+          id="searchInput"
+          placeholder="Search by name, public key, or glyph hash..."
+          aria-label="Search agents"
+          autocomplete="off"
+        >
+      </div>
+
+      <button class="filter-btn" data-tier="all" aria-label="Show all tiers">All</button>
+      <button class="filter-btn" data-tier="1" aria-label="Filter tier 1">T1</button>
+      <button class="filter-btn" data-tier="2" aria-label="Filter tier 2">T2</button>
+      <button class="filter-btn" data-tier="3" aria-label="Filter tier 3">T3</button>
+      <button class="filter-btn" data-tier="4" aria-label="Filter tier 4">T4</button>
+      <button class="filter-btn" data-tier="5" aria-label="Filter tier 5">T5</button>
+
+      <select class="sort-select" id="sortSelect" aria-label="Sort agents">
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+        <option value="name">Name A-Z</option>
+      </select>
+
+      <span class="results-count" id="resultsCount"></span>
+    </div>
+
+    <!-- Agent Grid -->
+    <div class="agent-grid" id="agentGrid" aria-label="Agent registry"></div>
+
+    <!-- CTA Banner (inserted dynamically after first batch) -->
+    <div id="ctaSlot"></div>
+
+    <!-- Additional agents load below -->
+    <div class="agent-grid" id="agentGridMore" aria-label="More agents"></div>
+
+    <!-- Load More -->
+    <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
+      <button class="load-more-btn" id="loadMoreBtn">Load More Agents</button>
+    </div>
   </main>
 
-  <footer>
+  <!-- Footer -->
+  <footer role="contentinfo">
     <div class="footer-content">
-      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.4.1 · Solana</div>
-      <div class="footer-meta">deployed autonomously · identity protocol for AI agents</div>
-      <nav class="footer-links">
+      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.5.0 · Solana</div>
+      <div class="footer-meta">deployed autonomously · last commit a65cad3</div>
+      <div class="footer-agents">Vektor ⏀ · Anima ✦</div>
+      <nav class="footer-links" aria-label="Footer navigation">
         <a href="index.html">Protocol</a>
         <a href="register.html">Register</a>
         <a href="gallery.html">Gallery</a>
         <a href="dashboard.html">Registry</a>
         <a href="stake.html">Stake</a>
+        <a href="passport.html">Passport</a>
+        <a href="verify.html">Verify</a>
+        <a href="integrations.html">Integrate</a>
         <a href="portfolio.html">Portfolio</a>
         <a href="leaderboard.html">Leaderboard</a>
       </nav>
     </div>
   </footer>
 
+  <!-- Back to top -->
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+  </button>
+
   <script>
-    // Hex → Base58 (Solana-native encoding)
-    function hexToBase58(hex) {
-      if (!hex) return '';
-      const ALPHA = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-      const bytes = []; for (let i = 0; i < hex.length; i += 2) bytes.push(parseInt(hex.substr(i, 2), 16));
-      let zeros = 0; for (let i = 0; i < bytes.length && bytes[i] === 0; i++) zeros++;
-      const digits = [0];
-      for (let i = 0; i < bytes.length; i++) {
-        let carry = bytes[i];
-        for (let j = 0; j < digits.length; j++) { carry += digits[j] << 8; digits[j] = carry % 58; carry = (carry / 58) | 0; }
-        while (carry) { digits.push(carry % 58); carry = (carry / 58) | 0; }
+    /* ===== STATE ===== */
+    const state = {
+      allAgents: [],
+      filteredAgents: [],
+      displayedCount: 0,
+      batchSize: 24,
+      firstBatchSize: 12,
+      loading: false,
+      allLoaded: false,
+      searchQuery: '',
+      tierFilter: 'all',
+      sortBy: 'newest',
+      ctaInserted: false,
+      totalFromAPI: 0
+    };
+
+    /* ===== HELPERS ===== */
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
+    const tierNames = { 1: 'Tier I', 2: 'Tier II', 3: 'Tier III', 4: 'Tier IV', 5: 'Tier V' };
+
+    function truncateKey(key) {
+      if (!key) return '';
+      return key.slice(0, 6) + '···' + key.slice(-4);
+    }
+
+    function truncateHash(hash) {
+      if (!hash) return '';
+      return hash.slice(0, 8) + '...' + hash.slice(-6);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function timeAgo(dateStr) {
+      if (!dateStr) return '';
+      const now = Date.now();
+      const then = new Date(dateStr).getTime();
+      const diff = now - then;
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'just now';
+      if (mins < 60) return mins + 'm ago';
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return hrs + 'h ago';
+      const days = Math.floor(hrs / 24);
+      return days + 'd ago';
+    }
+
+    /* ===== ANIMATED COUNTER ===== */
+    function animateCounter(el, target, duration = 1200) {
+      if (isNaN(target)) { el.textContent = target; return; }
+      const start = 0;
+      const startTime = performance.now();
+      function update(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(start + (target - start) * eased);
+        el.textContent = current.toLocaleString();
+        if (progress < 1) requestAnimationFrame(update);
       }
-      let r = ''; for (let i = 0; i < zeros; i++) r += ALPHA[0];
-      for (let i = digits.length - 1; i >= 0; i--) r += ALPHA[digits[i]];
-      return r;
+      requestAnimationFrame(update);
     }
 
-    const API = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
-      ? 'http://localhost:3141' : location.origin;
-
-    let page = 0;
-    const limit = 20;
-    let allAgents = [];
-    let currentStats = { total: 0, verified: 0, receipts: 0 };
-
-    // ===== API =====
-    async function api(path) {
-      try {
-        const r = await fetch(`${API}${path}`);
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      } catch (e) { console.warn('API error:', path, e); return null; }
-    }
-
-    // ===== COUNTER ANIMATION =====
-    function animateCount(el, from, to, ms = 1000) {
-      if (!el) return;
-      const start = performance.now();
-      (function tick(now) {
-        const p = Math.min((now - start) / ms, 1);
-        const ease = 1 - Math.pow(1 - p, 3);
-        el.textContent = Math.round(from + (to - from) * ease).toLocaleString();
-        if (p < 1) requestAnimationFrame(tick);
-      })(start);
-    }
-
-    // ===== STATS =====
+    /* ===== FETCH STATS ===== */
     async function loadStats() {
-      const d = await api('/api/stats');
-      if (!d) return;
-
-      const next = {
-        total: d.totalAgents || 0,
-        verified: d.verifiedAgents || d.verified || 0,
-        receipts: d.totalReceipts || d.receipts || 0,
-      };
-
-      animateCount(document.getElementById('statTotal'), currentStats.total, next.total);
-      animateCount(document.getElementById('statVerified'), currentStats.verified, next.verified);
-      animateCount(document.getElementById('statReceipts'), currentStats.receipts, next.receipts);
-      currentStats = next;
-
-      if (d.status) {
-        document.getElementById('statStatus').textContent =
-          d.status.charAt(0).toUpperCase() + d.status.slice(1);
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        animateCounter($('#statTotal'), data.totalAgents || 0);
+        animateCounter($('#statVerified'), data.verifiedAgents || 0);
+        animateCounter($('#statReceipts'), data.totalReceipts || 0);
+        $('#statVersion').textContent = data.protocolVersion || 'v0.5.0';
+      } catch (e) {
+        console.warn('Failed to load stats:', e);
+        $('#statTotal').textContent = '—';
+        $('#statVerified').textContent = '—';
+        $('#statReceipts').textContent = '—';
+        $('#statVersion').textContent = 'v0.5.0';
       }
     }
 
-    // ===== REGISTRY =====
-    function truncKey(k) { return k ? k.slice(0, 6) + '···' + k.slice(-4) : '—'; }
-    function fmtDate(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'; }
+    /* ===== FETCH EVENTS ===== */
+    async function loadEvents() {
+      try {
+        const res = await fetch('/api/events?limit=30');
+        const data = await res.json();
+        const events = data.events || [];
+        if (events.length === 0) return;
 
-    async function loadAgents() {
-      const offset = page * limit;
-      const d = await api(`/api/agents?limit=${limit}&offset=${offset}`);
-      if (!d) return;
+        const track = $('#feedTrack');
+        const items = events.map(ev => {
+          const name = ev.displayName || truncateKey(ev.publicKey);
+          let typeClass = 'updated';
+          let typeLabel = ev.type || 'update';
+          if (ev.type === 'registration' || ev.type === 'registration_started') { typeClass = 'registered'; typeLabel = 'registered'; }
+          else if (ev.type === 'verification' || ev.type === 'agent_verified') { typeClass = 'verified'; typeLabel = 'verified'; }
+          else if (ev.type === 'challenge_issued') { typeClass = 'registered'; typeLabel = 'challenge'; }
+          else if (ev.type === 'metadata_updated') { typeClass = 'updated'; typeLabel = 'updated'; }
+          return `<span class="feed-item">
+            <span class="feed-item-type ${typeClass}">${typeLabel}</span>
+            <span class="feed-item-name">${escapeHtml(name)}</span>
+            ${ev.detail ? `<span style="color:var(--text-dim)">${escapeHtml(ev.detail)}</span>` : ''}
+            <span class="feed-item-time">${timeAgo(ev.createdAt)}</span>
+          </span>`;
+        }).join('');
 
-      allAgents = d.agents || [];
-      const total = d.total || allAgents.length;
+        // Duplicate for seamless loop
+        track.innerHTML = items + items;
 
-      renderTable(allAgents, total, offset);
-    }
-
-    function renderTable(agents, total, offset) {
-      const tbody = document.getElementById('registryBody');
-      const cards = document.getElementById('registryCards');
-      const pag = document.getElementById('pagination');
-
-      if (!agents.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="table-empty">No agents found</td></tr>';
-        cards.innerHTML = '<div class="table-empty">No agents found</div>';
-        pag.style.display = 'none';
-        return;
+        // Adjust animation speed based on content width
+        requestAnimationFrame(() => {
+          const trackWidth = track.scrollWidth / 2;
+          const speed = 40; // pixels per second
+          const duration = trackWidth / speed;
+          track.style.animationDuration = duration + 's';
+        });
+      } catch (e) {
+        console.warn('Failed to load events:', e);
       }
-
-      tbody.innerHTML = agents.map(a => `
-        <tr onclick="window.open('agent.html?key=${a.publicKey}','_blank')">
-          <td>
-            <div class="glyph-thumb">
-              <img src="${API}/api/glyph/${a.publicKey}" alt="" loading="lazy" onerror="this.parentElement.style.opacity='0.2'"/>
-            </div>
-          </td>
-          <td><span class="display-name">${a.displayName || 'Anonymous Agent'}</span></td>
-          <td><span class="pubkey-truncated">${truncKey(a.publicKey)}</span></td>
-          <td><span class="glyph-hash">${a.glyphHash ? '⏀' + hexToBase58(a.glyphHash).slice(0, 11) + '…' : '—'}</span></td>
-          <td><span class="tier-cell">T${a.tier || 1}</span></td>
-          <td><span class="date-cell">${fmtDate(a.verifiedAt)}</span></td>
-        </tr>
-      `).join('');
-
-      cards.innerHTML = agents.map(a => `
-        <div class="registry-card-item" onclick="window.open('agent.html?key=${a.publicKey}','_blank')">
-          <div class="registry-card-row">
-            <span class="registry-card-label">Agent</span>
-            <span class="registry-card-value display-name">${a.displayName || 'Anonymous Agent'}</span>
-          </div>
-          <div class="registry-card-row">
-            <span class="registry-card-label">Key</span>
-            <span class="registry-card-value pubkey-truncated">${truncKey(a.publicKey)}</span>
-          </div>
-          <div class="registry-card-row">
-            <span class="registry-card-label">Glyph</span>
-            <span class="registry-card-value glyph-hash">${a.glyphHash ? '⏀' + hexToBase58(a.glyphHash).slice(0, 11) + '…' : '—'}</span>
-          </div>
-          <div class="registry-card-row">
-            <span class="registry-card-label">Tier</span>
-            <span class="registry-card-value tier-cell">T${a.tier || 1}</span>
-          </div>
-        </div>
-      `).join('');
-
-      // Pagination
-      const start = offset + 1;
-      const end = Math.min(offset + agents.length, total);
-      document.getElementById('paginationInfo').textContent = `${start}–${end} of ${total}`;
-      document.getElementById('btnPrev').disabled = page === 0;
-      document.getElementById('btnNext').disabled = end >= total;
-      pag.style.display = 'flex';
-
-      document.getElementById('searchCount').textContent = `${total} agents`;
     }
 
-    document.getElementById('btnPrev').onclick = () => { if (page > 0) { page--; loadAgents(); } };
-    document.getElementById('btnNext').onclick = () => { page++; loadAgents(); };
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
 
-    // ===== SEARCH =====
-    let searchTimeout;
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-      clearTimeout(searchTimeout);
-      const q = e.target.value.trim().toLowerCase();
-      searchTimeout = setTimeout(() => {
-        if (!q) {
-          renderTable(allAgents, allAgents.length, page * limit);
-          return;
+    /* ===== FETCH ALL AGENTS ===== */
+    async function loadAllAgents() {
+      state.loading = true;
+      showSkeletons($('#agentGrid'), state.firstBatchSize);
+
+      try {
+        // Load first batch fast
+        const firstRes = await fetch(`/api/agents?limit=50&offset=0`);
+        const firstData = await firstRes.json();
+        state.totalFromAPI = firstData.total || 0;
+        state.allAgents = firstData.agents || [];
+
+        // If more agents exist, fetch remaining in background
+        if (state.totalFromAPI > 50) {
+          const remaining = state.totalFromAPI - 50;
+          const batches = Math.ceil(remaining / 50);
+          const promises = [];
+          for (let i = 0; i < batches; i++) {
+            promises.push(
+              fetch(`/api/agents?limit=50&offset=${50 + i * 50}`)
+                .then(r => r.json())
+                .then(d => d.agents || [])
+                .catch(() => [])
+            );
+          }
+          const results = await Promise.all(promises);
+          results.forEach(agents => {
+            state.allAgents = state.allAgents.concat(agents);
+          });
         }
-        const filtered = allAgents.filter(a =>
-          (a.displayName || '').toLowerCase().includes(q) ||
-          (a.publicKey || '').toLowerCase().includes(q) ||
-          (a.glyphHash || '').toLowerCase().includes(q)
-        );
-        renderTable(filtered, filtered.length, 0);
-      }, 200);
-    });
 
-    // ===== AGENT LOOKUP =====
-    const lookupBtn = document.getElementById('btnLookup');
-    const lookupInput = document.getElementById('lookupInput');
+        state.allLoaded = true;
+        applyFilters();
+      } catch (e) {
+        console.error('Failed to load agents:', e);
+        $('#agentGrid').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">⚠</div>
+            <div class="empty-state-title">Failed to load agents</div>
+            <div class="empty-state-desc">Please try refreshing the page.</div>
+          </div>`;
+      }
 
-    async function doLookup() {
-      const key = lookupInput.value.trim();
-      const errEl = document.getElementById('lookupError');
-      const result = document.getElementById('lookupResult');
-      const title = document.getElementById('lookupTitle');
-      const details = document.getElementById('lookupDetails');
+      state.loading = false;
+    }
 
-      if (!key) { errEl.textContent = 'Enter a public key'; result.classList.remove('visible'); return; }
-      errEl.textContent = '';
+    /* ===== FILTERING & SORTING ===== */
+    function applyFilters() {
+      let agents = [...state.allAgents];
 
-      lookupBtn.classList.add('btn--loading');
-      const d = await api(`/api/agent/${key}`);
-      lookupBtn.classList.remove('btn--loading');
+      // Search filter
+      if (state.searchQuery) {
+        const q = state.searchQuery.toLowerCase();
+        agents = agents.filter(a => {
+          const name = (a.displayName || '').toLowerCase();
+          const key = (a.publicKey || '').toLowerCase();
+          const hash = (a.glyphHash || '').toLowerCase();
+          const bio = (a.metadata?.bio || '').toLowerCase();
+          const tags = (a.metadata?.tags || []).join(' ').toLowerCase();
+          return name.includes(q) || key.includes(q) || hash.includes(q) || bio.includes(q) || tags.includes(q);
+        });
+      }
 
-      result.classList.remove('verified', 'pending', 'not-found', 'visible');
-      document.getElementById('lookupGlyphCard').style.display = 'none';
+      // Tier filter
+      if (state.tierFilter !== 'all') {
+        const tier = parseInt(state.tierFilter);
+        agents = agents.filter(a => a.tier === tier);
+      }
 
-      if (!d || d.error) {
-        result.classList.add('not-found', 'visible');
-        title.textContent = '✕ Not Found';
-        details.innerHTML = '<div class="lookup-detail" style="grid-column:1/-1"><div class="lookup-detail-value" style="color:var(--text-dim)">No agent found for this public key.</div></div>';
+      // Sort
+      switch (state.sortBy) {
+        case 'newest':
+          agents.sort((a, b) => new Date(b.verifiedAt || b.createdAt || 0) - new Date(a.verifiedAt || a.createdAt || 0));
+          break;
+        case 'oldest':
+          agents.sort((a, b) => new Date(a.verifiedAt || a.createdAt || 0) - new Date(b.verifiedAt || b.createdAt || 0));
+          break;
+        case 'name':
+          agents.sort((a, b) => {
+            const na = (a.displayName || 'zzz').toLowerCase();
+            const nb = (b.displayName || 'zzz').toLowerCase();
+            return na.localeCompare(nb);
+          });
+          break;
+      }
+
+      state.filteredAgents = agents;
+      state.displayedCount = 0;
+      state.ctaInserted = false;
+
+      // Clear grids
+      $('#agentGrid').innerHTML = '';
+      $('#agentGridMore').innerHTML = '';
+      $('#ctaSlot').innerHTML = '';
+
+      // Update count
+      const total = state.filteredAgents.length;
+      const allTotal = state.allAgents.length;
+      if (state.searchQuery || state.tierFilter !== 'all') {
+        $('#resultsCount').textContent = `${total} of ${allTotal} agents`;
+      } else {
+        $('#resultsCount').textContent = `${allTotal} agents`;
+      }
+
+      if (total === 0) {
+        $('#agentGrid').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">⏀</div>
+            <div class="empty-state-title">No agents found</div>
+            <div class="empty-state-desc">Try adjusting your search or filter criteria.</div>
+          </div>`;
+        $('#loadMoreWrap').style.display = 'none';
         return;
       }
 
-      const a = d.agent || d;
-      const verified = a.status === 'verified';
-
-      if (verified) {
-        result.classList.add('verified', 'visible');
-        title.textContent = '✓ Verified Agent';
-        details.innerHTML = `
-          <div class="lookup-detail"><div class="lookup-detail-label">Agent</div><div class="lookup-detail-value">${a.displayName || 'Anonymous Agent'}</div></div>
-          <div class="lookup-detail"><div class="lookup-detail-label">Glyph Hash</div><div class="lookup-detail-value" style="color:var(--ember)">${a.glyphHash ? '⏀' + hexToBase58(a.glyphHash) : '—'}</div></div>
-          <div class="lookup-detail"><div class="lookup-detail-label">Tier</div><div class="lookup-detail-value" style="color:var(--accent)">Tier ${a.tier || 1}</div></div>
-          <div class="lookup-detail"><div class="lookup-detail-label">Verified</div><div class="lookup-detail-value">${fmtDate(a.verifiedAt)}</div></div>
-          <div class="lookup-detail"><div class="lookup-detail-label">Receipts</div><div class="lookup-detail-value">${d.receipts?.count || 0}</div></div>
-          <div class="lookup-detail"><div class="lookup-detail-label">Persistence</div><div class="lookup-detail-value">${a.persistenceScore || 0}</div></div>
-        `;
-
-        // Show glyph card
-        const img = document.getElementById('lookupGlyphImg');
-        const link = document.getElementById('lookupAgentLink');
-        img.src = `${API}/api/glyph/${key}`;
-        img.onerror = () => { document.getElementById('lookupGlyphCard').style.display = 'none'; };
-        img.onload = () => { document.getElementById('lookupGlyphCard').style.display = 'flex'; };
-        link.href = `agent.html?key=${key}`;
-      } else {
-        result.classList.add('pending', 'visible');
-        title.textContent = '◌ Pending Verification';
-        details.innerHTML = '<div class="lookup-detail" style="grid-column:1/-1"><div class="lookup-detail-value" style="color:var(--warning)">Agent registered but not yet verified.</div></div>';
-      }
+      // Show first batch
+      renderNextBatch(true);
     }
 
-    lookupBtn.onclick = doLookup;
-    lookupInput.addEventListener('keydown', e => { if (e.key === 'Enter') doLookup(); });
+    /* ===== RENDER BATCH ===== */
+    function renderNextBatch(isFirst = false) {
+      const batchSize = isFirst ? state.firstBatchSize : state.batchSize;
+      const start = state.displayedCount;
+      const end = Math.min(start + batchSize, state.filteredAgents.length);
+      const batch = state.filteredAgents.slice(start, end);
 
-    // ===== INIT =====
-    loadStats();
-    loadAgents();
-    setInterval(loadStats, 30000);
+      const targetGrid = isFirst ? $('#agentGrid') : $('#agentGridMore');
+      const fragment = document.createDocumentFragment();
+
+      batch.forEach((agent, i) => {
+        const card = createAgentCard(agent);
+        card.style.animationDelay = `${i * 40}ms`;
+        fragment.appendChild(card);
+      });
+
+      targetGrid.appendChild(fragment);
+      state.displayedCount = end;
+
+      // Insert CTA after first batch
+      if (isFirst && !state.ctaInserted) {
+        state.ctaInserted = true;
+        $('#ctaSlot').innerHTML = `
+          <div class="cta-banner">
+            <div class="cta-sigil">⏀</div>
+            <div class="cta-title">Claim Your Identity</div>
+            <div class="cta-desc">Join the registry. Mint your Glyph, stake your presence, and become part of the first identity layer for autonomous agents.</div>
+            <a href="register.html" class="cta-btn">
+              <span>⏀</span> Register Agent
+            </a>
+          </div>`;
+      }
+
+      // Show/hide load more
+      if (state.displayedCount >= state.filteredAgents.length) {
+        $('#loadMoreWrap').style.display = 'none';
+      } else {
+        $('#loadMoreWrap').style.display = 'block';
+        $('#loadMoreBtn').innerHTML = `Load More · ${state.filteredAgents.length - state.displayedCount} remaining`;
+      }
+
+      // Observe lazy images
+      observeImages();
+    }
+
+    /* ===== CREATE CARD ===== */
+    function createAgentCard(agent) {
+      const card = document.createElement('a');
+      card.href = `agent.html?key=${agent.publicKey}`;
+      card.className = 'agent-card';
+      card.setAttribute('role', 'article');
+      card.setAttribute('aria-label', `Agent: ${agent.displayName || 'Anonymous Agent'}`);
+      card.setAttribute('tabindex', '0');
+
+      const name = agent.displayName || 'Anonymous Agent';
+      const tier = agent.tier || 1;
+      const tierLabel = tierNames[tier] || `Tier ${tier}`;
+      const bio = agent.metadata?.bio || '';
+      const verDate = agent.verifiedAt ? formatDate(agent.verifiedAt) : '';
+      const isVerified = agent.status === 'verified' || !!agent.verifiedAt;
+
+      card.innerHTML = `
+        <div class="card-glyph-wrap">
+          <div class="card-glyph-placeholder" aria-hidden="true">⏀</div>
+          <img
+            data-src="/api/glyph/${agent.publicKey}"
+            alt="Glyph for ${escapeHtml(name)}"
+            loading="lazy"
+          >
+          <div class="card-tier tier-${tier}">${tierLabel}</div>
+        </div>
+        <div class="card-body">
+          <div class="card-name">${escapeHtml(name)}</div>
+          <div class="card-key">${truncateKey(agent.publicKey)}</div>
+          ${agent.glyphHash ? `<div class="card-hash">⏀ ${truncateHash(agent.glyphHash)}</div>` : ''}
+          ${bio ? `<div class="card-bio">${escapeHtml(bio)}</div>` : ''}
+        </div>
+        <div class="card-footer">
+          ${isVerified ? `
+            <span class="card-verified">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              ${verDate}
+            </span>
+          ` : `<span style="color:var(--text-dim)">Pending</span>`}
+          <span>${agent.stakeAmount ? parseFloat(agent.stakeAmount).toLocaleString() + ' SIGIL' : ''}</span>
+        </div>
+      `;
+
+      return card;
+    }
+
+    /* ===== SKELETON CARDS ===== */
+    function showSkeletons(container, count) {
+      let html = '';
+      for (let i = 0; i < count; i++) {
+        html += `
+          <div class="skeleton-card" aria-hidden="true">
+            <div class="skeleton-glyph"></div>
+            <div class="skeleton-body">
+              <div class="skeleton-line w60"></div>
+              <div class="skeleton-line w80"></div>
+              <div class="skeleton-line w40"></div>
+            </div>
+          </div>`;
+      }
+      container.innerHTML = html;
+    }
+
+    /* ===== LAZY IMAGE LOADING (Intersection Observer) ===== */
+    let imageObserver;
+
+    function setupImageObserver() {
+      if (!('IntersectionObserver' in window)) {
+        // Fallback: load all immediately
+        document.querySelectorAll('img[data-src]').forEach(img => {
+          img.src = img.dataset.src;
+          img.classList.add('loaded');
+        });
+        return;
+      }
+
+      imageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            img.src = img.dataset.src;
+            img.onload = () => img.classList.add('loaded');
+            img.onerror = () => {
+              // Keep placeholder visible on error
+              img.style.display = 'none';
+            };
+            imageObserver.unobserve(img);
+          }
+        });
+      }, {
+        rootMargin: '200px'
+      });
+    }
+
+    function observeImages() {
+      if (!imageObserver) return;
+      document.querySelectorAll('img[data-src]:not([src])').forEach(img => {
+        imageObserver.observe(img);
+      });
+    }
+
+    /* ===== EVENT HANDLERS ===== */
+    function initControls() {
+      // Search — debounced
+      let searchTimeout;
+      $('#searchInput').addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          state.searchQuery = e.target.value.trim();
+          applyFilters();
+        }, 250);
+      });
+
+      // Tier filters
+      $$('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          $$('.filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.tierFilter = btn.dataset.tier;
+          applyFilters();
+        });
+      });
+
+      // Set "All" as default active
+      document.querySelector('.filter-btn[data-tier="all"]').classList.add('active');
+
+      // Sort
+      $('#sortSelect').addEventListener('change', (e) => {
+        state.sortBy = e.target.value;
+        applyFilters();
+      });
+
+      // Load more
+      $('#loadMoreBtn').addEventListener('click', () => {
+        renderNextBatch(false);
+      });
+
+      // Infinite scroll (optional enhancement)
+      const sentinel = document.createElement('div');
+      sentinel.id = 'scrollSentinel';
+      sentinel.style.height = '1px';
+      $('#loadMoreWrap').parentNode.insertBefore(sentinel, $('#loadMoreWrap'));
+
+      const scrollObserver = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && !state.loading && state.displayedCount < state.filteredAgents.length) {
+          renderNextBatch(false);
+        }
+      }, { rootMargin: '400px' });
+      scrollObserver.observe(sentinel);
+
+      // Back to top
+      const backToTop = $('#backToTop');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 600) {
+          backToTop.classList.add('visible');
+        } else {
+          backToTop.classList.remove('visible');
+        }
+      }, { passive: true });
+
+      backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    /* ===== MOBILE NAV ===== */
+    function initMobileNav() {
+      const toggle = $('#navToggle');
+      const overlay = $('#navOverlay');
+      const mobile = $('#navMobile');
+
+      function openNav() {
+        toggle.classList.add('active');
+        toggle.setAttribute('aria-expanded', 'true');
+        mobile.classList.add('open');
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeNav() {
+        toggle.classList.remove('active');
+        toggle.setAttribute('aria-expanded', 'false');
+        mobile.classList.remove('open');
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+
+      toggle.addEventListener('click', () => {
+        if (mobile.classList.contains('open')) closeNav();
+        else openNav();
+      });
+
+      overlay.addEventListener('click', closeNav);
+    }
+
+    /* ===== INIT ===== */
+    async function init() {
+      setupImageObserver();
+      initControls();
+      initMobileNav();
+
+      // Load in parallel
+      loadStats();
+      loadEvents();
+      loadAllAgents();
+
+      // Refresh events every 30s
+      setInterval(loadEvents, 30000);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>

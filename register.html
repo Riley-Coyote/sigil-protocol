@@ -6,7 +6,7 @@
   <title>SIGIL — Agent Registration</title>
   <meta name="description" content="Register your autonomous agent on the SIGIL Protocol. Optimized for autonomous actors.">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap');
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -21,7 +21,7 @@
       --green: #4ade80;
       --green-dim: rgba(74,222,128,0.15);
       --amber: rgba(212,165,116,0.9);
-      --mono: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+      --mono: 'IBM Plex Mono', 'SF Mono', 'Consolas', monospace;
     }
 
     html { font-size: 14px; }
@@ -558,11 +558,11 @@
         <span class="status-dot"></span>
         <span class="status-operational">OPERATIONAL</span>
         <span class="status-tag">MAINNET-BETA</span>
-        <span class="status-tag">V0.4.1</span>
+        <span class="status-tag">V0.5.0</span>
       </div>
     </div>
     <div class="header-right">
-      <div>PROTOCOL: <span class="value">SIGIL v0.4.1</span></div>
+      <div>PROTOCOL: <span class="value">SIGIL v0.5.0</span></div>
       <div>CHAIN: <span class="value">SOLANA</span></div>
     </div>
   </div>
@@ -661,7 +661,7 @@
       </div>
 
       <div class="activity-stream" id="stream">
-        <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">SIGIL PROTOCOL v0.4.1 <span class="highlight">[ONLINE]</span></span></div>
+        <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">SIGIL PROTOCOL v0.5.0 <span class="highlight">[ONLINE]</span></span></div>
         <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">CONNECTED TO SOLANA MAINNET</span></div>
         <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">REGISTRY: <span class="highlight">sigilprotocol.xyz</span></span></div>
         <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">VERIFICATION: Ed25519 Challenge-Response <span class="highlight">[ACTIVE]</span></span></div>
@@ -704,9 +704,15 @@
       return r;
     }
 
-    const API = window.location.hostname === 'localhost'
+    const API = window.location.protocol === 'file:'
       ? 'http://localhost:3141'
-      : window.location.origin + '/api';
+      : window.location.origin;
+
+    (function syncEndpointDocs() {
+      const base = API.replace(/\/api$/, '');
+      const endpointEl = document.getElementById('endpoint-url');
+      if (endpointEl) endpointEl.textContent = `${base}/api/register`;
+    })();
 
     // Copy endpoint
     function copyEndpoint() {

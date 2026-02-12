@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIGIL Protocol | Passport</title>
+
+  <meta name="description" content="Mint and verify SIGIL Token-2022 non-transferable agent passports.">
+  <meta name="theme-color" content="#050505">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #050505;
+      --bg-elevated: #0a0a0a;
+      --surface: #0f0f0f;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-hover: rgba(255, 255, 255, 0.14);
+      --text: rgba(255, 255, 255, 0.82);
+      --text-muted: rgba(255, 255, 255, 0.45);
+      --text-dim: rgba(255, 255, 255, 0.2);
+      --accent: #4ade80;
+      --ember: #d4a574;
+      --ember-dim: rgba(212, 165, 116, 0.15);
+      --danger: #ef4444;
+
+      --font-display: 'Syne', sans-serif;
+      --font-sans: 'Public Sans', -apple-system, system-ui, sans-serif;
+      --font-mono: 'Spline Sans Mono', monospace;
+
+      --radius-sm: 2px;
+      --radius-md: 4px;
+      --radius-full: 9999px;
+
+      --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+      --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+      --space-12: 48px; --space-16: 64px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 14px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px);
+    }
+
+    ::selection { background: rgba(74, 222, 128, 0.18); color: var(--text); }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: var(--radius-full); }
+    :focus { outline: none; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    @keyframes sigilBurn {
+      0% { text-shadow: 0 0 10px rgba(212,165,116,0.3); }
+      50% { text-shadow: 0 0 20px rgba(212,165,116,0.5); }
+      100% { text-shadow: 0 0 10px rgba(212,165,116,0.3); }
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: var(--space-4) var(--space-8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: rgba(5,5,5,0.85);
+      backdrop-filter: blur(12px);
+      z-index: 50;
+    }
+
+    .header-left { display: flex; align-items: center; gap: var(--space-4); }
+    .logo { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; }
+    .logo-sigil { font-size: 1.25rem; color: var(--ember); animation: sigilBurn 4s infinite; line-height: 1; }
+    .logo-text { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); }
+    .logo-text span { color: rgba(255,255,255,0.2); font-weight: 400; }
+    .build-meta { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.15); letter-spacing: 0.02em; white-space: nowrap; }
+
+    nav { display: flex; gap: var(--space-8); }
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: var(--space-2) 0;
+      position: relative;
+      transition: color 0.25s ease;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--ember);
+      transition: width 0.25s ease;
+    }
+    nav a:hover { color: rgba(255,255,255,0.75); }
+    nav a:hover::after { width: 100%; }
+    nav a.active { color: var(--ember); }
+    nav a.active::after { width: 100%; }
+
+    main { max-width: 1200px; margin: 0 auto; padding: var(--space-10) var(--space-6); }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: var(--space-4);
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: var(--space-2);
+    }
+
+    p { font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-4); }
+
+    .flow-steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-3);
+      max-width: 840px;
+      margin-top: var(--space-5);
+      margin-bottom: var(--space-8);
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.015);
+      border-radius: var(--radius-md);
+      padding: var(--space-3) var(--space-4);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .flow-step-index {
+      width: 20px;
+      height: 20px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      border: 1px solid rgba(255,255,255,0.16);
+      color: var(--ember);
+      background: rgba(212,165,116,0.1);
+      flex: 0 0 auto;
+    }
+
+    .wallet-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) var(--space-5);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.015);
+      margin-bottom: var(--space-8);
+      gap: var(--space-4);
+    }
+
+    .wallet-address {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      word-break: break-all;
+    }
+
+    .passport-layout {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: var(--space-8);
+      align-items: start;
+    }
+
+    .panel-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      margin-bottom: var(--space-5);
+      background: rgba(255,255,255,0.01);
+    }
+
+    .panel-header {
+      padding: var(--space-3) var(--space-5);
+      background: rgba(255,255,255,0.02);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+    }
+
+    .panel-body { padding: var(--space-5); }
+
+    .field { margin-bottom: var(--space-4); }
+    .field label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-bottom: var(--space-2);
+    }
+
+    input {
+      width: 100%;
+      padding: 11px 14px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: border-color 0.2s ease;
+    }
+    input::placeholder { color: var(--text-dim); }
+    input:focus { border-color: var(--border-hover); }
+
+    .btn-row { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: 12px 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      background: transparent;
+    }
+    .btn:disabled { opacity: 0.5; pointer-events: none; cursor: not-allowed; }
+
+    .btn--primary { color: var(--accent); border-color: var(--accent); }
+    .btn--primary:hover { background: rgba(74,222,128,0.1); }
+
+    .btn--ember { color: var(--ember); border-color: var(--ember); }
+    .btn--ember:hover { background: var(--ember-dim); }
+
+    .status {
+      min-height: 20px;
+      margin-top: var(--space-3);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+    .status.ok { color: var(--accent); }
+    .status.err { color: var(--danger); }
+
+    .hint {
+      margin-top: var(--space-4);
+      margin-bottom: 0;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .passport-row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: var(--space-3);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      padding: 9px 0;
+    }
+    .passport-row:last-child { border-bottom: none; }
+    .passport-key {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+    }
+    .passport-value {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text);
+      text-align: right;
+      word-break: break-all;
+    }
+
+    .passport-value a {
+      color: var(--ember);
+      text-decoration: none;
+      border-bottom: 1px dashed rgba(212,165,116,0.4);
+    }
+
+    .glyph {
+      width: 100%;
+      margin-top: var(--space-4);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-elevated);
+      max-width: 360px;
+      margin-left: auto;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: var(--space-12) var(--space-8) var(--space-10);
+      margin-top: var(--space-8);
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .footer-brand { font-family: var(--font-mono); font-size: 12px; color: rgba(255,255,255,0.2); text-align: center; }
+    .footer-brand .ember-text { color: var(--ember); }
+    .footer-meta { font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,0.12); text-align: center; }
+
+    .footer-links { display: flex; gap: var(--space-8); margin-top: var(--space-3); flex-wrap: wrap; justify-content: center; }
+    .footer-links a {
+      color: rgba(255,255,255,0.2);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      transition: color 0.25s ease;
+    }
+    .footer-links a:hover { color: rgba(255,255,255,0.5); }
+
+    @media (max-width: 980px) {
+      .passport-layout { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      header { padding: var(--space-4); }
+      nav { gap: var(--space-4); }
+      nav a { font-size: 10px; }
+      .build-meta { display: none; }
+      main { padding: var(--space-6) var(--space-4); }
+      .flow-steps { grid-template-columns: 1fr; }
+      .wallet-bar { flex-direction: column; align-items: flex-start; }
+      .passport-row { grid-template-columns: 1fr; }
+      .passport-value { text-align: left; }
+      .glyph { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <a href="index.html" class="logo">
+        <span class="logo-sigil">⏀</span>
+        <div class="logo-text">SIGIL<span> PROTOCOL</span></div>
+      </a>
+      <span class="build-meta">v0.5.0 · solana mainnet</span>
+    </div>
+    <nav>
+      <a href="index.html">Protocol</a>
+      <a href="register.html">Register</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="stake.html">Stake</a>
+      <a href="passport.html" class="active">Passport</a>
+      <a href="verify.html">Verify</a>
+      <a href="integrations.html">Integrate</a>
+      <a href="portfolio.html">Portfolio</a>
+      <a href="leaderboard.html">Leaderboard</a>
+    </nav>
+  </header>
+
+  <main>
+    <div style="margin-bottom: var(--space-6);">
+      <p class="section-label">Soulbound Identity</p>
+      <h1>Mint Agent Passport</h1>
+      <p style="max-width: 760px;">Issue a Token-2022 non-transferable passport to bind an agent identity to a wallet owner and make verification portable across ecosystems.</p>
+      <div class="flow-steps">
+        <div class="flow-step"><span class="flow-step-index">1</span>Connect wallet</div>
+        <div class="flow-step"><span class="flow-step-index">2</span>Sign issue + finalize intent</div>
+        <div class="flow-step"><span class="flow-step-index">3</span>Verify on-chain mint</div>
+      </div>
+    </div>
+
+    <div class="wallet-bar">
+      <div>
+        <div class="section-label" style="margin-bottom: var(--space-2);">Connected Wallet</div>
+        <div class="wallet-address" id="walletPub">Not connected</div>
+      </div>
+      <button class="btn btn--primary" id="walletBtn" onclick="connectWallet()">Connect Wallet</button>
+    </div>
+
+    <div class="passport-layout">
+      <section>
+        <div class="panel-card">
+          <div class="panel-header">◆ Passport Mint Control</div>
+          <div class="panel-body">
+            <div class="field">
+              <label for="agentPub">Agent Public Key</label>
+              <input id="agentPub" type="text" placeholder="Paste the agent public key">
+            </div>
+
+            <div class="btn-row">
+              <button class="btn btn--ember" onclick="lookupPassport()">Lookup</button>
+              <button class="btn btn--primary" id="issueBtn" onclick="issuePassport()" disabled>Mint On-chain</button>
+            </div>
+
+            <div class="status" id="statusText"></div>
+            <p class="hint">Flow: sign issue challenge, sign Token-2022 mint transaction, sign finalize challenge, verify on-chain state.</p>
+          </div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="panel-card">
+          <div class="panel-header">◇ Passport State</div>
+          <div class="panel-body">
+            <div class="passport-row"><div class="passport-key">Status</div><div class="passport-value" id="pStatus">—</div></div>
+            <div class="passport-row"><div class="passport-key">Owner</div><div class="passport-value" id="pOwner">—</div></div>
+            <div class="passport-row"><div class="passport-key">Mint</div><div class="passport-value" id="pMint">—</div></div>
+            <div class="passport-row"><div class="passport-key">Metadata</div><div class="passport-value" id="pMeta">—</div></div>
+            <div class="passport-row"><div class="passport-key">Tx</div><div class="passport-value" id="pTx">—</div></div>
+            <div class="passport-row"><div class="passport-key">Issued</div><div class="passport-value" id="pIssued">—</div></div>
+            <img id="glyphImg" class="glyph" alt="Agent glyph" style="display:none;">
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.5.0 · Solana</div>
+      <div class="footer-meta">deployed autonomously · identity protocol for AI agents</div>
+      <nav class="footer-links">
+        <a href="index.html">Protocol</a>
+        <a href="register.html">Register</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="dashboard.html">Registry</a>
+        <a href="stake.html">Stake</a>
+        <a href="passport.html">Passport</a>
+        <a href="verify.html">Verify</a>
+        <a href="integrations.html">Integrate</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="leaderboard.html">Leaderboard</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
+  <script>
+    const API_BASE = location.protocol === 'file:'
+      ? 'http://localhost:3141'
+      : location.origin;
+    const ACTION_SESSION_STORAGE_KEY = 'sigil.action.session.v1';
+
+    let walletProvider = null;
+    let walletPublicKey = null;
+
+    function uint8ToBase58(bytes) {
+      const ALPHA = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+      let zeros = 0;
+      for (let i = 0; i < bytes.length && bytes[i] === 0; i++) zeros++;
+      const digits = [0];
+      for (let i = 0; i < bytes.length; i++) {
+        let carry = bytes[i];
+        for (let j = 0; j < digits.length; j++) {
+          carry += digits[j] << 8;
+          digits[j] = carry % 58;
+          carry = (carry / 58) | 0;
+        }
+        while (carry) { digits.push(carry % 58); carry = (carry / 58) | 0; }
+      }
+      let out = '';
+      for (let i = 0; i < zeros; i++) out += ALPHA[0];
+      for (let i = digits.length - 1; i >= 0; i--) out += ALPHA[digits[i]];
+      return out;
+    }
+
+    function createSessionId() {
+      const bytes = new Uint8Array(24);
+      if (window.crypto?.getRandomValues) {
+        window.crypto.getRandomValues(bytes);
+      } else {
+        for (let i = 0; i < bytes.length; i += 1) bytes[i] = Math.floor(Math.random() * 256);
+      }
+      let out = '';
+      for (const b of bytes) out += b.toString(16).padStart(2, '0');
+      return out;
+    }
+
+    function getActionSessionId() {
+      try {
+        const existing = localStorage.getItem(ACTION_SESSION_STORAGE_KEY);
+        if (existing && /^[A-Za-z0-9_-]{16,128}$/.test(existing)) return existing;
+        const next = createSessionId();
+        localStorage.setItem(ACTION_SESSION_STORAGE_KEY, next);
+        return next;
+      } catch {
+        return createSessionId();
+      }
+    }
+
+    function getActionDomain() {
+      return window.location.origin;
+    }
+
+    function setStatus(msg, ok = true) {
+      const el = document.getElementById('statusText');
+      el.textContent = msg || '';
+      el.className = `status ${ok ? 'ok' : 'err'}`;
+    }
+
+    function getWalletProvider() {
+      return window.phantom?.solana || (window.solana?.isPhantom ? window.solana : null) || window.solflare || null;
+    }
+
+    async function connectWallet() {
+      try {
+        walletProvider = getWalletProvider();
+        if (!walletProvider) {
+          setStatus('No wallet found. Install Phantom or Solflare.', false);
+          return;
+        }
+        const resp = await walletProvider.connect();
+        walletPublicKey = resp.publicKey.toString();
+        document.getElementById('walletPub').textContent = walletPublicKey;
+        document.getElementById('walletBtn').textContent = 'Wallet Connected';
+        document.getElementById('issueBtn').disabled = false;
+        setStatus('Wallet connected');
+      } catch (err) {
+        setStatus(err.message || 'Wallet connect failed', false);
+      }
+    }
+
+    function setPassportState(passport, agentPub) {
+      document.getElementById('pStatus').textContent = passport?.status || 'not-issued';
+      document.getElementById('pOwner').textContent = passport?.ownerPublicKey || '—';
+      document.getElementById('pMint').textContent = passport?.mintAddress || '—';
+      if (passport?.metadataUri) {
+        document.getElementById('pMeta').innerHTML = `<a href="${passport.metadataUri}" target="_blank">open</a>`;
+      } else {
+        document.getElementById('pMeta').textContent = '—';
+      }
+      if (passport?.txSignature) {
+        const txUrl = `https://solscan.io/tx/${passport.txSignature}`;
+        document.getElementById('pTx').innerHTML = `<a href="${txUrl}" target="_blank">${passport.txSignature.slice(0, 10)}...${passport.txSignature.slice(-8)}</a>`;
+      } else {
+        document.getElementById('pTx').textContent = '—';
+      }
+      document.getElementById('pIssued').textContent = passport?.mintedAt || '—';
+
+      const glyph = document.getElementById('glyphImg');
+      if (agentPub) {
+        glyph.src = `${API_BASE}/api/glyph/${encodeURIComponent(agentPub)}`;
+        glyph.style.display = 'block';
+      }
+
+      if (passport?.status === 'legacy_simulated') {
+        setStatus('Legacy simulated passport record found. Mint on-chain to upgrade this agent.', false);
+      }
+    }
+
+    async function lookupPassport() {
+      const agentPub = document.getElementById('agentPub').value.trim();
+      if (!agentPub) {
+        setStatus('Enter an agent public key first.', false);
+        return;
+      }
+      try {
+        const r = await fetch(`${API_BASE}/api/passport/${encodeURIComponent(agentPub)}`);
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+        setPassportState(data, agentPub);
+        if (data?.status !== 'legacy_simulated') {
+          setStatus('Passport state loaded');
+        }
+      } catch (err) {
+        setStatus(err.message || 'Lookup failed', false);
+      }
+    }
+
+    async function issuePassport() {
+      const agentPub = document.getElementById('agentPub').value.trim();
+      if (!walletPublicKey) {
+        setStatus('Connect wallet first.', false);
+        return;
+      }
+      if (!agentPub) {
+        setStatus('Enter an agent public key first.', false);
+        return;
+      }
+      try {
+        const sessionId = getActionSessionId();
+        const domain = getActionDomain();
+
+        const challengeResp = await fetch(`${API_BASE}/api/auth/action-challenge`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            publicKey: walletPublicKey,
+            scope: 'passport',
+            action: 'issue',
+            sessionId,
+            domain,
+            payload: {
+              agentPublicKey: agentPub,
+              ownerPublicKey: walletPublicKey,
+            },
+          }),
+        });
+        const challengeData = await challengeResp.json();
+        if (!challengeResp.ok) throw new Error(challengeData.error || `HTTP ${challengeResp.status}`);
+        const challenge = challengeData?.challenge;
+        if (!challenge?.message || !challenge?.nonce) throw new Error('Invalid challenge response');
+
+        setStatus('Challenge issued. Approve message signature…');
+        const signed = await walletProvider.signMessage(new TextEncoder().encode(challenge.message), 'utf8');
+        const sig = uint8ToBase58(new Uint8Array(signed.signature || signed));
+
+        const prepareResp = await fetch(`${API_BASE}/api/passport/${encodeURIComponent(agentPub)}/mint-prepare`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            ownerPublicKey: walletPublicKey,
+            signature: sig,
+            nonce: challenge.nonce,
+            sessionId,
+            domain,
+          }),
+        });
+        const prepared = await prepareResp.json();
+        if (!prepareResp.ok) throw new Error(prepared.error || `HTTP ${prepareResp.status}`);
+        const connection = new solanaWeb3.Connection(
+          prepared.rpcEndpoint || 'https://api.mainnet-beta.solana.com',
+          'confirmed',
+        );
+
+        let txSignature = null;
+        if (!prepared.alreadyExists) {
+          if (!prepared.transactionBase64) {
+            throw new Error('Missing mint transaction payload');
+          }
+          setStatus('Approve passport mint transaction in wallet…');
+          const txBytes = Uint8Array.from(atob(prepared.transactionBase64), (ch) => ch.charCodeAt(0));
+          const tx = solanaWeb3.Transaction.from(txBytes);
+
+          if (walletProvider.signAndSendTransaction) {
+            const sent = await walletProvider.signAndSendTransaction(tx);
+            txSignature = typeof sent === 'string' ? sent : sent.signature;
+          } else {
+            const signedTx = await walletProvider.signTransaction(tx);
+            txSignature = await connection.sendRawTransaction(signedTx.serialize(), { preflightCommitment: 'confirmed' });
+          }
+
+          if (prepared.blockhash && prepared.lastValidBlockHeight) {
+            await connection.confirmTransaction({
+              signature: txSignature,
+              blockhash: prepared.blockhash,
+              lastValidBlockHeight: prepared.lastValidBlockHeight,
+            }, 'confirmed');
+          } else if (txSignature) {
+            await connection.confirmTransaction(txSignature, 'confirmed');
+          }
+        }
+
+        const finalizeChallengeResp = await fetch(`${API_BASE}/api/auth/action-challenge`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            publicKey: walletPublicKey,
+            scope: 'passport',
+            action: 'finalize',
+            sessionId,
+            domain,
+            payload: {
+              agentPublicKey: agentPub,
+              ownerPublicKey: walletPublicKey,
+              mintAddress: prepared.mintAddress,
+              txSignature: txSignature || null,
+            },
+          }),
+        });
+        const finalizeChallengeData = await finalizeChallengeResp.json();
+        if (!finalizeChallengeResp.ok) throw new Error(finalizeChallengeData.error || `HTTP ${finalizeChallengeResp.status}`);
+        const finalizeChallenge = finalizeChallengeData?.challenge;
+        if (!finalizeChallenge?.message || !finalizeChallenge?.nonce) throw new Error('Invalid finalize challenge response');
+
+        setStatus('Approve finalize signature…');
+        const finalizeSigned = await walletProvider.signMessage(new TextEncoder().encode(finalizeChallenge.message), 'utf8');
+        const finalizeSig = uint8ToBase58(new Uint8Array(finalizeSigned.signature || finalizeSigned));
+
+        const finalizeResp = await fetch(`${API_BASE}/api/passport/${encodeURIComponent(agentPub)}/mint-finalize`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            ownerPublicKey: walletPublicKey,
+            mintAddress: prepared.mintAddress,
+            txSignature: txSignature || null,
+            signature: finalizeSig,
+            nonce: finalizeChallenge.nonce,
+            sessionId,
+            domain,
+          }),
+        });
+        const finalized = await finalizeResp.json();
+        if (!finalizeResp.ok) throw new Error(finalized.error || `HTTP ${finalizeResp.status}`);
+
+        await lookupPassport();
+        setStatus(prepared.alreadyExists
+          ? 'Passport already existed on-chain and has been linked.'
+          : 'Passport minted on-chain and verified.');
+      } catch (err) {
+        setStatus(err.message || 'Issuance failed', false);
+      }
+    }
+  </script>
+</body>
+</html>

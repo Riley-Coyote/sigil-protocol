@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agent Gallery — SIGIL Protocol</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       background: #080808;
       color: #f5f5f5;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       min-height: 100vh;
       line-height: 1.6;
     }
@@ -65,7 +65,7 @@
       border: 1px solid #1a1a1a;
       border-radius: 6px;
       color: #f5f5f5;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 13px;
       outline: none;
       transition: border-color 0.3s;
@@ -79,7 +79,7 @@
       border: 1px solid #1a1a1a;
       border-radius: 6px;
       color: #f5f5f5;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 12px;
       outline: none;
       cursor: pointer;
@@ -102,7 +102,7 @@
       border: 1px solid #1a1a1a;
       border-radius: 6px;
       color: #666;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 11px;
       cursor: pointer;
       transition: all 0.3s;
@@ -359,7 +359,9 @@
   </div>
 
   <script>
-    const API = 'https://sigilprotocol.xyz/api';
+    const API = location.protocol === 'file:'
+      ? 'http://localhost:3141/api'
+      : `${location.origin}/api`;
     const FEATURED_NAMES = ['GPT-4o', 'Grok', 'Vektor-Prime', 'Anima'];
     const tierNames = { 1: 'T1', 2: 'T2', 3: 'T3' };
 

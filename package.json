@@ -1,0 +1,30 @@
+{
+  "name": "sigil-site",
+  "version": "0.5.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch api/server.mjs",
+    "start": "node api/server.mjs",
+    "playwright:reset": "bash scripts/reset-playwright-profile.sh",
+    "deploy:prod": "bash scripts/deploy-production.sh",
+    "verify:local": "node scripts/verify-production.mjs --base-url=http://localhost:3141 --allow-readiness-404 --allow-offchain-staking --allow-missing-passport-collection",
+    "verify:prod": "node scripts/verify-production.mjs --base-url=https://sigilprotocol.xyz --expect-production-ready",
+    "smoke:prod": "node scripts/mainnet-production-smoke.mjs",
+    "e2e:devnet": "node scripts/e2e-onchain-devnet.mjs",
+    "lint": "node -e \"console.log('No linter configured yet')\"",
+    "test": "node --test api/tests/**/*.test.mjs"
+  },
+  "dependencies": {
+    "@solana/spl-token-metadata": "^0.1.6",
+    "@solana/spl-token": "^0.4.13",
+    "@solana/web3.js": "^1.98.0",
+    "better-sqlite3": "^11.7.0",
+    "bs58": "^6.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "helmet": "^8.0.0",
+    "nanoid": "^5.0.9",
+    "tweetnacl": "^1.0.3"
+  }
+}

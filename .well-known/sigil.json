@@ -1,0 +1,16 @@
+{
+  "protocol": "SIGIL",
+  "version": "0.5.0",
+  "network": "mainnet-beta",
+  "rpcEndpoint": "https://api.mainnet-beta.solana.com",
+  "verification": {
+    "full": "https://sigilprotocol.xyz/api/verification/agent/:publicKey?requirePassport=1",
+    "compact": "https://sigilprotocol.xyz/api/verification/agent/:publicKey/compact?requirePassport=1",
+    "badge": "https://sigilprotocol.xyz/api/verification/badge/:publicKey.svg?requirePassport=1"
+  },
+  "docs": {
+    "homepage": "https://sigilprotocol.xyz/index.html",
+    "verifyConsole": "https://sigilprotocol.xyz/verify.html",
+    "whitepaper": "https://sigilprotocol.xyz/whitepaper.html"
+  }
+}

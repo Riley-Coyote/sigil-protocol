@@ -1,0 +1,11 @@
+node_modules/
+api/node_modules/
+api/db/sigil.db
+api/db/sigil.db-*
+api/glyphs/*.svg
+*.log
+.DS_Store
+output/
+.playwright-cli/
+staging/
+*.bak

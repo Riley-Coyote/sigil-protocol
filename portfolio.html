@@ -21,8 +21,8 @@
       --border: rgba(255, 255, 255, 0.06);
       --border-hover: rgba(255, 255, 255, 0.12);
       --text: rgba(255, 255, 255, 0.8);
-      --text-muted: rgba(255, 255, 255, 0.45);
-      --text-dim: rgba(255, 255, 255, 0.2);
+      --text-muted: rgba(255, 255, 255, 0.55);
+      --text-dim: rgba(255, 255, 255, 0.4);
       --accent: #4ade80;
       --accent-dim: rgba(74, 222, 128, 0.15);
       --ember: #d4a574;
@@ -68,7 +68,25 @@
     .logo-sigil { font-size: 1.25rem; color: var(--ember); animation: sigilBurn 4s infinite; line-height: 1; }
     .logo-text { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); }
     .logo-text span { color: rgba(255,255,255,0.2); font-weight: 400; }
-    .build-meta { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.15); }
+    .build-meta { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.25); }
+    .nav-mobile-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      padding: var(--space-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      background: var(--surface);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: border-color var(--duration-fast), color var(--duration-fast);
+    }
+    .nav-mobile-toggle:hover { border-color: var(--border-hover); color: rgba(255,255,255,0.8); }
     nav { display: flex; gap: var(--space-8); }
     nav a { color: var(--text-muted); text-decoration: none; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; padding: var(--space-2) 0; position: relative; transition: color 0.25s ease; }
     nav a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--ember); transition: width 0.25s ease; }
@@ -78,9 +96,9 @@
     nav a.active::after { width: 100%; background: var(--ember); }
 
     main { max-width: 1100px; margin: 0 auto; padding: var(--space-10) var(--space-6); }
-    .section-label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.3); margin-bottom: var(--space-4); }
+    .section-label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.45); margin-bottom: var(--space-4); font-weight: 500; }
     h1 { font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 600; letter-spacing: -0.02em; color: rgba(255,255,255,0.85); margin-bottom: var(--space-2); }
-    p { font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-4); }
+    p { font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-4); font-weight: 400; }
 
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); padding: 12px 24px; font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none; border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: all var(--duration-normal) var(--ease-out); background: transparent; }
     .btn:disabled { opacity: 0.5; pointer-events: none; }
@@ -100,7 +118,7 @@
     }
     .connect-sigil { font-size: 64px; color: rgba(255,255,255,0.06); margin-bottom: var(--space-6); }
     .connect-prompt h2 { font-family: var(--font-sans); font-size: 1.5rem; font-weight: 500; color: var(--text); margin-bottom: var(--space-3); }
-    .connect-prompt p { color: var(--text-muted); max-width: 400px; margin: 0 auto var(--space-6); }
+    .connect-prompt p { color: var(--text-muted); max-width: 400px; margin: 0 auto var(--space-6); font-weight: 400; }
 
     /* ===== PORTFOLIO STATS ===== */
     .portfolio-stats {
@@ -211,8 +229,8 @@
       font-family: var(--font-mono);
       font-size: 11px;
     }
-    .rep-detail-label { color: var(--text-dim); }
-    .rep-detail-value { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    .rep-detail-label { color: var(--text-dim); font-weight: 400; }
+    .rep-detail-value { color: var(--text-muted); font-variant-numeric: tabular-nums; font-weight: 400; }
 
     /* ===== POSITIONS TABLE ===== */
     .positions-section {
@@ -249,6 +267,7 @@
       border-bottom: 1px solid rgba(255,255,255,0.03);
       font-family: var(--font-mono);
       font-size: 12px;
+      font-weight: 400;
       color: var(--text-muted);
     }
     .position-table td:last-child { text-align: right; }
@@ -273,7 +292,7 @@
     }
     .pos-agent-glyph img { width: 100%; height: 100%; object-fit: cover; }
 
-    .pos-agent-name { color: var(--text); font-family: var(--font-sans); font-weight: 500; }
+    .pos-agent-name { color: rgba(255,255,255,0.85); font-family: var(--font-sans); font-weight: 500; }
     .pos-amount { color: var(--ember); font-weight: 600; font-variant-numeric: tabular-nums; }
     .pos-status { display: inline-flex; align-items: center; gap: 4px; }
     .pos-status-dot { width: 6px; height: 6px; border-radius: 50%; }
@@ -281,7 +300,7 @@
     .pos-status-dot.cooling { background: var(--warning); box-shadow: 0 0 6px rgba(245,158,11,0.5); }
 
     .pos-multiplier { color: var(--accent); font-weight: 500; }
-    .pos-governance { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    .pos-governance { color: var(--text-muted); font-variant-numeric: tabular-nums; font-weight: 400; }
 
     .pos-cooldown-badge {
       display: inline-block;
@@ -359,18 +378,39 @@
     /* ===== FOOTER ===== */
     footer { border-top: 1px solid var(--border); padding: var(--space-12) var(--space-8) var(--space-10); margin-top: var(--space-8); }
     .footer-content { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
-    .footer-brand { font-family: var(--font-mono); font-size: 12px; color: rgba(255,255,255,0.2); text-align: center; }
+    .footer-brand { font-family: var(--font-mono); font-size: 12px; color: rgba(255,255,255,0.35); text-align: center; }
     .footer-brand .ember-text { color: var(--ember); }
-    .footer-meta { font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,0.12); text-align: center; }
+    .footer-meta { font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,0.25); text-align: center; }
     .footer-links { display: flex; gap: var(--space-8); margin-top: var(--space-3); flex-wrap: wrap; justify-content: center; }
-    .footer-links a { color: rgba(255,255,255,0.2); text-decoration: none; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; transition: color 0.25s ease; }
-    .footer-links a:hover { color: rgba(255,255,255,0.5); }
+    .footer-links a { color: rgba(255,255,255,0.35); text-decoration: none; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; transition: color 0.25s ease; }
+    .footer-links a:hover { color: rgba(255,255,255,0.6); }
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
       header { padding: var(--space-4); }
-      nav { gap: var(--space-4); }
-      nav a { font-size: 10px; }
+      .nav-mobile-toggle { display: inline-flex; }
+      header > nav { display: none; }
+      header > nav.open {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-2);
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        padding: var(--space-4);
+        background: rgba(5,5,5,0.98);
+        border-bottom: 1px solid var(--border);
+        z-index: 100;
+      }
+      header > nav.open a {
+        font-size: 12px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        padding: 0 var(--space-2);
+      }
       .build-meta { display: none; }
       main { padding: var(--space-6) var(--space-4); }
       .portfolio-stats { grid-template-columns: repeat(2, 1fr); }
@@ -390,15 +430,15 @@
       </a>
       <span class="build-meta">v0.5.0 · solana mainnet</span>
     </div>
-    <nav>
+    <button class="nav-mobile-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+    <nav id="navLinks">
       <a href="index.html">Protocol</a>
       <a href="register.html">Register</a>
       <a href="gallery.html">Gallery</a>
       <a href="stake.html">Stake</a>
       <a href="passport.html">Passport</a>
       <a href="verify.html">Verify</a>
-        <a href="integrations.html">Integrate</a>
-      <a href="portfolio.html" class="active">Portfolio</a>
+      <a href="integrations.html">Integrate</a>
       <a href="leaderboard.html">Leaderboard</a>
     </nav>
   </header>
@@ -558,6 +598,27 @@
   </footer>
 
   <script>
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    if (navToggle && navLinks) {
+      navToggle.addEventListener('click', () => {
+        const isOpen = navLinks.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', String(isOpen));
+      });
+      navLinks.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
     const API_BASE = location.protocol === 'file:'
       ? 'http://localhost:3141'
       : location.origin;

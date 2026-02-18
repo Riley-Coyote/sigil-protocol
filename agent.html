@@ -4,227 +4,352 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agent Profile — SIGIL Protocol</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <meta name="description" content="SIGIL Protocol agent identity profile — glyph, metadata, receipt chain, verification status.">
+  <meta name="theme-color" content="#000000">
+
+  <link rel="preconnect" href="https://fonts.cdnfonts.com" crossorigin>
+  <link href="https://fonts.cdnfonts.com/css/geist" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/geist-mono" rel="stylesheet">
+
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+    :root {
+      --black:    #000000;
+      --gray-950: #030303;
+      --gray-900: #050505;
+      --gray-850: #0a0a0a;
+      --gray-800: #0f0f0f;
+      --gray-750: #141414;
+      --gray-700: #1a1a1a;
+      --gray-650: #1f1f1f;
+      --gray-600: #252525;
+      --gray-550: #2a2a2a;
+      --gray-500: #333333;
+      --gray-450: #404040;
+      --gray-400: #4d4d4d;
+      --gray-350: #595959;
+      --gray-300: #666666;
+      --gray-250: #737373;
+      --gray-200: #808080;
+      --gray-150: #999999;
+      --gray-100: #b3b3b3;
+      --gray-50:  #cccccc;
+      --white:    #e6e6e6;
+
+      --bg:          var(--black);
+      --bg-subtle:   var(--gray-950);
+      --bg-muted:    var(--gray-900);
+      --bg-surface:  var(--gray-850);
+      --bg-elevated: var(--gray-800);
+      --bg-overlay:  var(--gray-750);
+
+      --border-base:    rgba(230, 230, 230, 0.06);
+      --border-faint:   rgba(230, 230, 230, 0.08);
+      --border-subtle:  rgba(230, 230, 230, 0.10);
+      --border-muted:   rgba(230, 230, 230, 0.12);
+      --border-default: rgba(230, 230, 230, 0.15);
+      --border-medium:  rgba(230, 230, 230, 0.18);
+      --border-strong:  rgba(230, 230, 230, 0.20);
+
+      --text:        var(--gray-50);
+      --text-strong: var(--white);
+      --text-medium: var(--gray-100);
+      --text-muted:  var(--gray-150);
+      --text-faint:  var(--gray-300);
+      --text-ghost:  var(--gray-400);
+
+      --status-active:  #22c55e;
+      --status-error:   #ef4444;
+      --status-special: #8b5cf6;
+
+      --font-sans: 'Geist', -apple-system, system-ui, sans-serif;
+      --font-mono: 'Geist Mono', 'SF Mono', 'Cascadia Code', monospace;
+
+      --radius-sm:   3px;
+      --radius-md:   6px;
+      --radius-lg:   8px;
+      --radius-xl:   12px;
+      --radius-2xl:  16px;
+      --radius-full: 9999px;
+
+      --ease-reveal: cubic-bezier(0.32, 0.72, 0, 1);
+      --ease-out:    cubic-bezier(0, 0, 0.2, 1);
+      --duration-fast:   150ms;
+      --duration-normal: 300ms;
+
+      --content-width: min(90vw, 720px);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-gutter: stable;
+      overscroll-behavior: none;
+    }
     body {
-      background: #080808;
-      color: #f5f5f5;
-      font-family: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
       font-weight: 300;
+      font-size: 0.9375rem;
+      line-height: 1.7;
       min-height: 100vh;
-      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
+    ::selection { background: rgba(230, 230, 230, 0.08); color: var(--text-strong); }
 
-    /* Back link */
-    .back-link {
-      position: absolute;
-      top: 32px;
-      left: 32px;
-      color: #555;
+    /* ───── NAV ───── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      background: rgba(0, 0, 0, 0.8);
+      border-bottom: 1px solid var(--border-base);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       text-decoration: none;
-      font-size: 13px;
+    }
+    .nav-logo .glyph {
+      font-size: 1rem;
+      color: var(--text-ghost);
+      transition: color 0.6s var(--ease-reveal);
+    }
+    .nav-logo:hover .glyph { color: var(--status-special); }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-links a {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
       font-weight: 300;
-      letter-spacing: 0.5px;
-      transition: color 0.3s ease;
-      z-index: 10;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color var(--duration-fast) ease;
+      padding: 0.5rem 0;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
     }
-    .back-link:hover { color: #a0a0a0; }
+    .nav-links a:hover { color: var(--text-strong); }
+    .nav-links a.active { color: var(--text); }
+    .nav-links a:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
 
-    /* Container */
+    /* ───── PAGE ───── */
+    .page { padding-top: 64px; min-height: 100vh; }
+
     .container {
-      max-width: 720px;
+      width: var(--content-width);
       margin: 0 auto;
-      padding: 100px 32px 80px;
+      padding: 4rem 0 5rem;
     }
 
-    /* Loading */
+    /* ───── LOADING ───── */
     .loading {
       text-align: center;
-      padding: 160px 0;
-      color: #444;
-      font-size: 13px;
-      font-weight: 300;
-      letter-spacing: 0.5px;
+      padding: 10rem 0;
+      color: var(--text-faint);
     }
     .loading .spinner {
-      width: 20px;
-      height: 20px;
-      border: 1.5px solid #222;
-      border-top-color: #666;
+      width: 20px; height: 20px;
+      border: 1.5px solid var(--border-default);
+      border-top-color: var(--text-muted);
       border-radius: 50%;
       animation: spin 0.9s linear infinite;
-      margin: 0 auto 20px;
+      margin: 0 auto 1.25rem;
+    }
+    .loading-text {
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-faint);
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Error */
+    /* ───── ERROR ───── */
     .error-state {
       text-align: center;
-      padding: 160px 32px;
+      padding: 10rem 2rem;
     }
     .error-state h2 {
-      font-size: 18px;
+      font-family: var(--font-sans);
+      font-size: 1.125rem;
       font-weight: 300;
-      color: #f5f5f5;
-      margin-bottom: 8px;
-      letter-spacing: -0.2px;
+      color: var(--text-strong);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
     }
     .error-state p {
-      font-size: 14px;
-      color: #555;
-      font-weight: 300;
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-faint);
+      max-width: 65ch;
+      margin: 0 auto;
     }
 
-    /* ── Glyph ── */
+    /* ───── GLYPH SECTION ───── */
     .glyph-section {
       text-align: center;
-      margin-bottom: 48px;
+      margin-bottom: 3rem;
     }
-
     .glyph-frame {
       width: 100%;
       aspect-ratio: 560 / 380;
-      border-radius: 12px;
+      border-radius: var(--radius-md);
       overflow: hidden;
-      background: #0b0b0b;
-      border: 1px solid #1a1a1a;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
       position: relative;
-      box-shadow: 0 0 80px rgba(74, 222, 128, 0.03), 0 0 0 1px rgba(255,255,255,0.02);
-      transition: box-shadow 0.5s ease, border-color 0.4s ease;
-      margin-bottom: 40px;
+      transition: border-color var(--duration-fast) ease;
+      margin-bottom: 2.5rem;
+      padding: 2rem;
     }
-    .glyph-frame:hover {
-      border-color: #252525;
-      box-shadow: 0 0 100px rgba(74, 222, 128, 0.06), 0 0 0 1px rgba(255,255,255,0.04);
-    }
+    .glyph-frame:hover { border-color: var(--border-subtle); }
     .glyph-frame img {
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       object-fit: contain;
       display: block;
     }
 
-    /* ── Agent Name ── */
     .agent-name {
-      font-size: 2.5rem;
-      font-weight: 300;
-      letter-spacing: -0.5px;
-      color: #f5f5f5;
-      margin-bottom: 16px;
+      font-family: var(--font-sans);
+      font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+      font-weight: 200;
+      letter-spacing: -0.02em;
+      color: var(--text-strong);
+      margin-bottom: 1rem;
       line-height: 1.2;
     }
 
-    /* ── Badges row ── */
+    /* ───── BADGES ───── */
     .badge-row {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      margin-bottom: 8px;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
     }
-
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 4px 12px;
-      border: 1px solid #1a1a1a;
-      border-radius: 100px;
-      font-size: 11px;
-      font-weight: 400;
-      letter-spacing: 0.8px;
+      gap: 0.375rem;
+      padding: 0.125rem 0.5rem;
+      border: 1px solid var(--border-base);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: #777;
-      transition: border-color 0.3s ease;
+      color: var(--text-faint);
+      height: 20px;
     }
-
     .badge-verified {
-      color: #4ade80;
-      border-color: rgba(74, 222, 128, 0.2);
+      color: var(--status-active);
+      border-color: rgba(34, 197, 94, 0.2);
     }
     .badge-verified::before {
       content: '';
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: #4ade80;
+      width: 5px; height: 5px;
+      border-radius: var(--radius-full);
+      background: var(--status-active);
       flex-shrink: 0;
     }
 
     .verified-date {
-      font-size: 12px;
-      color: #444;
-      font-weight: 300;
-      letter-spacing: 0.3px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text-faint);
+      letter-spacing: 0.02em;
     }
 
-    /* ── Divider ── */
+    /* ───── DIVIDER ───── */
     .divider {
       width: 48px;
       height: 1px;
-      background: #1a1a1a;
-      margin: 40px auto;
+      background: var(--border-faint);
+      margin: 2.5rem auto;
     }
 
-    /* ── Bio Section ── */
+    /* ───── BIO CARD ───── */
     .bio-card {
-      border: 1px solid #1a1a1a;
-      border-radius: 12px;
-      padding: 28px 32px;
-      background: #0f0f0f;
-      margin-bottom: 40px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
     }
-
     .section-label {
-      font-size: 10px;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
       font-weight: 500;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #444;
-      margin-bottom: 14px;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      display: block;
     }
-
     .bio-text {
-      font-size: 15px;
+      font-family: var(--font-sans);
+      font-size: 0.9375rem;
       font-weight: 400;
-      color: #c0c0c0;
+      color: var(--text);
       line-height: 1.75;
+      max-width: 65ch;
     }
-
     .tags {
       display: flex;
-      gap: 8px;
+      gap: 0.5rem;
       flex-wrap: wrap;
-      margin-top: 20px;
+      margin-top: 1rem;
     }
     .tag {
-      padding: 3px 10px;
-      border: 1px solid #222;
-      border-radius: 100px;
-      font-size: 11px;
+      font-family: var(--font-sans);
+      font-size: 0.6875rem;
       font-weight: 400;
-      color: #666;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-base);
+      border-radius: var(--radius-sm);
+      padding: 0.125rem 0.5rem;
+      display: inline-flex;
+      align-items: center;
+      height: 20px;
     }
 
-    /* ── Stats Row ── */
+    /* ───── STATS ROW ───── */
     .stats-row {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0;
-      margin: 0 0 40px;
-      padding: 24px 0;
-      border-top: 1px solid #141414;
-      border-bottom: 1px solid #141414;
+      margin: 0 0 2.5rem;
+      padding: 1.5rem 0;
+      border-top: 1px solid var(--border-base);
+      border-bottom: 1px solid var(--border-base);
     }
-
     .stat {
       display: flex;
       flex-direction: column;
@@ -235,295 +360,433 @@
     .stat + .stat::before {
       content: '';
       position: absolute;
-      left: 0;
-      top: 50%;
+      left: 0; top: 50%;
       transform: translateY(-50%);
-      width: 1px;
-      height: 32px;
-      background: #1a1a1a;
+      width: 1px; height: 32px;
+      background: var(--border-faint);
     }
-
     .stat-value {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 20px;
-      font-weight: 300;
-      color: #f5f5f5;
-      letter-spacing: -0.5px;
-      line-height: 1;
-      margin-bottom: 6px;
-    }
-
-    .stat-label {
-      font-size: 9px;
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
       font-weight: 400;
+      color: var(--text-strong);
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 0.375rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-label {
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: #555;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
     }
 
-    /* ── Staking ── */
+    /* ───── STAKING ROW ───── */
     .staking-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px 24px;
-      background: #0f0f0f;
-      border: 1px solid #1a1a1a;
-      border-radius: 10px;
-      margin-bottom: 40px;
+      padding: 1rem 1.5rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
+      margin-bottom: 2.5rem;
     }
     .staking-label {
-      font-size: 10px;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
       font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #444;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
     }
     .staking-value {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 14px;
-      font-weight: 300;
-      color: #a0a0a0;
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-medium);
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
     }
     .staking-note {
-      font-size: 12px;
-      color: #333;
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
       font-weight: 300;
+      color: var(--text-faint);
       font-style: italic;
     }
 
-    /* ── Technical Fields (key, hash) ── */
-    .tech-field {
-      margin-bottom: 20px;
-    }
+    /* ───── TECH FIELDS ───── */
+    .tech-field { margin-bottom: 1.25rem; }
     .tech-field-label {
-      font-size: 10px;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
       font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #444;
-      margin-bottom: 8px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      display: block;
     }
     .tech-field-value {
       display: flex;
       align-items: center;
       gap: 0;
-      background: #0c0c0c;
-      border: 1px solid #1a1a1a;
-      border-radius: 8px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
       overflow: hidden;
-      transition: border-color 0.3s ease;
+      transition: border-color var(--duration-fast) ease;
     }
-    .tech-field-value:hover {
-      border-color: #252525;
-    }
+    .tech-field-value:hover { border-color: var(--border-subtle); }
     .tech-field-text {
       flex: 1;
-      padding: 10px 14px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
-      font-weight: 300;
-      color: #777;
+      padding: 0.625rem 0.875rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text-muted);
       word-break: break-all;
       line-height: 1.5;
+      letter-spacing: 0.02em;
       min-width: 0;
     }
-    .copy-btn {
+    .tech-copy-btn {
       flex-shrink: 0;
-      padding: 10px 14px;
+      padding: 0.625rem 0.875rem;
       background: none;
       border: none;
-      border-left: 1px solid #1a1a1a;
-      color: #444;
+      border-left: 1px solid var(--border-base);
+      color: var(--text-ghost);
       cursor: pointer;
-      font-size: 12px;
-      transition: color 0.2s ease, background 0.2s ease;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      transition: color var(--duration-fast) ease;
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 0.375rem;
+      min-height: 44px;
+      min-width: 44px;
     }
-    .copy-btn:hover {
-      color: #a0a0a0;
-      background: rgba(255,255,255,0.02);
+    .tech-copy-btn:hover { color: var(--text-muted); }
+    .tech-copy-btn:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: -2px;
     }
-    .copy-btn.copied {
-      color: #4ade80;
+    .tech-copy-btn:active { transform: scale(0.97); }
+    .tech-copy-btn.copied { color: var(--status-active); }
+    .tech-copy-btn svg { width: 14px; height: 14px; }
+
+    /* ───── RECEIPT CHAIN ───── */
+    .receipt-chain {
+      margin-top: 2.5rem;
     }
-    .copy-btn svg {
-      width: 14px;
-      height: 14px;
+    .receipt-table-wrapper {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      content-visibility: auto;
+      contain-intrinsic-size: auto 300px;
+    }
+    .receipt-table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-base);
+    }
+    .receipt-table-title {
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .receipt-table-count {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: var(--text-faint);
+      font-variant-numeric: tabular-nums;
+    }
+    .receipt-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .receipt-table th {
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      text-align: left;
+      padding: 0.625rem 1rem;
+      border-bottom: 1px solid var(--border-muted);
+    }
+    .receipt-table td {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      padding: 0.625rem 1rem;
+      border-bottom: 1px solid var(--border-base);
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    .receipt-table tr:last-child td { border-bottom: none; }
+    .receipt-table tbody tr {
+      transition: background-color var(--duration-fast) ease;
+    }
+    .receipt-table tbody tr:nth-child(odd) td { background: var(--black); }
+    .receipt-table tbody tr:nth-child(even) td { background: var(--gray-950); }
+    .receipt-table tbody tr:hover td { background: var(--gray-850); }
+    .receipt-type {
+      display: inline-block;
+      padding: 0.0625rem 0.375rem;
+      font-family: var(--font-sans);
+      font-size: 0.5625rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: var(--radius-sm);
+      color: var(--text-faint);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-base);
+    }
+    .receipt-hash-cell {
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    /* ── Footer ── */
+    /* ───── FOOTER ───── */
     .footer {
-      margin-top: 56px;
-      padding-top: 24px;
-      border-top: 1px solid #141414;
+      margin-top: 3.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-base);
       display: flex;
       justify-content: center;
-      gap: 32px;
+      gap: 2rem;
     }
     .footer a {
-      color: #444;
-      text-decoration: none;
-      font-size: 12px;
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
       font-weight: 300;
-      letter-spacing: 0.5px;
-      transition: color 0.3s ease;
+      color: var(--text-faint);
+      text-decoration: none;
+      transition: color var(--duration-fast) ease;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
     }
-    .footer a:hover { color: #a0a0a0; }
+    .footer a:hover { color: var(--text-muted); }
+    .footer a:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
 
-    /* ── Responsive ── */
-    @media (max-width: 640px) {
-      .container {
-        padding: 80px 20px 60px;
+    /* ───── ANIMATIONS ───── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    #profile { animation: fadeUp 0.5s var(--ease-reveal) both; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
       }
-      .back-link {
-        top: 20px;
-        left: 20px;
-      }
-      .agent-name {
-        font-size: 2rem;
-      }
-      .bio-card {
-        padding: 22px 20px;
-      }
+      #profile { opacity: 1; transform: none; }
+    }
+
+    /* ───── RESPONSIVE ───── */
+    @media (max-width: 768px) {
+      .nav { padding: 0 1rem; }
+      .nav-links { gap: 1rem; }
+      .nav-links a { font-size: 0.75rem; }
+      .container { padding: 3rem 0 4rem; }
+      .agent-name { font-size: 2rem; }
+      .bio-card { padding: 1.25rem; }
+      .glyph-frame { padding: 1rem; }
       .stats-row {
         flex-direction: column;
-        gap: 20px;
-        padding: 20px 0;
+        gap: 1.25rem;
+        padding: 1.25rem 0;
       }
-      .stat + .stat::before {
-        display: none;
-      }
+      .stat + .stat::before { display: none; }
       .stat {
         flex-direction: row;
-        gap: 10px;
+        gap: 0.625rem;
         width: 100%;
         justify-content: center;
       }
       .stat-value { margin-bottom: 0; }
       .staking-row {
         flex-direction: column;
-        gap: 8px;
+        gap: 0.5rem;
         text-align: center;
-        padding: 18px 20px;
+        padding: 1rem 1.25rem;
       }
-      .tech-field-text {
-        font-size: 11px;
-        padding: 9px 12px;
-      }
-      .footer {
-        gap: 20px;
-        flex-wrap: wrap;
-      }
-    }
-
-    /* ── Fade in ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    #profile {
-      animation: fadeUp 0.6s ease both;
+      .tech-field-text { font-size: 0.6875rem; padding: 0.5rem 0.75rem; }
+      .footer { gap: 1.25rem; flex-wrap: wrap; }
     }
   </style>
 </head>
 <body>
 
-  <a href="gallery.html" class="back-link">← Gallery</a>
-
-  <div class="container">
-
-    <!-- Loading -->
-    <div id="loading" class="loading">
-      <div class="spinner"></div>
-      Loading agent profile…
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo">
+      <span class="glyph">⏀</span> SIGIL
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Protocol</a>
+      <a href="register.html">Register</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="stake.html">Stake</a>
+      <a href="passport.html">Passport</a>
+      <a href="verify.html">Verify</a>
+      <a href="integrations.html">Integrate</a>
+      <a href="leaderboard.html">Leaderboard</a>
     </div>
+  </nav>
 
-    <!-- Error -->
-    <div id="error" class="error-state" style="display:none;">
-      <h2>Agent Not Found</h2>
-      <p>The requested identity could not be located in the protocol.</p>
-    </div>
+  <div class="page">
+    <div class="container">
 
-    <!-- Profile -->
-    <div id="profile" style="display:none;">
-
-      <!-- Glyph Card — Full Width -->
-      <div class="glyph-section">
-        <div class="glyph-frame">
-          <img id="glyph-img" src="" alt="Agent Glyph" />
-        </div>
-        <h1 class="agent-name" id="agent-name"></h1>
-        <div class="badge-row">
-          <span class="badge" id="tier-badge"></span>
-          <span class="badge badge-verified" id="verified-badge">Verified</span>
-        </div>
-        <div class="verified-date" id="verified-date"></div>
+      <!-- Loading -->
+      <div id="loading" class="loading" role="status">
+        <div class="spinner"></div>
+        <span class="loading-text">Loading agent profile…</span>
       </div>
 
-      <div class="divider"></div>
-
-      <!-- Bio -->
-      <div class="bio-card" id="bio-section" style="display:none;">
-        <div class="section-label">About</div>
-        <p class="bio-text" id="bio-text"></p>
-        <div class="tags" id="tags-container"></div>
+      <!-- Error -->
+      <div id="error" class="error-state" style="display:none;">
+        <h2>Agent Not Found</h2>
+        <p>The requested identity could not be located in the protocol.</p>
       </div>
 
-      <!-- Stats -->
-      <div class="stats-row">
-        <div class="stat">
-          <span class="stat-value" id="receipt-count">0</span>
-          <span class="stat-label">Receipts</span>
+      <!-- Profile -->
+      <div id="profile" style="display:none;">
+
+        <!-- Glyph Card -->
+        <div class="glyph-section">
+          <div class="glyph-frame">
+            <img id="glyph-img" src="" alt="Agent Glyph" />
+          </div>
+          <h1 class="agent-name" id="agent-name"></h1>
+          <div class="badge-row">
+            <span class="badge" id="tier-badge"></span>
+            <span class="badge badge-verified" id="verified-badge">Verified</span>
+          </div>
+          <div class="verified-date" id="verified-date"></div>
         </div>
-        <div class="stat">
-          <span class="stat-value" id="persistence-score">0</span>
-          <span class="stat-label">Persistence</span>
+
+        <div class="divider"></div>
+
+        <!-- Bio -->
+        <div class="bio-card" id="bio-section" style="display:none;">
+          <span class="section-label">About</span>
+          <p class="bio-text" id="bio-text"></p>
+          <div class="tags" id="tags-container"></div>
         </div>
-        <div class="stat">
-          <span class="stat-value" id="tier-display">T1</span>
-          <span class="stat-label">Tier</span>
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat">
+            <span class="stat-value" id="receipt-count">0</span>
+            <span class="stat-label">Receipts</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="persistence-score">0</span>
+            <span class="stat-label">Persistence</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="tier-display">T1</span>
+            <span class="stat-label">Tier</span>
+          </div>
         </div>
-      </div>
 
-      <!-- Staking -->
-      <div class="staking-row" id="staking-section">
-        <span class="staking-label">Stake</span>
-        <span class="staking-value" id="staking-value"></span>
-      </div>
-
-      <!-- Public Key -->
-      <div class="tech-field">
-        <div class="tech-field-label">Public Key</div>
-        <div class="tech-field-value">
-          <span class="tech-field-text" id="pubkey"></span>
-          <button class="copy-btn" id="copy-key-btn" title="Copy to clipboard">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          </button>
+        <!-- Staking -->
+        <div class="staking-row" id="staking-section">
+          <span class="staking-label">Stake</span>
+          <span class="staking-value" id="staking-value"></span>
         </div>
-      </div>
 
-      <!-- Receipt Hash -->
-      <div class="tech-field" id="receipt-hash-section" style="display:none;">
-        <div class="tech-field-label">Latest Receipt</div>
-        <div class="tech-field-value">
-          <span class="tech-field-text" id="receipt-hash"></span>
-          <button class="copy-btn" id="copy-hash-btn" title="Copy to clipboard">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          </button>
+        <!-- Public Key -->
+        <div class="tech-field">
+          <span class="tech-field-label">Public Key</span>
+          <div class="tech-field-value">
+            <span class="tech-field-text" id="pubkey"></span>
+            <button class="tech-copy-btn" id="copy-key-btn" title="Copy to clipboard" aria-label="Copy public key">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              <span class="copy-label">Copy</span>
+            </button>
+          </div>
         </div>
-      </div>
 
-      <!-- Footer -->
-      <div class="footer">
-        <a href="gallery.html">Gallery</a>
-        <a href="index.html">Home</a>
-        <a href="register.html">Register</a>
-        <a href="dashboard.html">Dashboard</a>
-      </div>
+        <!-- Glyph Hash -->
+        <div class="tech-field" id="glyph-hash-section" style="display:none;">
+          <span class="tech-field-label">Glyph Hash</span>
+          <div class="tech-field-value">
+            <span class="tech-field-text" id="glyph-hash"></span>
+            <button class="tech-copy-btn" id="copy-glyph-btn" title="Copy to clipboard" aria-label="Copy glyph hash">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              <span class="copy-label">Copy</span>
+            </button>
+          </div>
+        </div>
 
+        <!-- Receipt Hash -->
+        <div class="tech-field" id="receipt-hash-section" style="display:none;">
+          <span class="tech-field-label">Latest Receipt</span>
+          <div class="tech-field-value">
+            <span class="tech-field-text" id="receipt-hash"></span>
+            <button class="tech-copy-btn" id="copy-hash-btn" title="Copy to clipboard" aria-label="Copy receipt hash">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              <span class="copy-label">Copy</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Receipt Chain Table -->
+        <div class="receipt-chain" id="receipt-chain-section" style="display:none;">
+          <div class="receipt-table-wrapper">
+            <div class="receipt-table-header">
+              <span class="receipt-table-title">Receipt Chain</span>
+              <span class="receipt-table-count" id="receipt-chain-count"></span>
+            </div>
+            <table class="receipt-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Type</th>
+                  <th>Hash</th>
+                </tr>
+              </thead>
+              <tbody id="receipt-chain-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer" role="navigation" aria-label="Footer navigation">
+          <a href="gallery.html">Gallery</a>
+          <a href="index.html">Protocol</a>
+          <a href="register.html">Register</a>
+          <a href="leaderboard.html">Leaderboard</a>
+        </div>
+
+      </div>
     </div>
   </div>
 
@@ -608,16 +871,43 @@
       if (stake > 0) {
         stakingEl.textContent = `${stake.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $SIGIL`;
       } else {
-        stakingEl.textContent = '0.00 $SIGIL';
+        stakingEl.innerHTML = '<span class="staking-note">Staking available soon</span>';
       }
 
       // Public key
       document.getElementById('pubkey').textContent = agent.publicKey;
 
+      // Glyph hash
+      if (agent.glyphHash) {
+        document.getElementById('glyph-hash-section').style.display = 'block';
+        document.getElementById('glyph-hash').textContent = agent.glyphHash;
+      }
+
       // Receipt hash
       if (receipts?.latest?.hash) {
         document.getElementById('receipt-hash-section').style.display = 'block';
         document.getElementById('receipt-hash').textContent = receipts.latest.hash;
+      }
+
+      // Receipt chain table
+      if (receipts?.chain?.length) {
+        document.getElementById('receipt-chain-section').style.display = 'block';
+        document.getElementById('receipt-chain-count').textContent = `${receipts.chain.length} receipts`;
+        const tbody = document.getElementById('receipt-chain-body');
+        tbody.innerHTML = receipts.chain.map(r => {
+          const ts = r.timestamp ? new Date(r.timestamp).toLocaleString('en-US', {
+            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+          }) : '—';
+          const hash = r.hash || '—';
+          const type = r.type || 'unknown';
+          return `
+            <tr>
+              <td>${ts}</td>
+              <td><span class="receipt-type">${type}</span></td>
+              <td class="receipt-hash-cell" title="${hash}">${hash}</td>
+            </tr>
+          `;
+        }).join('');
       }
     }
 
@@ -626,20 +916,31 @@
       document.getElementById('error').style.display = 'block';
     }
 
-    // Copy helpers
     function setupCopy(btnId, textId) {
-      document.getElementById(btnId).addEventListener('click', () => {
+      const btn = document.getElementById(btnId);
+      if (!btn) return;
+      btn.addEventListener('click', () => {
         const text = document.getElementById(textId).textContent;
-        const btn = document.getElementById(btnId);
         navigator.clipboard.writeText(text).then(() => {
           btn.classList.add('copied');
-          setTimeout(() => btn.classList.remove('copied'), 1500);
+          const label = btn.querySelector('.copy-label');
+          if (label) {
+            const prev = label.textContent;
+            label.textContent = 'Copied';
+            setTimeout(() => {
+              label.textContent = prev;
+              btn.classList.remove('copied');
+            }, 1500);
+          } else {
+            setTimeout(() => btn.classList.remove('copied'), 1500);
+          }
         });
       });
     }
 
     setupCopy('copy-key-btn', 'pubkey');
     setupCopy('copy-hash-btn', 'receipt-hash');
+    setupCopy('copy-glyph-btn', 'glyph-hash');
 
     loadProfile();
   </script>

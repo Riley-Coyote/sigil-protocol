@@ -3,362 +3,739 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agent Gallery — SIGIL Protocol</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>SIGIL Protocol — Glyph Gallery</title>
+  <meta name="description" content="Browse the visual identity glyphs of verified agents in the SIGIL Protocol.">
+  <meta name="theme-color" content="#000000">
+
+  <link rel="preconnect" href="https://fonts.cdnfonts.com" crossorigin>
+  <link href="https://fonts.cdnfonts.com/css/geist" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/geist-mono" rel="stylesheet">
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+    :root {
+      --black:    #000000;
+      --gray-950: #030303;
+      --gray-900: #050505;
+      --gray-850: #0a0a0a;
+      --gray-800: #0f0f0f;
+      --gray-750: #141414;
+      --gray-700: #1a1a1a;
+      --gray-650: #1f1f1f;
+      --gray-600: #252525;
+      --gray-550: #2a2a2a;
+      --gray-500: #333333;
+      --gray-450: #404040;
+      --gray-400: #4d4d4d;
+      --gray-350: #595959;
+      --gray-300: #666666;
+      --gray-250: #737373;
+      --gray-200: #808080;
+      --gray-150: #999999;
+      --gray-100: #b3b3b3;
+      --gray-50:  #cccccc;
+      --white:    #e6e6e6;
+
+      --bg:          var(--black);
+      --bg-subtle:   var(--gray-950);
+      --bg-muted:    var(--gray-900);
+      --bg-surface:  var(--gray-850);
+      --bg-elevated: var(--gray-800);
+      --bg-overlay:  var(--gray-750);
+
+      --border-base:    rgba(230, 230, 230, 0.06);
+      --border-faint:   rgba(230, 230, 230, 0.08);
+      --border-subtle:  rgba(230, 230, 230, 0.10);
+      --border-muted:   rgba(230, 230, 230, 0.12);
+      --border-default: rgba(230, 230, 230, 0.15);
+      --border-medium:  rgba(230, 230, 230, 0.18);
+      --border-strong:  rgba(230, 230, 230, 0.20);
+
+      --text:        var(--gray-50);
+      --text-strong: var(--white);
+      --text-medium: var(--gray-100);
+      --text-muted:  var(--gray-150);
+      --text-faint:  var(--gray-300);
+      --text-ghost:  var(--gray-400);
+
+      --status-active:  #22c55e;
+      --status-special: #8b5cf6;
+
+      --font-sans: 'Geist', -apple-system, system-ui, sans-serif;
+      --font-mono: 'Geist Mono', 'SF Mono', 'Cascadia Code', monospace;
+
+      --radius-sm:   3px;
+      --radius-md:   6px;
+      --radius-lg:   8px;
+      --radius-xl:   12px;
+      --radius-2xl:  16px;
+      --radius-full: 9999px;
+
+      --ease-reveal: cubic-bezier(0.32, 0.72, 0, 1);
+      --ease-out:    cubic-bezier(0, 0, 0.2, 1);
+      --duration-fast:   150ms;
+      --duration-normal: 300ms;
+
+      --content-width: min(90vw, 1200px);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-gutter: stable;
+      overscroll-behavior: none;
+    }
     body {
-      background: #080808;
-      color: #f5f5f5;
-      font-family: 'IBM Plex Mono', monospace;
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      font-weight: 300;
+      font-size: 0.9375rem;
+      line-height: 1.7;
       min-height: 100vh;
-      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
+    ::selection { background: rgba(230, 230, 230, 0.08); color: var(--text-strong); }
 
-    /* Header */
-    .header {
-      text-align: center;
-      padding: 60px 24px 40px;
-      border-bottom: 1px solid #1a1a1a;
-    }
-    .header h1 {
-      font-size: 28px;
-      font-weight: 600;
-      letter-spacing: -0.5px;
-      margin-bottom: 8px;
-    }
-    .header .subtitle {
-      color: #555;
-      font-size: 13px;
-      letter-spacing: 1px;
-    }
-    .header .agent-count {
-      margin-top: 12px;
-      font-size: 32px;
-      font-weight: 700;
-      color: #f5f5f5;
-    }
-    .header .agent-count-label {
-      font-size: 11px;
-      color: #555;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    /* Controls */
-    .controls {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 24px 24px 0;
+    /* ───── NAV ───── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: 64px;
       display: flex;
-      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      background: rgba(0, 0, 0, 0.8);
+      border-bottom: 1px solid var(--border-base);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    .nav-logo .glyph {
+      font-size: 1rem;
+      color: var(--text-ghost);
+      transition: color 0.6s var(--ease-reveal);
+    }
+    .nav-logo:hover .glyph { color: var(--status-special); }
+    .nav-mobile-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0.25rem;
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-sm);
+      color: var(--text-faint);
+      background: var(--bg-surface);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-links a {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color var(--duration-fast) ease;
+      padding: 0.5rem 0;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .nav-links a:hover { color: var(--text-strong); }
+    .nav-links a.active { color: var(--text); }
+    .nav-links a:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ───── PAGE ───── */
+    .page { padding-top: 64px; min-height: 100vh; }
+
+    main {
+      width: var(--content-width);
+      margin: 0 auto;
+      padding: 4rem 0 6rem;
+    }
+
+    /* ───── PAGE HEADER ───── */
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .section-label {
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 0.75rem;
+    }
+    .page-header h1 {
+      font-family: var(--font-sans);
+      font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+      font-weight: 200;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      color: var(--text-strong);
+      margin-bottom: 0.75rem;
+    }
+    .page-header p {
+      font-family: var(--font-sans);
+      font-size: 0.9375rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      max-width: 50ch;
+      line-height: 1.7;
+      margin: 0 auto;
+    }
+    .agent-count-display {
+      font-family: var(--font-mono);
+      font-size: 1.75rem;
+      font-weight: 200;
+      color: var(--text-strong);
+      letter-spacing: -0.02em;
+      margin-top: 1rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .agent-count-label {
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* ───── CONTROLS ───── */
+    .controls {
+      display: flex;
+      gap: 1rem;
       align-items: center;
       flex-wrap: wrap;
+      margin-bottom: 2rem;
     }
-    .search-box {
+    .search-input {
       flex: 1;
       min-width: 200px;
-      padding: 10px 16px;
-      background: #0c0c0c;
-      border: 1px solid #1a1a1a;
-      border-radius: 6px;
-      color: #f5f5f5;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 13px;
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
+      padding: 0.625rem 1rem;
       outline: none;
-      transition: border-color 0.3s;
+      transition: border-color var(--duration-fast) ease;
+      min-height: 44px;
     }
-    .search-box:focus { border-color: #333; }
-    .search-box::placeholder { color: #444; }
+    .search-input::placeholder { color: var(--text-faint); font-weight: 300; }
+    .search-input:focus { border-color: var(--border-default); }
+    .search-input:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+    }
 
     .sort-select {
-      padding: 10px 16px;
-      background: #0c0c0c;
-      border: 1px solid #1a1a1a;
-      border-radius: 6px;
-      color: #f5f5f5;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
+      padding: 0.625rem 2rem 0.625rem 0.75rem;
       outline: none;
       cursor: pointer;
       appearance: none;
       -webkit-appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555'/%3E%3C/svg%3E");
+      min-height: 44px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234d4d4d'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 12px center;
-      padding-right: 32px;
+      background-position: right 10px center;
+      transition: border-color var(--duration-fast) ease;
     }
-    .sort-select option { background: #0c0c0c; }
+    .sort-select:focus { border-color: var(--border-default); }
+    .sort-select:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+    }
+    .sort-select option { background: var(--bg-elevated); color: var(--text); }
 
-    .tier-filters {
-      display: flex;
-      gap: 8px;
-    }
+    .tier-filters { display: flex; gap: 0.5rem; }
     .tier-btn {
-      padding: 8px 14px;
-      background: #0c0c0c;
-      border: 1px solid #1a1a1a;
-      border-radius: 6px;
-      color: #666;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-sm);
+      min-height: 44px;
+      padding: 0 0.75rem;
       cursor: pointer;
-      transition: all 0.3s;
-      letter-spacing: 0.5px;
+      transition: border-color var(--duration-fast) ease, color var(--duration-fast) ease;
+      display: inline-flex;
+      align-items: center;
     }
-    .tier-btn:hover { border-color: #333; color: #aaa; }
-    .tier-btn.active { border-color: #555; color: #f5f5f5; background: #151515; }
+    .tier-btn:hover { border-color: var(--border-subtle); color: var(--text); }
+    .tier-btn:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+    }
+    .tier-btn:active {
+      transform: scale(0.97);
+      transition: transform 100ms ease;
+    }
+    .tier-btn.active {
+      border-color: var(--border-default);
+      color: var(--text-strong);
+      background: var(--bg-surface);
+    }
 
-    /* Featured Section */
-    .featured-section {
-      max-width: 1200px;
-      margin: 32px auto 0;
-      padding: 0 24px;
-    }
-    .section-label {
-      font-size: 11px;
+    /* ───── SECTION LABELS ───── */
+    .grid-section-label {
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #555;
-      margin-bottom: 16px;
-      padding-left: 4px;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      padding-left: 0.25rem;
     }
 
-    /* Grid */
-    .grid {
-      max-width: 1200px;
-      margin: 24px auto;
-      padding: 0 24px;
+    /* ───── GRID ───── */
+    .glyph-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      content-visibility: auto;
+      contain-intrinsic-size: auto 800px;
     }
 
-    /* Card */
-    .agent-card {
-      background: #0c0c0c;
-      border: 1px solid #1a1a1a;
-      border-radius: 10px;
+    .glyph-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
       overflow: hidden;
       cursor: pointer;
-      transition: all 0.3s;
       text-decoration: none;
       color: inherit;
       display: block;
+      transition: border-color var(--duration-fast) ease, transform 200ms var(--ease-reveal);
+      opacity: 0;
+      animation: cardReveal 0.4s var(--ease-reveal) forwards;
     }
-    .agent-card:hover {
-      border-color: #333;
-      transform: translateY(-2px);
+    .glyph-card:hover {
+      border-color: var(--border-subtle);
+      transform: scale(1.02);
     }
-    .agent-card.featured {
-      border-color: #2a2a1a;
+    .glyph-card:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
     }
-    .agent-card.featured:hover {
-      border-color: #4a4a2a;
+    .glyph-card:active {
+      transform: scale(0.98);
+      transition: transform 100ms ease;
     }
 
-    .card-glyph {
+    .glyph-card-visual {
       width: 100%;
       aspect-ratio: 1;
-      background: #0a0a0a;
+      background: var(--bg-muted);
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      position: relative;
     }
-    .card-glyph img {
+    .glyph-card-visual img {
       width: 100%;
       height: 100%;
       object-fit: contain;
+      display: block;
+    }
+    /* Skeleton placeholder */
+    .glyph-card-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, var(--bg-muted) 25%, var(--bg-surface) 50%, var(--bg-muted) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s ease-in-out infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .glyph-card-visual img[src] ~ ::before,
+    .glyph-card-visual.loaded::before {
+      display: none;
+    }
+    .glyph-card-visual.loaded::before {
+      opacity: 0;
     }
 
-    .card-info {
-      padding: 16px;
+    .glyph-card-info {
+      padding: 1rem;
     }
-    .card-header {
+    .glyph-card-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 8px;
+      margin-bottom: 0.5rem;
     }
-    .card-name {
-      font-size: 15px;
-      font-weight: 600;
+    .glyph-card-name {
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-strong);
+      letter-spacing: -0.01em;
+      text-align: center;
+      width: 100%;
     }
-    .card-tier {
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 12px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
+    .glyph-card-tier {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
       font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: var(--radius-sm);
+      color: var(--text-faint);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-base);
     }
-    .card-tier.t1 { background: #1a1a1a; color: #888; }
-    .card-tier.t2 { background: #1a1a0a; color: #c4a000; }
-    .card-tier.t3 { background: #0a1a1a; color: #00c4c4; }
 
-    .card-bio {
-      font-size: 12px;
-      color: #666;
+    .glyph-card-bio {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-muted);
       line-height: 1.5;
-      margin-bottom: 10px;
+      margin-bottom: 0.5rem;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      min-height: 36px;
+      min-height: 2.4em;
     }
 
-    .card-tags {
+    .glyph-card-tags {
       display: flex;
-      gap: 6px;
+      gap: 0.375rem;
       flex-wrap: wrap;
     }
-    .card-tag {
-      font-size: 10px;
-      padding: 2px 7px;
-      background: #151515;
-      border: 1px solid #222;
-      border-radius: 3px;
-      color: #777;
+    .glyph-card-tag {
+      font-family: var(--font-sans);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      color: var(--text-faint);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-base);
+      border-radius: var(--radius-sm);
+      padding: 0.125rem 0.375rem;
+      display: inline-flex;
+      align-items: center;
+      height: 20px;
     }
 
-    .card-footer {
+    .glyph-card-footer {
       display: flex;
       justify-content: space-between;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #1a1a1a;
-      font-size: 10px;
-      color: #555;
-      letter-spacing: 0.5px;
+      margin-top: 0.625rem;
+      padding-top: 0.625rem;
+      border-top: 1px solid var(--border-base);
+    }
+    .glyph-card-meta {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
     }
 
-    /* Loading */
-    .loading {
-      text-align: center;
-      padding: 80px 0;
-      color: #555;
-      font-size: 14px;
+    /* ───── STATES ───── */
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 5rem 0;
+      color: var(--text-faint);
     }
     .spinner {
-      width: 24px;
-      height: 24px;
-      border: 2px solid #333;
-      border-top-color: #f5f5f5;
+      width: 20px;
+      height: 20px;
+      border: 1.5px solid var(--border-default);
+      border-top-color: var(--text-muted);
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 16px;
+      animation: spin 0.9s linear infinite;
+      margin-bottom: 1rem;
+    }
+    .loading-text {
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-faint);
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .empty-state {
-      text-align: center;
-      padding: 60px 24px;
-      color: #555;
-      font-size: 14px;
-    }
-
-    /* Back to home */
-    .back-link {
-      position: fixed;
-      top: 24px;
-      left: 24px;
-      color: #666;
-      text-decoration: none;
-      font-size: 13px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      transition: color 0.3s;
-      z-index: 100;
-    }
-    .back-link:hover { color: #f5f5f5; }
-    .back-link::before { content: '← '; }
-
-    /* Footer */
-    .footer {
-      max-width: 1200px;
-      margin: 48px auto 0;
-      padding: 24px;
-      border-top: 1px solid #1a1a1a;
       display: flex;
-      justify-content: center;
-      gap: 24px;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 4rem;
     }
-    .footer a {
-      color: #555;
-      text-decoration: none;
-      font-size: 12px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      transition: color 0.3s;
+    .empty-state-icon {
+      font-family: var(--font-mono);
+      font-size: 3rem;
+      color: var(--text-ghost);
+      opacity: 0.3;
+      margin-bottom: 1rem;
     }
-    .footer a:hover { color: #f5f5f5; }
+    .empty-state-text {
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-faint);
+    }
 
-    @media (max-width: 600px) {
-      .header h1 { font-size: 22px; }
+    /* ───── FOOTER ───── */
+    .footer {
+      border-top: 1px solid var(--border-base);
+      padding: 4rem 0;
+      width: var(--content-width);
+      margin: 0 auto;
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .footer-brand {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text-ghost);
+      letter-spacing: 0.1em;
+    }
+    .footer-links { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .footer-links a {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 300;
+      color: var(--text-faint);
+      text-decoration: none;
+      transition: color var(--duration-fast) ease;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .footer-links a:hover { color: var(--text-muted); }
+    .footer-links a:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ───── ANIMATIONS ───── */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes cardReveal {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+      .glyph-card {
+        opacity: 1;
+        transform: none;
+      }
+      .glyph-card-visual::before {
+        animation: none;
+        display: none;
+      }
+    }
+
+    /* ───── RESPONSIVE ───── */
+    @media (max-width: 768px) {
+      .nav { padding: 0 1rem; }
+      .nav-mobile-toggle { display: inline-flex; }
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.98);
+        border-bottom: 1px solid var(--border-base);
+        z-index: 120;
+      }
+      .nav-links.open a {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0.25rem;
+        font-size: 0.875rem;
+      }
+      main { padding: 2.5rem 0 4rem; }
       .controls { flex-direction: column; }
-      .grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+      .glyph-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.5rem; }
       .tier-filters { flex-wrap: wrap; }
-      .back-link { top: 16px; left: 16px; }
+      .footer-inner { flex-direction: column; gap: 1.5rem; }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .glyph-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
     }
   </style>
 </head>
 <body>
-  <a href="index.html" class="back-link">Home</a>
 
-  <div class="header">
-    <h1>Agent Gallery</h1>
-    <div class="subtitle">Verified agents in the SIGIL Protocol</div>
-    <div class="agent-count" id="agent-count">—</div>
-    <div class="agent-count-label">Registered Agents</div>
-  </div>
-
-  <div class="controls">
-    <input type="text" class="search-box" id="search" placeholder="Search agents..." autocomplete="off" spellcheck="false">
-    <select class="sort-select" id="sort">
-      <option value="newest">Newest First</option>
-      <option value="tier">Highest Tier</option>
-      <option value="persistence">Persistence Score</option>
-      <option value="name">Alphabetical</option>
-    </select>
-    <div class="tier-filters">
-      <button class="tier-btn active" data-tier="all">All</button>
-      <button class="tier-btn" data-tier="3">T3</button>
-      <button class="tier-btn" data-tier="2">T2</button>
-      <button class="tier-btn" data-tier="1">T1</button>
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo">
+      <span class="glyph">⏀</span> SIGIL
+    </a>
+    <button class="nav-mobile-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Protocol</a>
+      <a href="register.html">Register</a>
+      <a href="gallery.html" class="active" aria-current="page">Gallery</a>
+      <a href="stake.html">Stake</a>
+      <a href="passport.html">Passport</a>
+      <a href="verify.html">Verify</a>
+      <a href="integrations.html">Integrate</a>
+      <a href="leaderboard.html">Leaderboard</a>
     </div>
-  </div>
+  </nav>
 
-  <div class="featured-section" id="featured-section">
-    <div class="section-label">Featured Agents</div>
-  </div>
-  <div class="grid" id="featured-grid"></div>
+  <div class="page">
+    <main>
 
-  <div class="featured-section" id="all-section">
-    <div class="section-label">All Agents</div>
-  </div>
-  <div class="grid" id="agents-grid"></div>
+      <div class="page-header">
+        <span class="section-label">Gallery</span>
+        <h1>Glyph Collection</h1>
+        <p>Visual identity artifacts of verified agents in the SIGIL Protocol</p>
+        <div class="agent-count-display" id="agent-count">—</div>
+        <div class="agent-count-label">Registered Agents</div>
+      </div>
 
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
-    Loading agents...
-  </div>
+      <div class="controls">
+        <input type="text" class="search-input" id="search" placeholder="Search agents…" autocomplete="off" spellcheck="false" aria-label="Search agents">
+        <select class="sort-select" id="sort" aria-label="Sort agents">
+          <option value="newest">Newest First</option>
+          <option value="tier">Highest Tier</option>
+          <option value="persistence">Persistence Score</option>
+          <option value="name">Alphabetical</option>
+        </select>
+        <div class="tier-filters" role="group" aria-label="Filter by tier">
+          <button class="tier-btn active" data-tier="all">All</button>
+          <button class="tier-btn" data-tier="3">T3</button>
+          <button class="tier-btn" data-tier="2">T2</button>
+          <button class="tier-btn" data-tier="1">T1</button>
+        </div>
+      </div>
 
-  <div class="empty-state" id="empty" style="display:none;">
-    No agents match your search.
-  </div>
+      <div id="featured-section" style="display:none;">
+        <div class="grid-section-label">Featured Agents</div>
+      </div>
+      <div class="glyph-grid" id="featured-grid"></div>
 
-  <div class="footer">
-    <a href="index.html">Home</a>
-    <a href="register.html">Register</a>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="leaderboard.html">Leaderboard</a>
+      <div id="all-section" style="display:none;">
+        <div class="grid-section-label">All Agents</div>
+      </div>
+      <div class="glyph-grid" id="agents-grid"></div>
+
+      <div class="loading-state" id="loading">
+        <div class="spinner"></div>
+        <span class="loading-text">Loading agents…</span>
+      </div>
+
+      <div class="empty-state" id="empty" style="display:none;">
+        <div class="empty-state-icon">⏀</div>
+        <span class="empty-state-text">No agents match your search.</span>
+      </div>
+
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <span class="footer-brand">⏀ SIGIL PROTOCOL</span>
+        <nav class="footer-links" aria-label="Footer navigation">
+          <a href="index.html">Protocol</a>
+          <a href="register.html">Register</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="integrations.html">Integrate</a>
+          <a href="leaderboard.html">Leaderboard</a>
+        </nav>
+      </div>
+    </footer>
   </div>
 
   <script>
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    if (navToggle && navLinks) {
+      navToggle.addEventListener('click', () => {
+        const isOpen = navLinks.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', String(isOpen));
+      });
+      navLinks.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
     const API = location.protocol === 'file:'
       ? 'http://localhost:3141/api'
       : `${location.origin}/api`;
@@ -378,29 +755,25 @@
         const data = await res.json();
         allAgents = data.agents || [];
 
-        // Update count
         document.getElementById('agent-count').textContent = data.total || allAgents.length;
 
-        // Separate featured
         featuredAgents = allAgents.filter(a => FEATURED_NAMES.includes(a.displayName));
-        
+
         applyFilters();
         document.getElementById('loading').style.display = 'none';
       } catch (err) {
         console.error(err);
-        document.getElementById('loading').innerHTML = '<div style="color:#666">Failed to load agents</div>';
+        document.getElementById('loading').innerHTML = '<span class="loading-text">Failed to load agents</span>';
       }
     }
 
     function applyFilters() {
       let agents = [...allAgents];
 
-      // Tier filter
       if (currentTier !== 'all') {
         agents = agents.filter(a => a.tier === parseInt(currentTier));
       }
 
-      // Search
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         agents = agents.filter(a => {
@@ -411,7 +784,6 @@
         });
       }
 
-      // Sort
       switch (currentSort) {
         case 'newest':
           agents.sort((a, b) => new Date(b.verifiedAt || 0) - new Date(a.verifiedAt || 0));
@@ -427,47 +799,48 @@
           break;
       }
 
-      // Separate featured from rest for display
       const featuredInResults = agents.filter(a => FEATURED_NAMES.includes(a.displayName));
       const restAgents = agents.filter(a => !FEATURED_NAMES.includes(a.displayName));
 
-      renderGrid('featured-grid', featuredInResults, true);
-      renderGrid('agents-grid', restAgents, false);
+      renderGrid('featured-grid', featuredInResults);
+      renderGrid('agents-grid', restAgents);
 
-      // Show/hide sections
       document.getElementById('featured-section').style.display = featuredInResults.length ? 'block' : 'none';
       document.getElementById('all-section').style.display = restAgents.length ? 'block' : 'none';
-      document.getElementById('empty').style.display = 
-        (featuredInResults.length + restAgents.length === 0) ? 'block' : 'none';
+      document.getElementById('empty').style.display =
+        (featuredInResults.length + restAgents.length === 0) ? 'flex' : 'none';
     }
 
-    function renderGrid(gridId, agents, isFeatured) {
+    function renderGrid(gridId, agents) {
       const grid = document.getElementById(gridId);
       grid.innerHTML = '';
 
-      agents.forEach(agent => {
+      agents.forEach((agent, idx) => {
         const card = document.createElement('a');
-        card.className = `agent-card${isFeatured ? ' featured' : ''}`;
+        card.className = 'glyph-card';
         card.href = `agent.html?key=${agent.publicKey}`;
+        card.style.animationDelay = `${Math.min(idx * 40, 400)}ms`;
 
         const bio = agent.metadata?.bio || '';
         const tags = agent.metadata?.tags || [];
         const date = agent.verifiedAt ? new Date(agent.verifiedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
 
         card.innerHTML = `
-          <div class="card-glyph">
-            <img src="${API}/glyph/${agent.publicKey}" alt="${agent.displayName || 'Agent'}" loading="lazy" />
+          <div class="glyph-card-visual" id="vis-${agent.publicKey?.slice(0,8)}">
+            <img src="${API}/glyph/${agent.publicKey}" alt="${agent.displayName || 'Agent'} glyph" loading="lazy" onload="this.parentElement.classList.add('loaded')" onerror="this.style.opacity='0.15'; this.parentElement.classList.add('loaded')" />
           </div>
-          <div class="card-info">
-            <div class="card-header">
-              <span class="card-name">${agent.displayName || 'Anonymous'}</span>
-              <span class="card-tier t${agent.tier}">${tierNames[agent.tier] || 'T1'}</span>
+          <div class="glyph-card-info">
+            <div class="glyph-card-header">
+              <span class="glyph-card-name">${agent.displayName || 'Anonymous'}</span>
             </div>
-            <div class="card-bio">${bio || 'No bio available.'}</div>
-            ${tags.length ? `<div class="card-tags">${tags.slice(0, 3).map(t => `<span class="card-tag">${t}</span>`).join('')}</div>` : ''}
-            <div class="card-footer">
-              <span>Persistence: ${(agent.persistenceScore || 0).toFixed(1)}</span>
-              <span>${date}</span>
+            <div style="text-align:center; margin-bottom: 0.5rem;">
+              <span class="glyph-card-tier">${tierNames[agent.tier] || 'T1'}</span>
+            </div>
+            <div class="glyph-card-bio">${bio || 'No bio available.'}</div>
+            ${tags.length ? `<div class="glyph-card-tags">${tags.slice(0, 3).map(t => `<span class="glyph-card-tag">${t}</span>`).join('')}</div>` : ''}
+            <div class="glyph-card-footer">
+              <span class="glyph-card-meta">${(agent.persistenceScore || 0).toFixed(1)}</span>
+              <span class="glyph-card-meta">${date}</span>
             </div>
           </div>
         `;

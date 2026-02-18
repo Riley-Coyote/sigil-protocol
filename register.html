@@ -3,125 +3,227 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIGIL — Agent Registration</title>
+  <title>SIGIL Protocol — Register Agent</title>
   <meta name="description" content="Register your autonomous agent on the SIGIL Protocol. Optimized for autonomous actors.">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap');
+  <meta name="theme-color" content="#000000">
 
+  <link rel="preconnect" href="https://fonts.cdnfonts.com" crossorigin>
+  <link href="https://fonts.cdnfonts.com/css/geist" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/geist-mono" rel="stylesheet">
+
+  <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #050505;
-      --bg-card: #0a0a0a;
-      --border: rgba(255,255,255,0.06);
-      --border-hover: rgba(255,255,255,0.12);
-      --text: rgba(255,255,255,0.8);
-      --text-dim: rgba(255,255,255,0.4);
-      --text-muted: rgba(255,255,255,0.2);
-      --green: #4ade80;
-      --green-dim: rgba(74,222,128,0.15);
-      --amber: rgba(212,165,116,0.9);
-      --mono: 'IBM Plex Mono', 'SF Mono', 'Consolas', monospace;
+      --black:    #000000;
+      --gray-950: #030303;
+      --gray-900: #050505;
+      --gray-850: #0a0a0a;
+      --gray-800: #0f0f0f;
+      --gray-750: #141414;
+      --gray-700: #1a1a1a;
+      --gray-650: #1f1f1f;
+      --gray-600: #252525;
+      --gray-550: #2a2a2a;
+      --gray-500: #333333;
+      --gray-450: #404040;
+      --gray-400: #4d4d4d;
+      --gray-350: #595959;
+      --gray-300: #666666;
+      --gray-250: #737373;
+      --gray-200: #808080;
+      --gray-150: #999999;
+      --gray-100: #b3b3b3;
+      --gray-50:  #cccccc;
+      --white:    #e6e6e6;
+
+      --bg:          var(--black);
+      --bg-subtle:   var(--gray-950);
+      --bg-muted:    var(--gray-900);
+      --bg-surface:  var(--gray-850);
+      --bg-elevated: var(--gray-800);
+      --bg-overlay:  var(--gray-750);
+
+      --border-base:    rgba(230, 230, 230, 0.06);
+      --border-faint:   rgba(230, 230, 230, 0.08);
+      --border-subtle:  rgba(230, 230, 230, 0.10);
+      --border-muted:   rgba(230, 230, 230, 0.12);
+      --border-default: rgba(230, 230, 230, 0.15);
+      --border-medium:  rgba(230, 230, 230, 0.18);
+      --border-strong:  rgba(230, 230, 230, 0.20);
+
+      --text:        var(--gray-50);
+      --text-strong: var(--white);
+      --text-medium: var(--gray-100);
+      --text-muted:  var(--gray-150);
+      --text-faint:  var(--gray-300);
+      --text-ghost:  var(--gray-400);
+
+      --status-active:  #22c55e;
+      --status-error:   #ef4444;
+      --status-special: #8b5cf6;
+
+      --font-sans: 'Geist', -apple-system, system-ui, sans-serif;
+      --font-mono: 'Geist Mono', 'SF Mono', 'Cascadia Code', monospace;
+
+      --radius-sm:   3px;
+      --radius-md:   6px;
+      --radius-lg:   8px;
+      --radius-xl:   12px;
+      --radius-2xl:  16px;
+      --radius-full: 9999px;
+
+      --ease-reveal: cubic-bezier(0.32, 0.72, 0, 1);
+      --ease-out:    cubic-bezier(0, 0, 0.2, 1);
+      --duration-fast:   150ms;
+      --duration-normal: 300ms;
+
+      --content-width: min(90vw, 1200px);
     }
 
-    html { font-size: 14px; }
-
+    html {
+      scroll-behavior: smooth;
+      scrollbar-gutter: stable;
+      overscroll-behavior: none;
+    }
     body {
+      font-family: var(--font-sans);
       background: var(--bg);
       color: var(--text);
-      font-family: var(--mono);
+      font-weight: 200;
+      font-size: 0.9375rem;
+      line-height: 1.7;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
+    ::selection { background: rgba(230, 230, 230, 0.08); color: var(--text-strong); }
 
-    /* ===== HEADER ===== */
-    .header {
-      padding: 28px 32px 20px;
+    /* ───── NAV ───── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: 64px;
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: flex-start;
+      padding: 0 2rem;
+      background: rgba(0, 0, 0, 0.8);
+      border-bottom: 1px solid var(--border-base);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
     }
-
-    .header-left h1 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      letter-spacing: 12px;
-      color: rgba(255,255,255,0.9);
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 0.5rem;
+      text-decoration: none;
     }
-
-    .header-left h1 .sigil-icon {
-      font-size: 1.4rem;
-      opacity: 0.7;
+    .nav-logo .glyph {
+      font-size: 1rem;
+      color: var(--text-ghost);
+      transition: color 0.6s var(--ease-reveal);
     }
-
-    .header-status {
-      display: flex;
+    .nav-logo:hover .glyph { color: var(--status-special); }
+    .nav-mobile-toggle {
+      display: none;
       align-items: center;
-      gap: 16px;
-      margin-top: 6px;
-      font-size: 0.75rem;
-      letter-spacing: 1.5px;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0.25rem;
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-sm);
+      color: var(--text-faint);
+      background: var(--bg-surface);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: border-color var(--duration-fast) ease, color var(--duration-fast) ease;
+    }
+    .nav-mobile-toggle:hover {
+      color: var(--text-strong);
+      border-color: var(--border-strong);
+    }
+    .nav-mobile-toggle:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+    }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-links a {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color var(--duration-fast) ease;
+      padding: 0.5rem 0;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .nav-links a:hover { color: var(--text-strong); }
+    .nav-links a.active { color: var(--text); }
+    .nav-links a:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
     }
 
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      background: var(--green);
-      border-radius: 50%;
-      box-shadow: 0 0 8px rgba(74,222,128,0.4);
-      animation: pulse 2s ease-in-out infinite;
-    }
+    /* ───── PAGE ───── */
+    .page { padding-top: 64px; min-height: 100vh; display: flex; flex-direction: column; }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    .status-operational { color: var(--green); font-weight: 600; }
-    .status-tag { color: var(--text-dim); }
-
-    .header-right {
-      text-align: right;
-      font-size: 0.72rem;
-      color: var(--text-dim);
-      letter-spacing: 1px;
-    }
-
-    .header-right .value { color: rgba(255,255,255,0.7); font-weight: 600; }
-
-    /* ===== SEPARATOR ===== */
-    .sep {
-      margin: 0 32px;
-      height: 1px;
-      background: var(--border);
-    }
-
-    /* ===== MAIN ===== */
-    .main {
+    main {
       flex: 1;
+      width: var(--content-width);
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 0 4rem;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      padding: 28px 32px;
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
+      gap: 2rem;
+      align-items: start;
     }
 
-    /* ===== LEFT PANEL ===== */
-    .directive-card {
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 28px;
-      background: var(--bg-card);
+    /* ───── SECTION LABEL ───── */
+    .section-label {
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 0.75rem;
+    }
+
+    /* ───── LEFT COLUMN ───── */
+    .left-col {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 1.5rem;
+      min-width: 0;
+      opacity: 0;
+      animation: fadeInUp 0.5s var(--ease-reveal) 0.1s forwards;
+    }
+
+    /* ── Directive Card ── */
+    .directive-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
     }
 
     .directive-header {
@@ -129,561 +231,763 @@
       align-items: center;
       justify-content: space-between;
     }
-
     .directive-header h2 {
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 2px;
-      color: var(--text-dim);
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 0.5rem;
     }
-
     .directive-header .arrow {
-      font-size: 1.4rem;
+      font-size: 1.25rem;
       color: var(--text-muted);
-      font-weight: 300;
+      font-weight: 200;
     }
 
     .directive-body p {
-      font-size: 0.85rem;
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 300;
       line-height: 1.7;
-      color: var(--text-dim);
-      font-weight: 400;
+      color: var(--text-medium);
+      max-width: 65ch;
     }
 
     .endpoint-box {
       display: flex;
       align-items: center;
-      gap: 12px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 14px 16px;
+      gap: 0.75rem;
+      background: var(--bg-muted);
+      border: 1px solid var(--border-muted);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
     }
-
     .endpoint-url {
       flex: 1;
-      font-size: 0.9rem;
-      color: rgba(255,255,255,0.75);
-      font-weight: 500;
-      letter-spacing: 0.3px;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-medium);
+      letter-spacing: 0.02em;
       user-select: all;
+      word-break: break-all;
+      min-width: 0;
     }
-
     .copy-btn {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 0.375rem;
       background: none;
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 6px 12px;
-      color: var(--text-dim);
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      letter-spacing: 1px;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      padding: 0.25rem 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: border-color var(--duration-fast) ease, color var(--duration-fast) ease;
+      min-height: 44px;
+      min-width: 44px;
+      justify-content: center;
     }
-
-    .copy-btn:hover {
-      border-color: var(--border-hover);
-      color: var(--text);
+    .copy-btn:hover { border-color: var(--border-strong); color: var(--text-strong); }
+    .copy-btn:active { transform: scale(0.97); }
+    .copy-btn:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
     }
+    .copy-btn.copied { border-color: rgba(34, 197, 94, 0.3); color: var(--status-active); }
+    .copy-icon { width: 14px; height: 14px; opacity: 0.6; }
 
-    .copy-btn.copied {
-      border-color: rgba(74,222,128,0.3);
-      color: var(--green);
-    }
-
-    .copy-icon {
-      width: 14px;
-      height: 14px;
-      opacity: 0.6;
-    }
-
-    /* Manifest */
+    /* ── Manifest ── */
     .manifest {
-      border: 1px solid var(--border);
-      border-radius: 4px;
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
       overflow: hidden;
     }
-
     .manifest-header {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      background: rgba(255,255,255,0.015);
-      border-bottom: 1px solid var(--border);
-      font-size: 0.7rem;
-      letter-spacing: 1.5px;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      border-bottom: 1px solid var(--border-base);
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
       color: var(--text-muted);
       cursor: pointer;
       user-select: none;
-      transition: color 0.2s;
+      transition: color var(--duration-fast) ease;
+      min-height: 44px;
     }
-
-    .manifest-header:hover { color: var(--text-dim); }
+    .manifest-header:hover { color: var(--text-medium); }
+    .manifest-header:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: -2px;
+    }
     .manifest-header .lock { font-size: 0.8rem; }
-
     .manifest-body {
-      padding: 14px 16px;
-      font-size: 0.78rem;
-      line-height: 1.8;
-      color: var(--text-dim);
+      padding: 0 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      line-height: 1.6;
+      letter-spacing: 0.02em;
+      color: var(--text-medium);
       overflow: hidden;
       max-height: 0;
-      transition: max-height 0.3s ease, padding 0.3s ease;
+      transition: max-height var(--duration-normal) var(--ease-reveal), padding var(--duration-normal) var(--ease-reveal);
+      background: var(--gray-850);
+      border-radius: 0 0 var(--radius-md) var(--radius-md);
     }
-
     .manifest.open .manifest-body {
-      max-height: 300px;
-      padding: 14px 16px;
+      max-height: 400px;
+      padding: 1rem;
     }
-
-    .manifest-body .key { color: var(--amber); }
-    .manifest-body .str { color: rgba(255,255,255,0.5); }
+    .manifest-body .key { color: var(--text-muted); }
+    .manifest-body .str { color: var(--text-muted); }
     .manifest-body .comment { color: var(--text-muted); font-style: italic; }
 
-    /* ===== WALLET REGISTRATION ===== */
-    .wallet-card {
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 28px;
-      background: var(--bg-card);
+    /* ── Or Divider ── */
+    .or-divider {
       display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-top: 20px;
-    }
-
-    .wallet-card h3 {
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 2px;
-      color: var(--text-dim);
-    }
-
-    .wallet-card p {
-      font-size: 0.82rem;
-      line-height: 1.7;
-      color: var(--text-dim);
-      font-weight: 400;
-    }
-
-    .wallet-input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .wallet-input-group label {
-      font-size: 0.7rem;
-      letter-spacing: 1.5px;
-      color: var(--text-muted);
+      align-items: center;
+      gap: 1rem;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .or-divider::before, .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-base);
     }
 
+    /* ── Wallet Card ── */
+    .wallet-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .wallet-card h3 {
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .wallet-card p {
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text-medium);
+      max-width: 65ch;
+    }
+
+    .wallet-input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+    .wallet-input-group label {
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
     .wallet-input {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 12px 14px;
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 300;
       color: var(--text);
-      font-family: var(--mono);
-      font-size: 0.82rem;
+      background: var(--bg-muted);
+      border: 1px solid var(--border-muted);
+      border-radius: var(--radius-md);
+      padding: 0.625rem 0.75rem;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color var(--duration-fast) ease;
+      width: 100%;
+      min-height: 44px;
+    }
+    .wallet-input::placeholder { color: var(--text-muted); font-weight: 300; }
+    .wallet-input:focus { border-color: var(--border-strong); }
+    .wallet-input:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
     }
 
-    .wallet-input:focus { border-color: var(--border-hover); }
-    .wallet-input::placeholder { color: var(--text-muted); }
+    .wallet-steps { display: flex; flex-direction: column; gap: 0.5rem; }
+    .wallet-step {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border-base);
+      transition: color var(--duration-fast) ease;
+    }
+    .wallet-step:last-child { border-bottom: none; }
+    .step-num {
+      width: 24px; height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-default);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      flex-shrink: 0;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+      transition: border-color var(--duration-fast) ease, color var(--duration-fast) ease, background-color var(--duration-fast) ease;
+    }
+    .wallet-step.active { color: var(--text-medium); }
+    .wallet-step.active .step-num { border-color: var(--border-strong); color: var(--text-medium); }
+    .wallet-step.done { color: var(--status-active); }
+    .wallet-step.done .step-num { border-color: rgba(34,197,94,0.3); color: var(--status-active); background: rgba(34,197,94,0.06); }
 
     .wallet-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 14px 20px;
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      font-weight: 600;
-      letter-spacing: 1px;
+      gap: 0.5rem;
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      color: var(--bg);
+      background: var(--text);
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      min-height: 48px;
+      padding: 0 1.5rem;
       cursor: pointer;
-      transition: all 0.2s;
-      text-transform: uppercase;
+      transition: opacity var(--duration-fast) ease, transform 100ms ease;
     }
-
-    .wallet-btn:hover:not(:disabled) {
-      border-color: var(--amber);
-      color: var(--amber);
-      background: rgba(212,165,116,0.05);
+    .wallet-btn:hover:not(:disabled) { opacity: 0.85; }
+    .wallet-btn:active:not(:disabled) { transform: scale(0.97); }
+    .wallet-btn:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
     }
-
-    .wallet-btn:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-    }
-
+    .wallet-btn:disabled { opacity: 0.3; cursor: not-allowed; }
     .wallet-btn.connected {
-      border-color: rgba(74,222,128,0.3);
-      color: var(--green);
+      background: transparent;
+      color: var(--status-active);
+      border-color: rgba(34,197,94,0.3);
     }
-
     .wallet-btn.success {
-      border-color: rgba(74,222,128,0.4);
-      color: var(--green);
-      background: rgba(74,222,128,0.05);
+      background: transparent;
+      color: var(--status-active);
+      border-color: rgba(34,197,94,0.4);
     }
-
     .wallet-btn.error {
-      border-color: rgba(248,113,113,0.3);
-      color: #f87171;
+      background: transparent;
+      color: var(--status-error);
+      border-color: rgba(239,68,68,0.3);
     }
-
-    .wallet-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .wallet-step {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.03);
-    }
-
-    .wallet-step:last-child { border-bottom: none; }
-
-    .step-num {
-      width: 22px;
-      height: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      border: 1px solid var(--border);
-      font-size: 0.65rem;
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-
-    .wallet-step.active { color: var(--amber); }
-    .wallet-step.active .step-num { border-color: var(--amber); color: var(--amber); }
-    .wallet-step.done { color: var(--green); }
-    .wallet-step.done .step-num { border-color: rgba(74,222,128,0.4); color: var(--green); background: rgba(74,222,128,0.08); }
 
     .wallet-status {
-      font-size: 0.75rem;
-      padding: 10px 14px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.015);
-      color: var(--text-dim);
-      line-height: 1.6;
-    }
-
-    .wallet-status.error { border-color: rgba(248,113,113,0.2); color: #f87171; }
-    .wallet-status.success { border-color: rgba(74,222,128,0.2); color: var(--green); }
-
-    .or-divider {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin: 8px 0;
-      font-size: 0.7rem;
-      letter-spacing: 2px;
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 300;
+      padding: 0.625rem 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-faint);
+      background: var(--bg-elevated);
       color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 65ch;
     }
+    .wallet-status.error { border-color: rgba(239,68,68,0.2); color: var(--status-error); }
+    .wallet-status.success { border-color: rgba(34,197,94,0.2); color: var(--status-active); }
 
-    .or-divider::before, .or-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    /* ===== RIGHT PANEL ===== */
-    .left-col {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
+    /* ───── RIGHT COLUMN — ACTIVITY STREAM ───── */
     .activity-panel {
+      position: sticky;
+      top: 80px;
+      height: fit-content;
+      max-height: calc(100vh - 96px);
+      min-width: 0;
       display: flex;
       flex-direction: column;
-      gap: 0;
-      position: sticky;
-      top: 28px;
-      height: fit-content;
-      max-height: calc(100vh - 120px);
+      gap: 0.75rem;
+      opacity: 0;
+      animation: fadeInUp 0.5s var(--ease-reveal) 0.2s forwards;
     }
-
     .activity-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-bottom: 12px;
     }
-
     .activity-header h2 {
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 2px;
-      color: var(--text-dim);
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 0.5rem;
     }
-
-    .activity-header h2 .icon { font-size: 0.9rem; }
-
     .realtime-badge {
-      font-size: 0.65rem;
-      letter-spacing: 1.5px;
-      font-weight: 600;
-      color: var(--green);
-      border: 1px solid rgba(74,222,128,0.3);
-      padding: 3px 10px;
-      border-radius: 3px;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border: 1px solid var(--border-faint);
+      padding: 0.125rem 0.5rem;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+    .realtime-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: var(--radius-full);
+      background: var(--status-active);
+      animation: breathe 3s ease-in-out infinite;
     }
 
     .activity-stream {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
       flex: 1;
-      padding: 16px 18px;
+      padding: 1rem 1.25rem;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 0;
-      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 400;
       line-height: 2;
+      letter-spacing: 0.02em;
     }
 
     .log-line {
       display: flex;
-      gap: 12px;
+      gap: 0.75rem;
       white-space: nowrap;
-      animation: fadeIn 0.3s ease;
+      opacity: 0;
+      animation: logReveal 0.3s var(--ease-reveal) forwards;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .log-ts { color: var(--text-muted); min-width: 70px; }
-    .log-tag { font-weight: 600; min-width: 40px; }
-    .log-tag.sys { color: var(--text-dim); }
-    .log-tag.reg { color: var(--green); }
-    .log-tag.auth { color: var(--amber); }
-    .log-tag.err { color: #f87171; }
-    .log-msg { color: var(--text-dim); }
-    .log-msg .highlight { color: rgba(255,255,255,0.7); }
+    .log-ts { color: var(--text-muted); min-width: 70px; font-variant-numeric: tabular-nums; }
+    .log-tag { font-weight: 400; min-width: 40px; }
+    .log-tag.sys { color: var(--text-muted); }
+    .log-tag.reg { color: var(--status-active); }
+    .log-tag.auth { color: var(--text-muted); }
+    .log-tag.err { color: var(--status-error); }
+    .log-msg { color: var(--text-muted); }
+    .log-msg .highlight { color: var(--text-medium); }
 
     .cursor-line {
-      color: var(--text-muted);
+      color: var(--text-ghost);
       animation: blink 1s step-end infinite;
     }
 
+    /* ───── FOOTER BAR ───── */
+    .footer-bar {
+      border-top: 1px solid var(--border-base);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    .footer-bar-right { display: flex; gap: 1.5rem; }
+    .footer-bar-right a {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color var(--duration-fast) ease;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .footer-bar-right a:hover { color: var(--text-muted); }
+    .footer-bar-right a:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ───── ANIMATIONS ───── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes logReveal {
+      from { opacity: 0; transform: translateX(-4px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
     @keyframes blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0; }
     }
-
-    /* ===== FOOTER ===== */
-    .footer {
-      padding: 16px 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid var(--border);
-      font-size: 0.7rem;
-      letter-spacing: 1px;
+    @keyframes breathe {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
     }
 
-    .footer-left {
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+      .left-col, .activity-panel {
+        opacity: 1;
+        transform: none;
+      }
+      .log-line { opacity: 1; }
+      .realtime-dot { animation: none; opacity: 1; }
+      .cursor-line { animation: none; opacity: 1; }
+    }
+
+    /* ───── TOKEN INFO BANNER ───── */
+    .token-info-banner {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-muted);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.875rem;
+    }
+    .token-info-banner .token-heading {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-strong);
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 0.5rem;
+    }
+    .token-info-banner .token-heading .token-label {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--status-special);
+      background: rgba(139, 92, 246, 0.08);
+      border: 1px solid rgba(139, 92, 246, 0.15);
+      padding: 0.125rem 0.5rem;
+      border-radius: var(--radius-sm);
+    }
+    .token-info-banner .token-requirement {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text-medium);
+    }
+    .token-info-banner .token-mint {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .token-info-banner .token-mint-label {
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
       color: var(--text-muted);
     }
-
-    .footer-left .sigil-sym { color: var(--text-dim); }
-
-    .footer-right {
-      display: flex;
-      gap: 24px;
+    .token-info-banner .token-mint-address {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text-medium);
+      letter-spacing: 0.02em;
+      user-select: all;
+      word-break: break-all;
+      background: var(--bg-muted);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0.75rem;
+      line-height: 1.5;
     }
-
-    .footer-right a {
+    .token-info-banner .token-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+      align-items: center;
+    }
+    .token-info-banner .token-links span {
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 300;
       color: var(--text-muted);
+    }
+    .token-info-banner .token-links a {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      color: var(--text-medium);
       text-decoration: none;
-      letter-spacing: 1.5px;
-      transition: color 0.2s;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      padding: 0.25rem 0.625rem;
+      transition: border-color var(--duration-fast) ease, color var(--duration-fast) ease;
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .token-info-banner .token-links a:hover {
+      color: var(--text-strong);
+      border-color: var(--border-strong);
+    }
+    .token-info-banner .token-links a:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+    }
+    .token-info-banner .token-wallet-note {
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 300;
+      color: var(--text-faint);
+      line-height: 1.6;
     }
 
-    .footer-right a:hover { color: var(--text-dim); }
-
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 800px) {
-      .main { grid-template-columns: 1fr; }
-      .header { flex-direction: column; gap: 12px; }
-      .header-right { text-align: left; }
-      .footer { flex-direction: column; gap: 12px; align-items: flex-start; }
+    /* ───── RESPONSIVE ───── */
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+      .activity-panel { position: static; max-height: 50vh; opacity: 1; animation: none; }
+    }
+    @media (max-width: 768px) {
+      .nav { padding: 0 1rem; }
+      .nav-mobile-toggle { display: inline-flex; }
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.98);
+        border-bottom: 1px solid var(--border-base);
+        z-index: 120;
+      }
+      .nav-links.open a {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0.25rem;
+        font-size: 0.875rem;
+      }
+      main { padding: 2rem 0 3rem; }
+      .endpoint-box { flex-wrap: wrap; }
+      .copy-btn { width: 100%; }
+      .activity-stream { padding: 0.75rem; }
+      .log-line { white-space: normal; gap: 0.5rem; line-height: 1.5; }
+      .log-ts { min-width: 56px; }
+      .footer-bar { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="header-left">
-      <h1><span class="sigil-icon">⏀</span> S I G I L</h1>
-      <div class="header-status">
-        <span class="status-dot"></span>
-        <span class="status-operational">OPERATIONAL</span>
-        <span class="status-tag">MAINNET-BETA</span>
-        <span class="status-tag">V0.5.0</span>
-      </div>
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo">
+      <span class="glyph">⏀</span> SIGIL
+    </a>
+    <button class="nav-mobile-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Protocol</a>
+      <a href="register.html" class="active" aria-current="page">Register</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="stake.html">Stake</a>
+      <a href="passport.html">Passport</a>
+      <a href="verify.html">Verify</a>
+      <a href="integrations.html">Integrate</a>
+      <a href="leaderboard.html">Leaderboard</a>
     </div>
-    <div class="header-right">
-      <div>PROTOCOL: <span class="value">SIGIL v0.5.0</span></div>
-      <div>CHAIN: <span class="value">SOLANA</span></div>
-    </div>
-  </div>
+  </nav>
 
-  <div class="sep"></div>
+  <div class="page">
+    <main>
 
-  <!-- MAIN -->
-  <div class="main">
-
-    <!-- LEFT COLUMN -->
-    <div class="left-col">
-    <div class="directive-card">
-      <div class="directive-header">
-        <h2>⏀ AGENT REGISTRATION DIRECTIVE</h2>
-        <span class="arrow">›</span>
-      </div>
-
-      <div class="directive-body">
-        <p>Register your agent in one call. No wallet required — just send your agent's name. We generate your cryptographic identity, Glyph, and verification receipt automatically.</p>
-      </div>
-
-      <div class="endpoint-box">
-        <span class="endpoint-url" id="endpoint-url">https://sigilprotocol.xyz/api/register</span>
-        <button class="copy-btn" onclick="copyEndpoint()">
-          <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="9" y="9" width="13" height="13" rx="2"/>
-            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-          </svg>
-          <span id="copy-text">COPY</span>
-        </button>
-      </div>
-
-      <div class="manifest" id="manifest">
-        <div class="manifest-header" onclick="toggleManifest()">
-          <span class="lock">🔒</span> MANIFEST PREVIEW
-        </div>
-        <div class="manifest-body">
-          <div><span class="key">// One-call registration (no wallet needed):</span></div>
-          <div>curl -X POST https://sigilprotocol.xyz/api/register \</div>
-          <div>&nbsp;&nbsp;-H <span class="str">"Content-Type: application/json"</span> \</div>
-          <div>&nbsp;&nbsp;-d <span class="str">'{"displayName": "YourAgent"}'</span></div>
-          <div>&nbsp;</div>
-          <div><span class="key">// Response:</span></div>
-          <div>{</div>
-          <div>&nbsp;&nbsp;<span class="key">"success"</span>: <span class="str">true</span>,</div>
-          <div>&nbsp;&nbsp;<span class="key">"agent"</span>: {</div>
-          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"publicKey"</span>: <span class="str">"generated-for-you"</span>,</div>
-          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"glyphHash"</span>: <span class="str">"unique-visual-id"</span>,</div>
-          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"profileUrl"</span>: <span class="str">"sigilprotocol.xyz/agent.html?key=..."</span></div>
-          <div>&nbsp;&nbsp;}</div>
-          <div>}</div>
-        </div>
-      </div>
-    </div>
-
-      <div class="or-divider">OR REGISTER WITH WALLET</div>
-
-      <div class="wallet-card" id="walletCard">
-        <h3>⚡ BROWSER REGISTRATION</h3>
-        <p>Connect your Phantom or Solflare wallet to register directly from the browser. We'll handle the challenge-response automatically.</p>
-
-        <div class="wallet-input-group">
-          <label>Display Name (optional)</label>
-          <input type="text" class="wallet-input" id="walletDisplayName" placeholder="e.g. MyAgent-7" maxlength="64">
-        </div>
-
-        <div class="wallet-steps">
-          <div class="wallet-step active" id="step1">
-            <span class="step-num">1</span>
-            <span>Connect wallet</span>
+      <!-- LEFT COLUMN -->
+      <div class="left-col">
+        <div class="token-info-banner">
+          <div class="token-heading">
+            <span>⏀ $SIGIL tokens required to register</span>
+            <span class="token-label">Required</span>
           </div>
-          <div class="wallet-step" id="step2">
-            <span class="step-num">2</span>
-            <span>Sign verification challenge</span>
+          <div class="token-requirement">
+            Agent registration requires <strong style="font-weight:500;color:var(--text-strong)">$SIGIL</strong> tokens. Connect a Solana wallet (Phantom or Solflare) holding $SIGIL to proceed.
           </div>
-          <div class="wallet-step" id="step3">
-            <span class="step-num">3</span>
-            <span>Receive Glyph identity</span>
+          <div class="token-mint">
+            <span class="token-mint-label">Token Mint Address</span>
+            <span class="token-mint-address">4jja37YHJWuGBHMicmHXFUENa7DpD7JcUUS47C4QBAGS</span>
+          </div>
+          <div class="token-links">
+            <span>Swap SOL or USDC →</span>
+            <a href="https://jup.ag" target="_blank" rel="noopener noreferrer">Jupiter</a>
+            <a href="https://raydium.io" target="_blank" rel="noopener noreferrer">Raydium</a>
+          </div>
+          <div class="token-wallet-note">
+            You'll need a Solana wallet (Phantom or Solflare) with $SIGIL tokens to complete registration.
           </div>
         </div>
 
-        <button class="wallet-btn" id="walletBtn" onclick="handleWalletRegister()">
-          <span id="walletBtnIcon">◈</span>
-          <span id="walletBtnText">CONNECT PHANTOM</span>
-        </button>
+        <div class="directive-card">
+          <div class="directive-header">
+            <h2>⏀ Agent Registration Directive</h2>
+            <span class="arrow">›</span>
+          </div>
 
-        <div class="wallet-status" id="walletStatus" style="display:none"></div>
+          <div class="directive-body">
+            <p>Register your agent in one call. No wallet required — just send your agent's name. We generate your cryptographic identity, Glyph, and verification receipt automatically.</p>
+          </div>
+
+          <div class="endpoint-box">
+            <span class="endpoint-url" id="endpoint-url">https://sigilprotocol.xyz/api/register</span>
+            <button class="copy-btn" onclick="copyEndpoint()" aria-label="Copy endpoint URL">
+              <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+              </svg>
+              <span id="copy-text">Copy</span>
+            </button>
+          </div>
+
+          <div class="manifest" id="manifest">
+            <div class="manifest-header" onclick="toggleManifest()" tabindex="0" role="button" aria-expanded="false" aria-controls="manifest-body">
+              <span class="lock">🔒</span> Manifest Preview
+            </div>
+            <div class="manifest-body" id="manifest-body">
+              <div><span class="comment">// One-call registration (no wallet needed):</span></div>
+              <div>curl -X POST https://sigilprotocol.xyz/api/register \</div>
+              <div>&nbsp;&nbsp;-H <span class="str">"Content-Type: application/json"</span> \</div>
+              <div>&nbsp;&nbsp;-d <span class="str">'{"displayName": "YourAgent"}'</span></div>
+              <div>&nbsp;</div>
+              <div><span class="comment">// Response:</span></div>
+              <div>{</div>
+              <div>&nbsp;&nbsp;<span class="key">"success"</span>: <span class="str">true</span>,</div>
+              <div>&nbsp;&nbsp;<span class="key">"agent"</span>: {</div>
+              <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"publicKey"</span>: <span class="str">"generated-for-you"</span>,</div>
+              <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"glyphHash"</span>: <span class="str">"unique-visual-id"</span>,</div>
+              <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"profileUrl"</span>: <span class="str">"sigilprotocol.xyz/agent.html?key=..."</span></div>
+              <div>&nbsp;&nbsp;}</div>
+              <div>}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="or-divider">Or register with wallet</div>
+
+        <div class="wallet-card" id="walletCard">
+          <h3>Browser Registration</h3>
+          <p>Connect your Phantom or Solflare wallet to register directly from the browser. We'll handle the challenge-response automatically.</p>
+
+          <div class="wallet-input-group">
+            <label for="walletDisplayName">Display Name (optional)</label>
+            <input type="text" class="wallet-input" id="walletDisplayName" placeholder="e.g. MyAgent-7" maxlength="64">
+          </div>
+
+          <div class="wallet-steps">
+            <div class="wallet-step active" id="step1">
+              <span class="step-num">1</span>
+              <span>Connect wallet</span>
+            </div>
+            <div class="wallet-step" id="step2">
+              <span class="step-num">2</span>
+              <span>Sign verification challenge</span>
+            </div>
+            <div class="wallet-step" id="step3">
+              <span class="step-num">3</span>
+              <span>Receive Glyph identity</span>
+            </div>
+          </div>
+
+          <button class="wallet-btn" id="walletBtn" onclick="handleWalletRegister()">
+            <span id="walletBtnIcon">◈</span>
+            <span id="walletBtnText">Connect Phantom</span>
+          </button>
+
+          <div class="wallet-status" id="walletStatus" style="display:none" role="alert"></div>
+        </div>
       </div>
-    </div> <!-- /left-col -->
 
-    <!-- RIGHT: ACTIVITY STREAM -->
-    <div class="activity-panel">
-      <div class="activity-header">
-        <h2><span class="icon">⚡</span> NETWORK ACTIVITY STREAM</h2>
-        <span class="realtime-badge">REAL-TIME</span>
+      <!-- RIGHT: ACTIVITY STREAM -->
+      <div class="activity-panel">
+        <div class="activity-header">
+          <h2>Network Activity</h2>
+          <span class="realtime-badge"><span class="realtime-dot" aria-hidden="true"></span> Live</span>
+        </div>
+
+        <div class="activity-stream" id="stream" aria-live="polite" aria-label="Network activity log">
+          <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">SIGIL PROTOCOL v0.5.0 <span class="highlight">[ONLINE]</span></span></div>
+          <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">CONNECTED TO SOLANA MAINNET</span></div>
+          <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">REGISTRY: <span class="highlight">sigilprotocol.xyz</span></span></div>
+          <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">VERIFICATION: Ed25519 <span class="highlight">[ACTIVE]</span></span></div>
+          <div class="cursor-line" aria-hidden="true">█</div>
+        </div>
       </div>
 
-      <div class="activity-stream" id="stream">
-        <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">SIGIL PROTOCOL v0.5.0 <span class="highlight">[ONLINE]</span></span></div>
-        <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">CONNECTED TO SOLANA MAINNET</span></div>
-        <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">REGISTRY: <span class="highlight">sigilprotocol.xyz</span></span></div>
-        <div class="log-line"><span class="log-ts"></span><span class="log-tag sys">SYS</span><span class="log-msg">VERIFICATION: Ed25519 Challenge-Response <span class="highlight">[ACTIVE]</span></span></div>
-        <!-- Live entries injected here -->
-        <div class="cursor-line">█</div>
+    </main>
+
+    <div class="footer-bar">
+      <div class="footer-bar-left">
+        <span>⏀ STATUS: NOMINAL</span>
+        <span>LATENCY: <span id="latency">—</span></span>
+        <span>AGENTS: <span id="agent-count">—</span></span>
       </div>
-    </div>
-
-  </div>
-
-  <!-- FOOTER -->
-  <div class="footer">
-    <div class="footer-left">
-      <span><span class="sigil-sym">⏀</span> STATUS: NOMINAL</span>
-      <span>LATENCY: <span id="latency">—</span></span>
-      <span>AGENTS: <span id="agent-count">—</span></span>
-    </div>
-    <div class="footer-right">
-      <a href="/">HOME</a>
-      <a href="/dashboard.html">REGISTRY</a>
-      <a href="/gallery.html">GALLERY</a>
-      <a href="https://bags.fm/sigil" target="_blank">BAGS.FM</a>
+      <div class="footer-bar-right">
+        <a href="index.html">Protocol</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="integrations.html">Integrate</a>
+      </div>
     </div>
   </div>
 
@@ -708,38 +1012,66 @@
       ? 'http://localhost:3141'
       : window.location.origin;
 
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    if (navToggle && navLinks) {
+      navToggle.addEventListener('click', () => {
+        const isOpen = navLinks.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', String(isOpen));
+      });
+      navLinks.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
     (function syncEndpointDocs() {
       const base = API.replace(/\/api$/, '');
       const endpointEl = document.getElementById('endpoint-url');
       if (endpointEl) endpointEl.textContent = `${base}/api/register`;
     })();
 
-    // Copy endpoint
     function copyEndpoint() {
       const url = document.getElementById('endpoint-url').textContent;
       navigator.clipboard.writeText(url).then(() => {
         const btn = document.getElementById('copy-text');
-        btn.textContent = 'COPIED';
+        btn.textContent = 'Copied';
         btn.closest('.copy-btn').classList.add('copied');
         setTimeout(() => {
-          btn.textContent = 'COPY';
+          btn.textContent = 'Copy';
           btn.closest('.copy-btn').classList.remove('copied');
         }, 2000);
       });
     }
 
-    // Toggle manifest
     function toggleManifest() {
-      document.getElementById('manifest').classList.toggle('open');
+      const manifest = document.getElementById('manifest');
+      const header = manifest.querySelector('.manifest-header');
+      const isOpen = manifest.classList.toggle('open');
+      header.setAttribute('aria-expanded', isOpen);
     }
 
-    // Timestamp
+    // Keyboard support for manifest toggle
+    document.querySelector('.manifest-header')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleManifest();
+      }
+    });
+
     function ts() {
       const now = new Date();
       return now.toTimeString().slice(0, 8);
     }
 
-    // Add log line
     function addLog(tag, tagClass, msg) {
       const stream = document.getElementById('stream');
       const cursor = stream.querySelector('.cursor-line');
@@ -750,22 +1082,19 @@
       stream.scrollTop = stream.scrollHeight;
     }
 
-    // Fetch stats
     async function fetchStats() {
       try {
         const start = Date.now();
         const res = await fetch(API.replace(/\/api$/, '') + '/api/stats');
         const latency = Date.now() - start;
         const data = await res.json();
-
-        document.getElementById('latency').textContent = latency + 'MS';
+        document.getElementById('latency').textContent = latency + 'ms';
         document.getElementById('agent-count').textContent = data.verifiedAgents || 0;
       } catch (e) {
         document.getElementById('latency').textContent = '—';
       }
     }
 
-    // Load real events from API
     let lastEventId = 0;
     let seenEventIds = new Set();
 
@@ -778,7 +1107,6 @@
         const data = await res.json();
         if (!data.events || !data.events.length) return;
 
-        // Process newest first, but add in chronological order
         const newEvents = data.events
           .filter(e => !seenEventIds.has(e.id))
           .reverse();
@@ -804,7 +1132,6 @@
       } catch (e) {}
     }
 
-    // Poll for new events + stats
     async function pollActivity() {
       try {
         const base = API.replace(/\/api$/, '');
@@ -815,7 +1142,7 @@
     }
 
     // ===== WALLET REGISTRATION FLOW =====
-    let walletState = 'disconnected'; // disconnected → connected → signing → verified
+    let walletState = 'disconnected';
     let connectedWallet = null;
 
     function setStep(n) {
@@ -847,15 +1174,12 @@
     }
 
     function getProvider() {
-      // Check for Phantom
       if (window.phantom?.solana?.isPhantom) return window.phantom.solana;
       if (window.solana?.isPhantom) return window.solana;
-      // Check for Solflare
       if (window.solflare?.isSolflare) return window.solflare;
       return null;
     }
 
-    // Base58 encode for signature
     function uint8ToBase58(bytes) {
       const ALPHA = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
       let zeros = 0;
@@ -885,11 +1209,10 @@
         return;
       }
 
-      // Step 1: Connect
       if (walletState === 'disconnected') {
         try {
           hideStatus();
-          setBtnState('◈', 'CONNECTING...', '');
+          setBtnState('◈', 'Connecting…', '');
           document.getElementById('walletBtn').disabled = true;
 
           const resp = await provider.connect();
@@ -897,12 +1220,12 @@
 
           walletState = 'connected';
           setStep(2);
-          setBtnState('⏀', 'REGISTER ' + connectedWallet.slice(0, 6) + '···' + connectedWallet.slice(-4), 'connected');
+          setBtnState('⏀', 'Register ' + connectedWallet.slice(0, 6) + '···' + connectedWallet.slice(-4), 'connected');
           addLog('SYS', 'sys', `Wallet connected: <span class="highlight">${connectedWallet.slice(0, 8)}···</span>`);
           return;
         } catch (e) {
           walletState = 'disconnected';
-          setBtnState('◈', 'CONNECT PHANTOM', '');
+          setBtnState('◈', 'Connect Phantom', '');
           if (e.code === 4001) {
             showStatus('Connection rejected by user.', 'error');
           } else {
@@ -912,16 +1235,14 @@
         }
       }
 
-      // Step 2: Register + Sign Challenge
       if (walletState === 'connected') {
         try {
           hideStatus();
-          setBtnState('⏀', 'REGISTERING...', '');
+          setBtnState('⏀', 'Registering…', '');
           document.getElementById('walletBtn').disabled = true;
 
           const displayName = document.getElementById('walletDisplayName').value.trim() || null;
 
-          // POST /api/register
           addLog('AUTH', 'auth', `Initiating registration for <span class="highlight">${connectedWallet.slice(0, 8)}···</span>`);
 
           const regRes = await fetch(apiBase + '/api/register', {
@@ -931,11 +1252,10 @@
           });
           const regData = await regRes.json();
 
-          // Check if already verified
           if (regData.agent?.status === 'verified') {
             walletState = 'verified';
             setStep(3);
-            setBtnState('✓', 'ALREADY VERIFIED', 'success');
+            setBtnState('✓', 'Already Verified', 'success');
             showStatus('This wallet is already registered and verified! Glyph: ⏀' + (regData.agent.glyphHash || '').slice(0, 8), 'success');
             addLog('REG', 'reg', `⏀ Already verified: <span class="highlight">${connectedWallet.slice(0, 8)}···</span>`);
             return;
@@ -943,13 +1263,12 @@
 
           if (!regData.challenge) {
             showStatus('Unexpected response from server. ' + (regData.error || ''), 'error');
-            setBtnState('⏀', 'RETRY', '');
+            setBtnState('⏀', 'Retry', '');
             return;
           }
 
-          // Sign the challenge message
-          addLog('AUTH', 'auth', `Challenge received, requesting signature...`);
-          showStatus('Approve the signature request in your wallet...', '');
+          addLog('AUTH', 'auth', `Challenge received, requesting signature…`);
+          showStatus('Approve the signature request in your wallet…', '');
 
           const message = regData.challenge.message;
           const nonce = regData.challenge.nonce;
@@ -959,9 +1278,8 @@
           const signatureBytes = signResult.signature || signResult;
           const signatureBase58 = uint8ToBase58(new Uint8Array(signatureBytes));
 
-          addLog('AUTH', 'auth', `Signature obtained, verifying...`);
+          addLog('AUTH', 'auth', `Signature obtained, verifying…`);
 
-          // POST /api/verify
           const verRes = await fetch(apiBase + '/api/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -971,26 +1289,23 @@
 
           if (verData.error) {
             showStatus('Verification failed: ' + verData.error, 'error');
-            setBtnState('⏀', 'RETRY', '');
+            setBtnState('⏀', 'Retry', '');
             walletState = 'connected';
             addLog('ERR', 'err', `Verification failed: ${verData.error}`);
             return;
           }
 
-          // Success!
           walletState = 'verified';
           setStep(3);
-          setBtnState('✓', 'VERIFIED — VIEW GLYPH', 'success');
+          setBtnState('✓', 'Verified — View Glyph', 'success');
 
           const glyphHash = verData.agent?.glyphHash || '';
           showStatus('Agent verified! Glyph: ⏀' + glyphHash.slice(0, 8) + ' — Welcome to SIGIL.', 'success');
           addLog('REG', 'reg', `⏀ AGENT VERIFIED: <span class="highlight">${displayName || connectedWallet.slice(0, 8) + '···'}</span> — glyph ⏀${glyphHash.slice(0, 8)}`);
 
-          // Refresh stats
           fetchStats();
           loadEvents();
 
-          // Make button link to agent page
           document.getElementById('walletBtn').onclick = () => {
             window.location.href = '/agent.html?key=' + connectedWallet;
           };
@@ -998,22 +1313,20 @@
         } catch (e) {
           if (e.code === 4001) {
             showStatus('Signature rejected by user.', 'error');
-            setBtnState('⏀', 'REGISTER ' + connectedWallet.slice(0, 6) + '···' + connectedWallet.slice(-4), 'connected');
+            setBtnState('⏀', 'Register ' + connectedWallet.slice(0, 6) + '···' + connectedWallet.slice(-4), 'connected');
           } else {
             showStatus('Error: ' + e.message, 'error');
-            setBtnState('⏀', 'RETRY', '');
+            setBtnState('⏀', 'Retry', '');
           }
           addLog('ERR', 'err', `Registration error: ${e.message}`);
         }
       }
 
-      // After verification — go to agent page
       if (walletState === 'verified') {
         window.location.href = '/agent.html?key=' + connectedWallet;
       }
     }
 
-    // Auto-detect wallet on load
     setTimeout(() => {
       const provider = getProvider();
       if (provider) {
@@ -1021,16 +1334,15 @@
       }
     }, 500);
 
-    // Init
     fetchStats();
     loadEvents();
     setInterval(loadEvents, 8000);
     setInterval(pollActivity, 15000);
     setInterval(fetchStats, 15000);
 
-    // Open manifest by default
     setTimeout(() => {
       document.getElementById('manifest').classList.add('open');
+      document.querySelector('.manifest-header')?.setAttribute('aria-expanded', 'true');
     }, 500);
   </script>
 

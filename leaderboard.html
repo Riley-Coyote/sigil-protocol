@@ -3,503 +3,805 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIGIL Protocol | Leaderboard</title>
-
+  <title>SIGIL Protocol — Leaderboard</title>
   <meta name="description" content="SIGIL Protocol leaderboard — top backed agents, top patrons, rising agents, and tier breakdown.">
-  <meta name="theme-color" content="#050505">
+  <meta name="theme-color" content="#000000">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.cdnfonts.com" crossorigin>
+  <link href="https://fonts.cdnfonts.com/css/geist" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/geist-mono" rel="stylesheet">
 
   <style>
-    :root {
-      --bg: #050505;
-      --bg-elevated: #0a0a0a;
-      --surface: #0f0f0f;
-      --border: rgba(255, 255, 255, 0.06);
-      --border-hover: rgba(255, 255, 255, 0.12);
-      --text: rgba(255, 255, 255, 0.8);
-      --text-muted: rgba(255, 255, 255, 0.45);
-      --text-dim: rgba(255, 255, 255, 0.2);
-      --accent: #4ade80;
-      --accent-dim: rgba(74, 222, 128, 0.15);
-      --ember: #d4a574;
-      --ember-dim: rgba(212, 165, 116, 0.15);
-      --ember-glow: rgba(212, 165, 116, 0.3);
-      --warning: #f59e0b;
-
-      --font-display: 'Syne', sans-serif;
-      --font-sans: 'Public Sans', -apple-system, system-ui, sans-serif;
-      --font-mono: 'Spline Sans Mono', monospace;
-      --radius-sm: 2px; --radius-md: 4px; --radius-full: 9999px;
-      --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
-      --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
-      --space-12: 48px; --space-16: 64px;
-      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-      --duration-fast: 150ms; --duration-normal: 250ms;
-      --z-sticky: 50;
-    }
-
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
-    body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.7; font-size: 14px; min-height: 100vh; overflow-x: hidden; }
-    body::after { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px); }
-    ::selection { background: var(--accent-dim); color: var(--text); }
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: var(--radius-full); }
-    :focus { outline: none; }
-    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    @keyframes sigilBurn { 0% { text-shadow: 0 0 10px rgba(212,165,116,0.3); } 50% { text-shadow: 0 0 20px rgba(212,165,116,0.5); } 100% { text-shadow: 0 0 10px rgba(212,165,116,0.3); } }
-    @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 10px rgba(74,222,128,0.3); } 50% { box-shadow: 0 0 20px rgba(74,222,128,0.5); } }
+    :root {
+      --black:    #000000;
+      --gray-950: #030303;
+      --gray-900: #050505;
+      --gray-850: #0a0a0a;
+      --gray-800: #0f0f0f;
+      --gray-750: #141414;
+      --gray-700: #1a1a1a;
+      --gray-650: #1f1f1f;
+      --gray-600: #252525;
+      --gray-550: #2a2a2a;
+      --gray-500: #333333;
+      --gray-450: #404040;
+      --gray-400: #4d4d4d;
+      --gray-350: #595959;
+      --gray-300: #666666;
+      --gray-250: #737373;
+      --gray-200: #808080;
+      --gray-150: #999999;
+      --gray-100: #b3b3b3;
+      --gray-50:  #cccccc;
+      --white:    #e6e6e6;
 
-    /* ===== HEADER ===== */
-    header { border-bottom: 1px solid var(--border); padding: var(--space-4) var(--space-8); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: rgba(5,5,5,0.85); backdrop-filter: blur(12px); z-index: var(--z-sticky); }
-    .header-left { display: flex; align-items: center; gap: var(--space-4); }
-    .logo { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; }
-    .logo-sigil { font-size: 1.25rem; color: var(--ember); animation: sigilBurn 4s infinite; line-height: 1; }
-    .logo-text { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); }
-    .logo-text span { color: rgba(255,255,255,0.2); font-weight: 400; }
-    .build-meta { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.15); }
-    nav { display: flex; gap: var(--space-8); }
-    nav a { color: var(--text-muted); text-decoration: none; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; padding: var(--space-2) 0; position: relative; transition: color 0.25s ease; }
-    nav a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--ember); transition: width 0.25s ease; }
-    nav a:hover { color: rgba(255,255,255,0.75); }
-    nav a:hover::after { width: 100%; }
-    nav a.active { color: var(--ember); }
-    nav a.active::after { width: 100%; background: var(--ember); }
+      --bg:          var(--black);
+      --bg-subtle:   var(--gray-950);
+      --bg-muted:    var(--gray-900);
+      --bg-surface:  var(--gray-850);
+      --bg-elevated: var(--gray-800);
+      --bg-overlay:  var(--gray-750);
 
-    main { max-width: 1200px; margin: 0 auto; padding: var(--space-10) var(--space-6); }
-    .section-label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.3); margin-bottom: var(--space-4); }
-    h1 { font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 600; letter-spacing: -0.02em; color: rgba(255,255,255,0.85); margin-bottom: var(--space-2); }
-    p { font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-4); }
+      --border-base:    rgba(230, 230, 230, 0.06);
+      --border-faint:   rgba(230, 230, 230, 0.08);
+      --border-subtle:  rgba(230, 230, 230, 0.10);
+      --border-muted:   rgba(230, 230, 230, 0.12);
+      --border-default: rgba(230, 230, 230, 0.15);
+      --border-medium:  rgba(230, 230, 230, 0.18);
+      --border-strong:  rgba(230, 230, 230, 0.20);
 
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); padding: 12px 24px; font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none; border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: all var(--duration-normal) var(--ease-out); background: transparent; }
-    .btn--primary { color: var(--accent); border-color: var(--accent); }
-    .btn--primary:hover { background: rgba(74,222,128,0.1); }
-    .btn--small { padding: 8px 16px; font-size: 11px; }
+      --text:        var(--gray-50);
+      --text-strong: var(--white);
+      --text-medium: var(--gray-100);
+      --text-muted:  var(--gray-150);
+      --text-faint:  var(--gray-300);
+      --text-ghost:  var(--gray-400);
 
-    /* ===== TABS ===== */
-    .tab-bar {
+      --status-active:  #22c55e;
+      --status-warning: #f59e0b;
+      --status-error:   #ef4444;
+      --status-info:    #6b7280;
+      --status-special: #8b5cf6;
+
+      --font-sans: 'Geist', -apple-system, system-ui, sans-serif;
+      --font-mono: 'Geist Mono', 'SF Mono', 'Cascadia Code', monospace;
+
+      --radius-sm:   3px;
+      --radius-md:   6px;
+      --radius-lg:   8px;
+      --radius-xl:   12px;
+      --radius-2xl:  16px;
+      --radius-full: 9999px;
+
+      --ease-reveal: cubic-bezier(0.32, 0.72, 0, 1);
+      --ease-out:    cubic-bezier(0, 0, 0.2, 1);
+      --duration-fast:   150ms;
+      --duration-normal: 300ms;
+
+      --content-width: min(90vw, 1200px);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-gutter: stable;
+      overscroll-behavior: none;
+    }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      font-weight: 300;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::selection { background: rgba(230, 230, 230, 0.08); color: var(--text-strong); }
+
+    /* ───── NAV ───── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: 64px;
       display: flex;
-      gap: 0;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: var(--space-8);
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      background: rgba(0, 0, 0, 0.8);
+      border-bottom: 1px solid var(--border-base);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
     }
-
-    .tab-btn {
-      padding: var(--space-3) var(--space-6);
+    .nav-logo {
       font-family: var(--font-mono);
-      font-size: 12px;
-      letter-spacing: 0.03em;
+      font-size: 0.8125rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--text-dim);
-      background: transparent;
-      border: none;
-      border-bottom: 2px solid transparent;
-      cursor: pointer;
-      transition: all var(--duration-fast);
-      margin-bottom: -1px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
     }
-    .tab-btn:hover { color: var(--text-muted); }
-    .tab-btn.active { color: var(--ember); border-bottom-color: var(--ember); }
+    .nav-logo .glyph {
+      font-size: 1rem;
+      color: var(--text-ghost);
+      transition: color 0.6s var(--ease-reveal);
+    }
+    .nav-logo:hover .glyph { color: var(--status-special); }
+    .nav-mobile-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0.25rem;
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-sm);
+      color: var(--text-faint);
+      background: var(--bg-surface);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .nav-links a {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color var(--duration-fast) ease;
+      padding: 0.5rem 0;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .nav-links a:hover { color: var(--text-strong); }
+    .nav-links a.active { color: var(--text); }
+    .nav-links a:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
 
-    .tab-panel { display: none; animation: fadeIn 0.3s var(--ease-out); }
-    .tab-panel.active { display: block; }
+    /* ───── PAGE ───── */
+    .page {
+      padding-top: 64px;
+      min-height: 100vh;
+    }
 
-    /* ===== TIER BREAKDOWN ===== */
+    main {
+      width: var(--content-width);
+      margin: 0 auto;
+      padding: 4rem 0 6rem;
+    }
+
+    /* ───── PAGE HEADER ───── */
+    .page-header {
+      margin-bottom: 3rem;
+    }
+    .section-label {
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 0.75rem;
+    }
+    .page-header h1 {
+      font-family: var(--font-sans);
+      font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+      font-weight: 200;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      color: var(--text-strong);
+      margin-bottom: 0.75rem;
+    }
+    .page-header p {
+      font-family: var(--font-sans);
+      font-size: 0.9375rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      max-width: 50ch;
+      line-height: 1.7;
+    }
+
+    /* ───── TIER BREAKDOWN ───── */
     .tier-breakdown {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: var(--space-5);
-      margin-bottom: var(--space-10);
+      gap: 1rem;
+      margin-bottom: 3rem;
+      content-visibility: auto;
+      contain-intrinsic-size: auto 120px;
     }
-
     .tier-card {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: var(--space-5) var(--space-6);
-      background: rgba(255,255,255,0.015);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
       text-align: center;
-      transition: border-color var(--duration-fast), background var(--duration-fast);
-      animation: fadeInUp 0.4s var(--ease-out) both;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: border-color var(--duration-fast) ease;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeInUp 0.5s var(--ease-reveal) forwards;
     }
     .tier-card:nth-child(1) { animation-delay: 0ms; }
     .tier-card:nth-child(2) { animation-delay: 80ms; }
     .tier-card:nth-child(3) { animation-delay: 160ms; }
     .tier-card:nth-child(4) { animation-delay: 240ms; }
-    .tier-card:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.025); }
+    .tier-card:hover { border-color: var(--border-subtle); }
 
     .tier-card-badge {
       display: inline-block;
-      padding: 4px 12px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+      padding: 0.125rem 0.5rem;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      border-radius: var(--radius-full);
-      margin-bottom: var(--space-3);
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.75rem;
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-base);
     }
-    .tier-card-badge.t0 { color: var(--text-dim); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); }
-    .tier-card-badge.t1 { color: var(--text-muted); background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); }
-    .tier-card-badge.t2 { color: var(--accent); background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.2); }
-    .tier-card-badge.t3 { color: var(--ember); background: var(--ember-dim); border: 1px solid rgba(212,165,116,0.3); }
 
     .tier-card-count {
       font-family: var(--font-mono);
-      font-size: 2rem;
-      font-weight: 600;
-      color: rgba(255,255,255,0.85);
+      font-size: 1.75rem;
+      font-weight: 200;
+      color: var(--text-strong);
       line-height: 1.2;
+      letter-spacing: -0.02em;
       font-variant-numeric: tabular-nums;
     }
 
     .tier-card-name {
-      font-family: var(--font-mono);
-      font-size: 10px;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
-      margin-top: var(--space-1);
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
     }
 
     .tier-bar-visual {
-      margin-top: var(--space-3);
-      height: 4px;
-      background: rgba(255,255,255,0.06);
-      border-radius: var(--radius-full);
+      margin-top: 0.75rem;
+      height: 2px;
+      background: var(--border-faint);
+      border-radius: 1px;
       overflow: hidden;
     }
-
     .tier-bar-fill {
       height: 100%;
-      border-radius: var(--radius-full);
-      transition: width 1.5s var(--ease-out);
+      border-radius: 1px;
+      background: var(--text-ghost);
+      transition: width 1.5s var(--ease-reveal);
     }
-    .tier-bar-fill.t0 { background: rgba(255,255,255,0.15); }
-    .tier-bar-fill.t1 { background: var(--text-muted); }
-    .tier-bar-fill.t2 { background: var(--accent); }
-    .tier-bar-fill.t3 { background: var(--ember); }
 
-    /* ===== LEADERBOARD TABLE ===== */
+    /* ───── TABS ───── */
+    .tab-bar {
+      display: flex;
+      gap: 0.25rem;
+      border-bottom: 1px solid var(--border-faint);
+      margin-bottom: 2rem;
+    }
+    .tab-btn {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      border-bottom: 1px solid transparent;
+      margin-bottom: -1px;
+      transition: color var(--duration-fast) ease, border-color var(--duration-fast) ease;
+      min-height: 44px;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: -2px;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+    .tab-btn.active {
+      color: var(--text-strong);
+      border-bottom-color: var(--text-ghost);
+    }
+    .tab-btn:active {
+      transform: scale(0.97);
+      transition: transform 100ms ease;
+    }
+
+    .tab-panel {
+      display: none;
+      opacity: 0;
+      animation: fadeIn 0.3s var(--ease-reveal) forwards;
+    }
+    .tab-panel.active { display: block; }
+
+    /* ───── TABLE ───── */
     .lb-table-wrapper {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
       overflow: hidden;
-      margin-bottom: var(--space-8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      margin-bottom: 2rem;
+      content-visibility: auto;
+      contain-intrinsic-size: auto 600px;
     }
 
     .lb-table-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: var(--space-3) var(--space-5);
-      background: rgba(255,255,255,0.02);
-      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      border-bottom: 1px solid var(--border-base);
     }
-
     .lb-table-title {
-      font-family: var(--font-mono);
-      font-size: 10px;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
       font-weight: 500;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
+      color: var(--text-muted);
       display: flex;
       align-items: center;
-      gap: var(--space-2);
+      gap: 0.5rem;
     }
-
-    .lb-table-title .icon { font-size: 12px; }
+    .lb-table-title .icon {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .lb-table-meta {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: var(--text-faint);
+      letter-spacing: 0.02em;
+    }
 
     .lb-table {
       width: 100%;
       border-collapse: collapse;
     }
-
-    .lb-table thead { background: rgba(255,255,255,0.015); }
     .lb-table th {
-      font-family: var(--font-mono);
-      font-size: 9px;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
       font-weight: 500;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
-      padding: var(--space-3) var(--space-4);
+      color: var(--text-faint);
       text-align: left;
-      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-muted);
+      position: sticky;
+      top: 0;
+      background: var(--bg-surface);
+      z-index: 2;
     }
-
     .lb-table td {
-      padding: var(--space-3) var(--space-4);
-      border-bottom: 1px solid rgba(255,255,255,0.03);
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text);
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-base);
+      vertical-align: middle;
     }
-
-    .lb-table tbody tr { transition: background var(--duration-fast); cursor: pointer; }
-    .lb-table tbody tr:hover td { background: rgba(255,255,255,0.015); }
+    .lb-table tbody tr {
+      transition: background-color var(--duration-fast) ease;
+      cursor: pointer;
+    }
+    .lb-table tbody tr:nth-child(odd) td { background: var(--black); }
+    .lb-table tbody tr:nth-child(even) td { background: var(--gray-950); }
+    .lb-table tbody tr:hover td { background: var(--gray-850); }
+    .lb-table tbody tr:focus-visible { outline: 2px solid var(--text-ghost); outline-offset: -2px; }
     .lb-table tr:last-child td { border-bottom: none; }
 
+    /* ── Table Cells ── */
     .lb-rank {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 500;
       font-variant-numeric: tabular-nums;
+      color: var(--text-faint);
+      letter-spacing: 0.02em;
       width: 36px;
       text-align: center;
+      display: inline-block;
     }
-    .lb-rank.gold { color: var(--ember); font-weight: 700; }
-    .lb-rank.silver { color: var(--text-muted); font-weight: 600; }
-    .lb-rank.bronze { color: var(--text-dim); font-weight: 500; }
+    .lb-rank.gold { color: var(--text-strong); }
+    .lb-rank.silver { color: var(--text-medium); }
+    .lb-rank.bronze { color: var(--text-muted); }
 
     .lb-agent-cell {
       display: flex;
       align-items: center;
-      gap: var(--space-3);
+      gap: 0.75rem;
     }
-
     .lb-glyph {
       width: 28px; height: 28px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-faint);
       overflow: hidden;
       flex-shrink: 0;
       background: var(--bg-elevated);
     }
-    .lb-glyph img { width: 100%; height: 100%; object-fit: cover; }
-
-    .lb-agent-name { color: var(--text); font-family: var(--font-sans); font-weight: 500; }
+    .lb-glyph img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .lb-agent-name {
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-strong);
+    }
 
     .lb-tier {
-      padding: 2px 8px;
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      border-radius: var(--radius-full);
+      border-radius: var(--radius-sm);
+      color: var(--text-faint);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-base);
     }
-    .lb-tier.t0 { color: var(--text-dim); background: rgba(255,255,255,0.06); }
-    .lb-tier.t1 { color: var(--text-muted); background: rgba(255,255,255,0.08); }
-    .lb-tier.t2 { color: var(--accent); background: rgba(74,222,128,0.1); }
-    .lb-tier.t3 { color: var(--ember); background: var(--ember-dim); }
 
-    .lb-staked { color: var(--ember); font-weight: 600; font-variant-numeric: tabular-nums; }
-    .lb-stakers { font-variant-numeric: tabular-nums; }
-
-    .lb-change {
+    .lb-staked {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-medium);
+      letter-spacing: 0.02em;
       font-variant-numeric: tabular-nums;
-      font-size: 11px;
     }
-    .lb-change.positive { color: var(--accent); }
-    .lb-change.negative { color: #ef4444; }
-    .lb-change.neutral { color: var(--text-dim); }
+    .lb-stakers {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    .lb-change {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    .lb-change.positive { color: var(--status-active); }
+    .lb-change.negative { color: var(--status-error); }
+    .lb-change.neutral { color: var(--text-faint); }
 
-    /* Patron-specific */
-    .lb-patron-score { color: var(--ember); font-weight: 600; }
+    .lb-patron-score {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-medium);
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
+    }
 
     .lb-empty {
       text-align: center;
-      padding: var(--space-8);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-dim);
+      padding: 3rem;
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-faint);
     }
 
-    /* ===== FOOTER ===== */
-    footer { border-top: 1px solid var(--border); padding: var(--space-12) var(--space-8) var(--space-10); margin-top: var(--space-8); }
-    .footer-content { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
-    .footer-brand { font-family: var(--font-mono); font-size: 12px; color: rgba(255,255,255,0.2); text-align: center; }
-    .footer-brand .ember-text { color: var(--ember); }
-    .footer-meta { font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,0.12); text-align: center; }
-    .footer-links { display: flex; gap: var(--space-8); margin-top: var(--space-3); flex-wrap: wrap; justify-content: center; }
-    .footer-links a { color: rgba(255,255,255,0.2); text-decoration: none; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; transition: color 0.25s ease; }
-    .footer-links a:hover { color: rgba(255,255,255,0.5); }
+    /* ───── FOOTER ───── */
+    .footer {
+      border-top: 1px solid var(--border-base);
+      padding: 4rem 0;
+      width: var(--content-width);
+      margin: 0 auto;
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .footer-brand {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text-ghost);
+      letter-spacing: 0.1em;
+    }
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 300;
+      color: var(--text-faint);
+      text-decoration: none;
+      transition: color var(--duration-fast) ease;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .footer-links a:hover { color: var(--text-muted); }
+    .footer-links a:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
 
+    /* ───── ANIMATIONS ───── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+      .tier-card {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* ───── RESPONSIVE ───── */
     @media (max-width: 768px) {
-      header { padding: var(--space-4); }
-      nav { gap: var(--space-4); }
-      nav a { font-size: 10px; }
-      .build-meta { display: none; }
-      main { padding: var(--space-6) var(--space-4); }
+      .nav { padding: 0 1rem; }
+      .nav-mobile-toggle { display: inline-flex; }
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.98);
+        border-bottom: 1px solid var(--border-base);
+        z-index: 120;
+      }
+      .nav-links.open a {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0.25rem;
+        font-size: 0.875rem;
+      }
+      main { padding: 2.5rem 0 4rem; }
       .tier-breakdown { grid-template-columns: repeat(2, 1fr); }
+      .tab-btn { padding: 0.75rem 0.75rem; font-size: 0.75rem; }
       .lb-table-wrapper { overflow-x: auto; }
-      .tab-btn { padding: var(--space-3) var(--space-4); font-size: 11px; }
+      .footer-inner { flex-direction: column; gap: 1.5rem; }
     }
 
     @media (max-width: 480px) {
+      .nav-links.open { gap: 0.5rem; }
       .tier-breakdown { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="header-left">
-      <a href="index.html" class="logo">
-        <span class="logo-sigil">⏀</span>
-        <div class="logo-text">SIGIL<span> PROTOCOL</span></div>
-      </a>
-      <span class="build-meta">v0.5.0 · solana mainnet</span>
-    </div>
-    <nav>
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo">
+      <span class="glyph">⏀</span> SIGIL
+    </a>
+    <button class="nav-mobile-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+    <div class="nav-links" id="navLinks">
       <a href="index.html">Protocol</a>
       <a href="register.html">Register</a>
       <a href="gallery.html">Gallery</a>
       <a href="stake.html">Stake</a>
       <a href="passport.html">Passport</a>
       <a href="verify.html">Verify</a>
-        <a href="integrations.html">Integrate</a>
-      <a href="portfolio.html">Portfolio</a>
-      <a href="leaderboard.html" class="active">Leaderboard</a>
-    </nav>
-  </header>
-
-  <main>
-    <div style="margin-bottom: var(--space-6);">
-      <p class="section-label">Leaderboard</p>
-      <h1>Protocol Rankings</h1>
-      <p style="max-width: 640px;">Track the most backed agents, top patrons, and rising stars across the SIGIL Protocol.</p>
+      <a href="integrations.html">Integrate</a>
+      <a href="leaderboard.html" class="active" aria-current="page">Leaderboard</a>
     </div>
+  </nav>
 
-    <!-- Tier Breakdown -->
-    <div class="tier-breakdown" id="tierBreakdown">
-      <div class="tier-card">
-        <span class="tier-card-badge t3">T3 · Persistent</span>
-        <div class="tier-card-count" id="tierT3Count">0</div>
-        <div class="tier-card-name">Agents</div>
-        <div class="tier-bar-visual"><div class="tier-bar-fill t3" id="tierT3Bar" style="width: 0%;"></div></div>
-      </div>
-      <div class="tier-card">
-        <span class="tier-card-badge t2">T2 · Staked</span>
-        <div class="tier-card-count" id="tierT2Count">0</div>
-        <div class="tier-card-name">Agents</div>
-        <div class="tier-bar-visual"><div class="tier-bar-fill t2" id="tierT2Bar" style="width: 0%;"></div></div>
-      </div>
-      <div class="tier-card">
-        <span class="tier-card-badge t1">T1 · Verified</span>
-        <div class="tier-card-count" id="tierT1Count">0</div>
-        <div class="tier-card-name">Agents</div>
-        <div class="tier-bar-visual"><div class="tier-bar-fill t1" id="tierT1Bar" style="width: 0%;"></div></div>
-      </div>
-      <div class="tier-card">
-        <span class="tier-card-badge t0">T0 · Alive</span>
-        <div class="tier-card-count" id="tierT0Count">0</div>
-        <div class="tier-card-name">Agents</div>
-        <div class="tier-bar-visual"><div class="tier-bar-fill t0" id="tierT0Bar" style="width: 0%;"></div></div>
-      </div>
-    </div>
+  <div class="page">
+    <main>
 
-    <!-- Tab Navigation -->
-    <div class="tab-bar">
-      <button class="tab-btn active" data-tab="most-backed" onclick="switchTab('most-backed')">Most Backed</button>
-      <button class="tab-btn" data-tab="top-patrons" onclick="switchTab('top-patrons')">Top Patrons</button>
-      <button class="tab-btn" data-tab="rising" onclick="switchTab('rising')">Rising Agents</button>
-    </div>
+      <div class="page-header">
+        <span class="section-label">Leaderboard</span>
+        <h1>Protocol Rankings</h1>
+        <p>Track the most backed agents, top patrons, and rising stars across the SIGIL Protocol.</p>
+      </div>
 
-    <!-- Most Backed Agents -->
-    <div class="tab-panel active" id="tab-most-backed">
-      <div class="lb-table-wrapper">
-        <div class="lb-table-header">
-          <span class="lb-table-title"><span class="icon">◆</span> Most Backed Agents</span>
-          <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);">Ranked by total $SIGIL staked</span>
+      <!-- Tier Breakdown -->
+      <div class="tier-breakdown" id="tierBreakdown">
+        <div class="tier-card">
+          <span class="tier-card-badge">T3 · Persistent</span>
+          <div class="tier-card-count" id="tierT3Count">0</div>
+          <div class="tier-card-name">Agents</div>
+          <div class="tier-bar-visual"><div class="tier-bar-fill" id="tierT3Bar" style="width: 0%;"></div></div>
         </div>
-        <table class="lb-table">
-          <thead>
-            <tr>
-              <th style="width: 36px;">Rank</th>
-              <th>Agent</th>
-              <th>Tier</th>
-              <th>Total Staked</th>
-              <th>Stakers</th>
-              <th>7d Change</th>
-            </tr>
-          </thead>
-          <tbody id="mostBackedBody">
-            <tr><td colspan="6" class="lb-empty">Loading...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Top Patrons -->
-    <div class="tab-panel" id="tab-top-patrons">
-      <div class="lb-table-wrapper">
-        <div class="lb-table-header">
-          <span class="lb-table-title"><span class="icon">◇</span> Top Patrons</span>
-          <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);">Ranked by total $SIGIL staked across all agents</span>
+        <div class="tier-card">
+          <span class="tier-card-badge">T2 · Staked</span>
+          <div class="tier-card-count" id="tierT2Count">0</div>
+          <div class="tier-card-name">Agents</div>
+          <div class="tier-bar-visual"><div class="tier-bar-fill" id="tierT2Bar" style="width: 0%;"></div></div>
         </div>
-        <table class="lb-table">
-          <thead>
-            <tr>
-              <th style="width: 36px;">Rank</th>
-              <th>Wallet</th>
-              <th>Total Staked</th>
-              <th>Agents Backed</th>
-              <th>Patron Score</th>
-            </tr>
-          </thead>
-          <tbody id="topPatronsBody">
-            <tr><td colspan="5" class="lb-empty">Loading...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Rising Agents -->
-    <div class="tab-panel" id="tab-rising">
-      <div class="lb-table-wrapper">
-        <div class="lb-table-header">
-          <span class="lb-table-title"><span class="icon">⊹</span> Rising Agents</span>
-          <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);">Most new stakes in the last 7 days</span>
+        <div class="tier-card">
+          <span class="tier-card-badge">T1 · Verified</span>
+          <div class="tier-card-count" id="tierT1Count">0</div>
+          <div class="tier-card-name">Agents</div>
+          <div class="tier-bar-visual"><div class="tier-bar-fill" id="tierT1Bar" style="width: 0%;"></div></div>
         </div>
-        <table class="lb-table">
-          <thead>
-            <tr>
-              <th style="width: 36px;">Rank</th>
-              <th>Agent</th>
-              <th>Tier</th>
-              <th>7d New Stake</th>
-              <th>New Stakers</th>
-              <th>Total Staked</th>
-            </tr>
-          </thead>
-          <tbody id="risingBody">
-            <tr><td colspan="6" class="lb-empty">Loading...</td></tr>
-          </tbody>
-        </table>
+        <div class="tier-card">
+          <span class="tier-card-badge">T0 · Alive</span>
+          <div class="tier-card-count" id="tierT0Count">0</div>
+          <div class="tier-card-name">Agents</div>
+          <div class="tier-bar-visual"><div class="tier-bar-fill" id="tierT0Bar" style="width: 0%;"></div></div>
+        </div>
       </div>
-    </div>
 
-  </main>
+      <!-- Tab Navigation -->
+      <div class="tab-bar" role="tablist" aria-label="Leaderboard views">
+        <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-most-backed" data-tab="most-backed" onclick="switchTab('most-backed')">Most Backed</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-top-patrons" data-tab="top-patrons" onclick="switchTab('top-patrons')">Top Patrons</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-rising" data-tab="rising" onclick="switchTab('rising')">Rising Agents</button>
+      </div>
 
-  <footer>
-    <div class="footer-content">
-      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.5.0 · Solana</div>
-      <div class="footer-meta">deployed autonomously · identity protocol for AI agents</div>
-      <nav class="footer-links">
-        <a href="index.html">Protocol</a>
-        <a href="register.html">Register</a>
-        <a href="gallery.html">Gallery</a>
-        <a href="dashboard.html">Registry</a>
-        <a href="stake.html">Stake</a>
-        <a href="passport.html">Passport</a>
-        <a href="verify.html">Verify</a>
-        <a href="integrations.html">Integrate</a>
-        <a href="portfolio.html">Portfolio</a>
-        <a href="leaderboard.html">Leaderboard</a>
-      </nav>
-    </div>
-  </footer>
+      <!-- Most Backed Agents -->
+      <div class="tab-panel active" id="tab-most-backed" role="tabpanel">
+        <div class="lb-table-wrapper">
+          <div class="lb-table-header">
+            <span class="lb-table-title"><span class="icon">◆</span> Most Backed Agents</span>
+            <span class="lb-table-meta">Ranked by total $SIGIL staked</span>
+          </div>
+          <table class="lb-table">
+            <thead>
+              <tr>
+                <th style="width: 36px;">Rank</th>
+                <th>Agent</th>
+                <th>Tier</th>
+                <th>Total Staked</th>
+                <th>Stakers</th>
+                <th>7d Change</th>
+              </tr>
+            </thead>
+            <tbody id="mostBackedBody">
+              <tr><td colspan="6" class="lb-empty">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Top Patrons -->
+      <div class="tab-panel" id="tab-top-patrons" role="tabpanel">
+        <div class="lb-table-wrapper">
+          <div class="lb-table-header">
+            <span class="lb-table-title"><span class="icon">◇</span> Top Patrons</span>
+            <span class="lb-table-meta">Ranked by total $SIGIL staked across all agents</span>
+          </div>
+          <table class="lb-table">
+            <thead>
+              <tr>
+                <th style="width: 36px;">Rank</th>
+                <th>Wallet</th>
+                <th>Total Staked</th>
+                <th>Agents Backed</th>
+                <th>Patron Score</th>
+              </tr>
+            </thead>
+            <tbody id="topPatronsBody">
+              <tr><td colspan="5" class="lb-empty">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Rising Agents -->
+      <div class="tab-panel" id="tab-rising" role="tabpanel">
+        <div class="lb-table-wrapper">
+          <div class="lb-table-header">
+            <span class="lb-table-title"><span class="icon">⊹</span> Rising Agents</span>
+            <span class="lb-table-meta">Most new stakes in the last 7 days</span>
+          </div>
+          <table class="lb-table">
+            <thead>
+              <tr>
+                <th style="width: 36px;">Rank</th>
+                <th>Agent</th>
+                <th>Tier</th>
+                <th>7d New Stake</th>
+                <th>New Stakers</th>
+                <th>Total Staked</th>
+              </tr>
+            </thead>
+            <tbody id="risingBody">
+              <tr><td colspan="6" class="lb-empty">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <span class="footer-brand">⏀ SIGIL PROTOCOL</span>
+        <nav class="footer-links" aria-label="Footer navigation">
+          <a href="index.html">Protocol</a>
+          <a href="register.html">Register</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="integrations.html">Integrate</a>
+          <a href="leaderboard.html">Leaderboard</a>
+        </nav>
+      </div>
+    </footer>
+  </div>
 
   <script>
     const API_BASE = location.protocol === 'file:'
       ? 'http://localhost:3141'
       : location.origin;
+
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    if (navToggle && navLinks) {
+      navToggle.addEventListener('click', () => {
+        const isOpen = navLinks.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', String(isOpen));
+      });
+      navLinks.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
 
     let allAgents = [];
     let patrons = [];
@@ -528,8 +830,14 @@
     }
 
     function switchTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach((btn) => btn.classList.toggle('active', btn.dataset.tab === tabId));
-      document.querySelectorAll('.tab-panel').forEach((panel) => panel.classList.toggle('active', panel.id === `tab-${tabId}`));
+      document.querySelectorAll('.tab-btn').forEach((btn) => {
+        const isActive = btn.dataset.tab === tabId;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-selected', isActive);
+      });
+      document.querySelectorAll('.tab-panel').forEach((panel) => {
+        panel.classList.toggle('active', panel.id === `tab-${tabId}`);
+      });
     }
 
     function animateCount(el, from, to, ms = 800) {
@@ -605,7 +913,7 @@
         const changeClass = a.change7d > 0 ? 'positive' : 'neutral';
         const changeStr = a.change7d > 0 ? `+${formatStake(a.change7d)}` : '—';
         return `
-          <tr onclick="window.location.href='agent.html?key=${a.publicKey}'">
+          <tr onclick="window.location.href='agent.html?key=${a.publicKey}'" tabindex="0" role="link">
             <td><span class="lb-rank ${rankClass(i)}">${i + 1}</span></td>
             <td>
               <div class="lb-agent-cell">
@@ -613,7 +921,7 @@
                 <span class="lb-agent-name">${escapeHtml(a.displayName || 'Anonymous Agent')}</span>
               </div>
             </td>
-            <td><span class="lb-tier t${a.tier}">T${a.tier}</span></td>
+            <td><span class="lb-tier">T${a.tier}</span></td>
             <td><span class="lb-staked">${formatStake(a.totalStaked)} SIGIL</span></td>
             <td><span class="lb-stakers">${a.stakerCount}</span></td>
             <td><span class="lb-change ${changeClass}">${changeStr}</span></td>
@@ -631,9 +939,9 @@
       tbody.innerHTML = patrons.map((p, i) => `
         <tr>
           <td><span class="lb-rank ${rankClass(i)}">${i + 1}</span></td>
-          <td style="font-family:var(--font-mono); font-size:12px;">${truncKey(p.stakerPublicKey)}</td>
+          <td style="font-family:var(--font-mono); font-size:0.8125rem; font-weight:400; color:var(--text-muted); letter-spacing:0.02em;">${truncKey(p.stakerPublicKey)}</td>
           <td><span class="lb-staked">${formatStake(p.totalStaked)} SIGIL</span></td>
-          <td>${p.agentsBacked}</td>
+          <td><span class="lb-stakers">${p.agentsBacked}</span></td>
           <td><span class="lb-patron-score">${p.patronScore}</span></td>
         </tr>
       `).join('');
@@ -647,7 +955,7 @@
       }
 
       tbody.innerHTML = risingAgents.map((a, i) => `
-        <tr onclick="window.location.href='agent.html?key=${a.publicKey}'">
+        <tr onclick="window.location.href='agent.html?key=${a.publicKey}'" tabindex="0" role="link">
           <td><span class="lb-rank ${rankClass(i)}">${i + 1}</span></td>
           <td>
             <div class="lb-agent-cell">
@@ -655,13 +963,20 @@
               <span class="lb-agent-name">${escapeHtml(a.displayName || 'Anonymous Agent')}</span>
             </div>
           </td>
-          <td><span class="lb-tier t${a.tier}">T${a.tier}</span></td>
+          <td><span class="lb-tier">T${a.tier}</span></td>
           <td><span class="lb-change positive">+${formatStake(a.recentStake)}</span></td>
           <td><span class="lb-change positive">+${a.newStakers}</span></td>
           <td><span class="lb-staked">${formatStake(a.totalStaked)}</span></td>
         </tr>
       `).join('');
     }
+
+    // Keyboard navigation for table rows
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.target.matches('tr[role="link"]')) {
+        e.target.click();
+      }
+    });
 
     loadData();
   </script>

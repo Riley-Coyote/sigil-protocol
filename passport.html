@@ -6,150 +6,263 @@
   <title>SIGIL Protocol | Passport</title>
 
   <meta name="description" content="Mint and verify SIGIL Token-2022 non-transferable agent passports.">
-  <meta name="theme-color" content="#050505">
+  <meta name="theme-color" content="#000000">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/geist" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/geist-mono" rel="stylesheet">
 
   <style>
+    /* ════════════════════════════════════════════════════════
+       SIGIL Protocol — Passport Page
+       Design System: Polyphonic-aligned v2.0
+       ════════════════════════════════════════════════════════ */
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
     :root {
-      --bg: #050505;
-      --bg-elevated: #0a0a0a;
-      --surface: #0f0f0f;
-      --border: rgba(255, 255, 255, 0.06);
-      --border-hover: rgba(255, 255, 255, 0.14);
-      --text: rgba(255, 255, 255, 0.82);
-      --text-muted: rgba(255, 255, 255, 0.45);
-      --text-dim: rgba(255, 255, 255, 0.2);
-      --accent: #4ade80;
-      --ember: #d4a574;
-      --ember-dim: rgba(212, 165, 116, 0.15);
-      --danger: #ef4444;
+      /* Grayscale Ramp */
+      --black:    #000000;
+      --gray-950: #030303;
+      --gray-900: #050505;
+      --gray-850: #0a0a0a;
+      --gray-800: #0f0f0f;
+      --gray-750: #141414;
+      --gray-700: #1a1a1a;
+      --gray-650: #1f1f1f;
+      --gray-600: #252525;
+      --gray-550: #2a2a2a;
+      --gray-500: #333333;
+      --gray-450: #404040;
+      --gray-400: #4d4d4d;
+      --gray-350: #595959;
+      --gray-300: #666666;
+      --gray-250: #737373;
+      --gray-200: #808080;
+      --gray-150: #999999;
+      --gray-100: #b3b3b3;
+      --gray-50:  #cccccc;
+      --white:    #e6e6e6;
 
-      --font-display: 'Syne', sans-serif;
-      --font-sans: 'Public Sans', -apple-system, system-ui, sans-serif;
-      --font-mono: 'Spline Sans Mono', monospace;
+      /* Semantic Backgrounds */
+      --bg:          var(--black);
+      --bg-subtle:   var(--gray-950);
+      --bg-muted:    var(--gray-900);
+      --bg-surface:  var(--gray-850);
+      --bg-elevated: var(--gray-800);
+      --bg-overlay:  var(--gray-750);
 
-      --radius-sm: 2px;
-      --radius-md: 4px;
+      /* Semantic Borders (solid hex) */
+      --border-faint:   #141414;
+      --border-subtle:  #1a1a1a;
+      --border-muted:   #1f1f1f;
+      --border-default: #252525;
+      --border-medium:  #2a2a2a;
+      --border-strong:  #333333;
+
+      /* Semantic Text */
+      --text:        #cccccc;
+      --text-strong: #e6e6e6;
+      --text-medium: #b3b3b3;
+      --text-muted:  #999999;
+      --text-faint:  #666666;
+      --text-ghost:  #4d4d4d;
+
+      /* Status */
+      --status-active: #22c55e;
+      --status-error:  #ef4444;
+
+      /* Fonts */
+      --font-sans: 'Geist', -apple-system, system-ui, sans-serif;
+      --font-mono: 'Geist Mono', 'SF Mono', 'Cascadia Code', monospace;
+
+      /* Radius */
+      --radius-sm: 3px;
+      --radius-md: 6px;
       --radius-full: 9999px;
 
+      /* Spacing (4px grid) */
       --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
       --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
       --space-12: 48px; --space-16: 64px;
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+      --ease-standard: cubic-bezier(0.2, 0, 0, 1);
     }
 
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      scrollbar-gutter: stable;
+    }
+
     body {
       font-family: var(--font-sans);
       background: var(--bg);
       color: var(--text);
       line-height: 1.7;
-      font-size: 14px;
+      font-size: 0.9375rem;
+      font-weight: 400;
       min-height: 100vh;
       overflow-x: hidden;
+      overscroll-behavior: none;
     }
 
-    body::after {
-      content: '';
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 9999;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px);
-    }
-
-    ::selection { background: rgba(74, 222, 128, 0.18); color: var(--text); }
-    ::-webkit-scrollbar { width: 8px; }
+    ::selection { background: rgba(230, 230, 230, 0.08); color: var(--text-strong); }
+    ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: var(--radius-full); }
+    ::-webkit-scrollbar-thumb { background: var(--gray-600); border-radius: var(--radius-full); }
     :focus { outline: none; }
-    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    :focus-visible { outline: 1px solid var(--border-strong); outline-offset: 2px; }
 
-    @keyframes sigilBurn {
-      0% { text-shadow: 0 0 10px rgba(212,165,116,0.3); }
-      50% { text-shadow: 0 0 20px rgba(212,165,116,0.5); }
-      100% { text-shadow: 0 0 10px rgba(212,165,116,0.3); }
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes breathe {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    @keyframes successFlash {
+      0% { opacity: 1; }
+      30% { opacity: 0.6; background-color: rgba(34, 197, 94, 0.04); }
+      100% { opacity: 1; background-color: transparent; }
     }
 
-    header {
-      border-bottom: 1px solid var(--border);
-      padding: var(--space-4) var(--space-8);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
+    /* ===== NAV ===== */
+    .nav {
+      position: fixed;
       top: 0;
-      background: rgba(5,5,5,0.85);
-      backdrop-filter: blur(12px);
-      z-index: 50;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-8);
+      background: rgba(0, 0, 0, 0.85);
+      border-bottom: 1px solid var(--border-faint);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
     }
 
-    .header-left { display: flex; align-items: center; gap: var(--space-4); }
-    .logo { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; }
-    .logo-sigil { font-size: 1.25rem; color: var(--ember); animation: sigilBurn 4s infinite; line-height: 1; }
-    .logo-text { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); }
-    .logo-text span { color: rgba(255,255,255,0.2); font-weight: 400; }
-    .build-meta { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.15); letter-spacing: 0.02em; white-space: nowrap; }
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      text-decoration: none;
+      transition: color 150ms var(--ease-out);
+    }
+    .nav-logo:hover { color: var(--text); }
 
-    nav { display: flex; gap: var(--space-8); }
-    nav a {
+    .nav-logo .glyph {
+      font-size: 1rem;
+      color: var(--text-ghost);
+    }
+
+    .nav-mobile-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      padding: var(--space-2);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      background: var(--bg-surface);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: var(--space-8);
+    }
+
+    .nav-links a {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
       color: var(--text-muted);
       text-decoration: none;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      transition: color 150ms var(--ease-out);
       padding: var(--space-2) 0;
-      position: relative;
-      transition: color 0.25s ease;
     }
-    nav a::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 1px;
-      background: var(--ember);
-      transition: width 0.25s ease;
-    }
-    nav a:hover { color: rgba(255,255,255,0.75); }
-    nav a:hover::after { width: 100%; }
-    nav a.active { color: var(--ember); }
-    nav a.active::after { width: 100%; }
 
-    main { max-width: 1200px; margin: 0 auto; padding: var(--space-10) var(--space-6); }
+    .nav-links a:hover { color: var(--text-strong); }
+    .nav-links a.active { color: var(--text); }
+
+    /* ===== MAIN ===== */
+    .page {
+      padding-top: 64px;
+      min-height: 100vh;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-12) var(--space-6) var(--space-16);
+    }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      margin-bottom: var(--space-10);
+    }
 
     .section-label {
-      font-family: var(--font-mono);
-      font-size: 11px;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: rgba(255,255,255,0.3);
-      margin-bottom: var(--space-4);
+      color: var(--text-muted);
+      margin-bottom: var(--space-3);
+      display: block;
     }
 
     h1 {
-      font-family: var(--font-display);
-      font-size: clamp(1.5rem, 4vw, 2rem);
-      font-weight: 600;
+      font-family: var(--font-sans);
+      font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+      font-weight: 200;
       letter-spacing: -0.02em;
-      color: rgba(255,255,255,0.85);
-      margin-bottom: var(--space-2);
+      line-height: 1.2;
+      color: var(--text-strong);
+      margin-bottom: var(--space-4);
     }
 
-    p { font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-4); }
+    .page-desc {
+      font-family: var(--font-sans);
+      font-size: 0.9375rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 65ch;
+      margin-bottom: var(--space-6);
+    }
 
+    /* ===== FLOW STEPS ===== */
     .flow-steps {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: var(--space-3);
       max-width: 840px;
-      margin-top: var(--space-5);
       margin-bottom: var(--space-8);
     }
 
@@ -157,49 +270,175 @@
       display: flex;
       align-items: center;
       gap: var(--space-3);
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.015);
+      border: 1px solid var(--border-faint);
+      background: var(--bg-surface);
       border-radius: var(--radius-md);
       padding: var(--space-3) var(--space-4);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.03em;
-      color: rgba(255,255,255,0.7);
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      color: var(--text-muted);
+      transition: border-color 200ms var(--ease-out), color 200ms var(--ease-out);
+    }
+
+    .flow-step.active {
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+
+    .flow-step.completed {
+      border-color: var(--border-default);
+      color: var(--text-medium);
     }
 
     .flow-step-index {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       border-radius: var(--radius-full);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
-      border: 1px solid rgba(255,255,255,0.16);
-      color: var(--ember);
-      background: rgba(212,165,116,0.1);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      border: 1px solid var(--border-default);
+      color: var(--text-muted);
+      background: transparent;
       flex: 0 0 auto;
+      transition: border-color 200ms var(--ease-out);
     }
 
+    .flow-step.active .flow-step-index {
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+
+    /* ===== WALLET BAR ===== */
     .wallet-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: var(--space-4) var(--space-5);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: rgba(255,255,255,0.015);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
       margin-bottom: var(--space-8);
       gap: var(--space-4);
+      transition: border-color 200ms var(--ease-out);
+    }
+
+    .wallet-bar.connected {
+      border-color: var(--border-subtle);
+    }
+
+    .wallet-bar-info .wallet-label {
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: var(--space-1);
     }
 
     .wallet-address {
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 0.75rem;
+      font-weight: 400;
       color: var(--text-muted);
       word-break: break-all;
+      letter-spacing: 0.02em;
+      transition: color 200ms var(--ease-out);
     }
 
+    .wallet-address.active {
+      color: var(--text-medium);
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: 0 var(--space-5);
+      height: 36px;
+      min-height: 36px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: transform 100ms var(--ease-out), border-color 150ms var(--ease-out), color 150ms var(--ease-out), background 150ms var(--ease-out), opacity 150ms var(--ease-out);
+      background: transparent;
+      color: var(--text);
+    }
+
+    .btn:hover {
+      border-color: var(--border-strong);
+      color: var(--text-strong);
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+      background: var(--bg-surface);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+
+    .btn--primary {
+      color: var(--text-strong);
+      border-color: var(--border-strong);
+      background: var(--bg-surface);
+    }
+    .btn--primary:hover { border-color: var(--text-ghost); background: var(--bg-elevated); }
+
+    .btn--connect {
+      color: var(--text-strong);
+      border-color: var(--border-strong);
+      background: var(--bg-surface);
+    }
+    .btn--connect:hover { border-color: var(--text-ghost); background: var(--bg-elevated); }
+
+    .btn--secondary {
+      color: var(--text-muted);
+      border-color: var(--border-muted);
+    }
+    .btn--secondary:hover { border-color: var(--border-default); color: var(--text); }
+
+    .btn--loading { pointer-events: none; position: relative; }
+    .btn--loading .btn-text { opacity: 0; }
+    .btn--loading::after {
+      content: '';
+      position: absolute;
+      width: 14px; height: 14px;
+      border: 1px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .btn-row { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+
+    /* Touch targets on mobile */
+    @media (pointer: coarse) {
+      .btn { min-height: 44px; }
+    }
+
+    /* ===== LAYOUT ===== */
     .passport-layout {
       display: grid;
       grid-template-columns: 1fr 400px;
@@ -207,199 +446,356 @@
       align-items: start;
     }
 
+    /* ===== PANELS ===== */
     .panel-card {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
       overflow: hidden;
       margin-bottom: var(--space-5);
-      background: rgba(255,255,255,0.01);
+      background: var(--bg-surface);
     }
 
     .panel-header {
       padding: var(--space-3) var(--space-5);
-      background: rgba(255,255,255,0.02);
-      border-bottom: 1px solid var(--border);
-      font-family: var(--font-mono);
-      font-size: 10px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border-faint);
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
       font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
     }
 
     .panel-body { padding: var(--space-5); }
 
+    /* ===== FORM FIELDS ===== */
     .field { margin-bottom: var(--space-4); }
     .field label {
       display: block;
-      font-family: var(--font-mono);
-      font-size: 10px;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
       margin-bottom: var(--space-2);
     }
 
-    input {
+    input[type="text"] {
       width: 100%;
-      padding: 11px 14px;
+      padding: var(--space-2) var(--space-3);
+      min-height: 36px;
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 0.8125rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
       color: var(--text);
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      transition: border-color 0.2s ease;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-muted);
+      border-radius: var(--radius-sm);
+      transition: border-color 150ms var(--ease-out);
+      outline: none;
     }
-    input::placeholder { color: var(--text-dim); }
-    input:focus { border-color: var(--border-hover); }
+    input[type="text"]::placeholder { color: var(--text-faint); }
+    input[type="text"]:focus-visible { border-color: var(--border-strong); outline: none; }
 
-    .btn-row { display: flex; gap: var(--space-2); flex-wrap: wrap; }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--space-2);
-      padding: 12px 18px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      text-decoration: none;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      background: transparent;
+    @media (pointer: coarse) {
+      input[type="text"] { min-height: 44px; }
     }
-    .btn:disabled { opacity: 0.5; pointer-events: none; cursor: not-allowed; }
 
-    .btn--primary { color: var(--accent); border-color: var(--accent); }
-    .btn--primary:hover { background: rgba(74,222,128,0.1); }
-
-    .btn--ember { color: var(--ember); border-color: var(--ember); }
-    .btn--ember:hover { background: var(--ember-dim); }
-
+    /* ===== STATUS ===== */
     .status {
       min-height: 20px;
       margin-top: var(--space-3);
       font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-dim);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      transition: color 200ms var(--ease-out);
     }
-    .status.ok { color: var(--accent); }
-    .status.err { color: var(--danger); }
+    .status.ok { color: var(--status-active); }
+    .status.err { color: var(--status-error); }
+    .status.loading { animation: breathe 2s ease-in-out infinite; }
+
+    .status-error-area {
+      padding: var(--space-3) var(--space-4);
+      background: rgba(239, 68, 68, 0.03);
+      border: 1px solid rgba(239, 68, 68, 0.15);
+      border-radius: var(--radius-sm);
+      margin-top: var(--space-3);
+      display: none;
+    }
+
+    .status-error-area.visible { display: block; }
+
+    .status-error-area p {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: var(--status-error);
+      letter-spacing: 0.02em;
+      margin: 0;
+    }
+
+    .status-error-area button {
+      margin-top: var(--space-2);
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border-muted);
+      border-radius: var(--radius-sm);
+      padding: var(--space-1) var(--space-3);
+      cursor: pointer;
+      transition: border-color 150ms var(--ease-out), color 150ms var(--ease-out);
+    }
+
+    .status-error-area button:hover {
+      border-color: var(--border-default);
+      color: var(--text);
+    }
 
     .hint {
       margin-top: var(--space-4);
       margin-bottom: 0;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-dim);
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.15em;
+      line-height: 1.6;
+      max-width: 65ch;
     }
 
+    /* ===== MINT PROGRESS ===== */
+    .mint-progress {
+      display: flex;
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+      margin-bottom: var(--space-4);
+      padding: var(--space-3) 0;
+      border-top: 1px solid var(--border-faint);
+      display: none;
+    }
+
+    .mint-progress.visible { display: flex; }
+
+    .mint-step {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      transition: color 300ms var(--ease-out);
+    }
+
+    .mint-step.active {
+      color: var(--text-medium);
+    }
+
+    .mint-step.completed {
+      color: var(--text-muted);
+    }
+
+    .mint-step-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-ghost);
+      flex-shrink: 0;
+      transition: background 300ms var(--ease-out);
+    }
+
+    .mint-step.active .mint-step-dot {
+      background: var(--text-medium);
+      animation: breathe 2s ease-in-out infinite;
+    }
+
+    .mint-step.completed .mint-step-dot {
+      background: var(--status-active);
+    }
+
+    /* ===== PASSPORT STATE ===== */
     .passport-row {
       display: grid;
-      grid-template-columns: 120px 1fr;
+      grid-template-columns: 100px 1fr;
       gap: var(--space-3);
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      padding: 9px 0;
+      border-bottom: 1px solid var(--border-faint);
+      padding: var(--space-3) 0;
+      align-items: baseline;
     }
     .passport-row:last-child { border-bottom: none; }
+
     .passport-key {
-      font-family: var(--font-mono);
-      font-size: 10px;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
     }
+
     .passport-value {
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 0.75rem;
+      font-weight: 400;
       color: var(--text);
       text-align: right;
       word-break: break-all;
+      letter-spacing: 0.02em;
+    }
+
+    .passport-value.empty {
+      color: var(--text-ghost);
     }
 
     .passport-value a {
-      color: var(--ember);
+      color: var(--text-muted);
       text-decoration: none;
-      border-bottom: 1px dashed rgba(212,165,116,0.4);
+      border-bottom: 1px solid var(--border-default);
+      transition: color 150ms var(--ease-out), border-color 150ms var(--ease-out);
     }
+    .passport-value a:hover { color: var(--text-strong); border-color: var(--text-faint); }
 
-    .glyph {
-      width: 100%;
-      margin-top: var(--space-4);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+    /* Glyph preview */
+    .glyph-preview-container {
+      margin-top: var(--space-5);
+      padding: var(--space-6);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
       background: var(--bg-elevated);
-      max-width: 360px;
-      margin-left: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    footer {
-      border-top: 1px solid var(--border);
-      padding: var(--space-12) var(--space-8) var(--space-10);
-      margin-top: var(--space-8);
+    .glyph-img {
+      width: 100%;
+      max-width: 280px;
+      border-radius: var(--radius-sm);
+      display: block;
     }
 
-    .footer-content {
-      max-width: 1200px;
+    /* ===== FOOTER ===== */
+    .footer {
+      border-top: 1px solid var(--border-faint);
+      padding: var(--space-16) 0;
+      width: min(90vw, 1200px);
       margin: 0 auto;
+      content-visibility: auto;
+    }
+
+    .footer-inner {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: var(--space-3);
     }
 
-    .footer-brand { font-family: var(--font-mono); font-size: 12px; color: rgba(255,255,255,0.2); text-align: center; }
-    .footer-brand .ember-text { color: var(--ember); }
-    .footer-meta { font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,0.12); text-align: center; }
-
-    .footer-links { display: flex; gap: var(--space-8); margin-top: var(--space-3); flex-wrap: wrap; justify-content: center; }
-    .footer-links a {
-      color: rgba(255,255,255,0.2);
-      text-decoration: none;
+    .footer-brand {
       font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.05em;
-      transition: color 0.25s ease;
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text-ghost);
+      letter-spacing: 0.1em;
     }
-    .footer-links a:hover { color: rgba(255,255,255,0.5); }
 
+    .footer-meta {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: var(--space-8);
+      margin-top: var(--space-3);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-links a {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 150ms var(--ease-out);
+      padding: var(--space-1) 0;
+    }
+    .footer-links a:hover { color: var(--text-muted); }
+
+    /* ===== RESPONSIVE ===== */
     @media (max-width: 980px) {
       .passport-layout { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 768px) {
-      header { padding: var(--space-4); }
-      nav { gap: var(--space-4); }
-      nav a { font-size: 10px; }
-      .build-meta { display: none; }
+      .nav { padding: 0 var(--space-4); }
+      .nav-mobile-toggle { display: inline-flex; }
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-2);
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        padding: var(--space-4);
+        background: rgba(5, 5, 5, 0.98);
+        border-bottom: 1px solid var(--border-default);
+        z-index: 120;
+      }
+      .nav-links.open a {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        font-size: 0.875rem;
+        padding: 0 var(--space-2);
+      }
       main { padding: var(--space-6) var(--space-4); }
       .flow-steps { grid-template-columns: 1fr; }
       .wallet-bar { flex-direction: column; align-items: flex-start; }
       .passport-row { grid-template-columns: 1fr; }
       .passport-value { text-align: left; }
-      .glyph { margin-left: 0; }
+      .glyph-preview-container { padding: var(--space-4); }
+      .mint-progress { flex-wrap: wrap; }
+    }
+
+    /* ===== REDUCED MOTION ===== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .status.loading { animation: none; }
+      .mint-step.active .mint-step-dot { animation: none; }
     }
   </style>
 </head>
 <body>
+<div class="page">
 
-  <header>
-    <div class="header-left">
-      <a href="index.html" class="logo">
-        <span class="logo-sigil">⏀</span>
-        <div class="logo-text">SIGIL<span> PROTOCOL</span></div>
-      </a>
-      <span class="build-meta">v0.5.0 · solana mainnet</span>
-    </div>
-    <nav>
+  <!-- Nav -->
+  <nav class="nav">
+    <a href="index.html" class="nav-logo">
+      <span class="glyph">⏀</span>
+      SIGIL
+    </a>
+    <button class="nav-mobile-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+    <div class="nav-links" id="navLinks">
       <a href="index.html">Protocol</a>
       <a href="register.html">Register</a>
       <a href="gallery.html">Gallery</a>
@@ -407,87 +803,119 @@
       <a href="passport.html" class="active">Passport</a>
       <a href="verify.html">Verify</a>
       <a href="integrations.html">Integrate</a>
-      <a href="portfolio.html">Portfolio</a>
       <a href="leaderboard.html">Leaderboard</a>
-    </nav>
-  </header>
+    </div>
+  </nav>
 
+  <!-- Main -->
   <main>
-    <div style="margin-bottom: var(--space-6);">
-      <p class="section-label">Soulbound Identity</p>
+    <div class="page-header">
+      <span class="section-label">SOULBOUND IDENTITY</span>
       <h1>Mint Agent Passport</h1>
-      <p style="max-width: 760px;">Issue a Token-2022 non-transferable passport to bind an agent identity to a wallet owner and make verification portable across ecosystems.</p>
-      <div class="flow-steps">
-        <div class="flow-step"><span class="flow-step-index">1</span>Connect wallet</div>
-        <div class="flow-step"><span class="flow-step-index">2</span>Sign issue + finalize intent</div>
-        <div class="flow-step"><span class="flow-step-index">3</span>Verify on-chain mint</div>
+      <p class="page-desc">Issue a Token-2022 non-transferable passport to bind an agent identity to a wallet owner and make verification portable across ecosystems.</p>
+      <div class="flow-steps" id="flowSteps">
+        <div class="flow-step active" data-step="1"><span class="flow-step-index">1</span>Connect wallet</div>
+        <div class="flow-step" data-step="2"><span class="flow-step-index">2</span>Sign issue + finalize intent</div>
+        <div class="flow-step" data-step="3"><span class="flow-step-index">3</span>Verify on-chain mint</div>
       </div>
     </div>
 
-    <div class="wallet-bar">
-      <div>
-        <div class="section-label" style="margin-bottom: var(--space-2);">Connected Wallet</div>
+    <div class="wallet-bar" id="walletBar">
+      <div class="wallet-bar-info">
+        <div class="wallet-label">Connected Wallet</div>
         <div class="wallet-address" id="walletPub">Not connected</div>
       </div>
-      <button class="btn btn--primary" id="walletBtn" onclick="connectWallet()">Connect Wallet</button>
+      <button class="btn btn--connect" id="walletBtn" onclick="connectWallet()">
+        <span class="btn-text">Connect Wallet</span>
+      </button>
     </div>
 
     <div class="passport-layout">
       <section>
         <div class="panel-card">
-          <div class="panel-header">◆ Passport Mint Control</div>
+          <div class="panel-header">Passport Mint Control</div>
           <div class="panel-body">
             <div class="field">
               <label for="agentPub">Agent Public Key</label>
-              <input id="agentPub" type="text" placeholder="Paste the agent public key">
+              <input id="agentPub" type="text" placeholder="Paste the agent public key" spellcheck="false" autocomplete="off">
             </div>
 
             <div class="btn-row">
-              <button class="btn btn--ember" onclick="lookupPassport()">Lookup</button>
-              <button class="btn btn--primary" id="issueBtn" onclick="issuePassport()" disabled>Mint On-chain</button>
+              <button class="btn btn--secondary" onclick="lookupPassport()">Lookup</button>
+              <button class="btn btn--primary" id="issueBtn" onclick="issuePassport()" disabled>
+                <span class="btn-text">Mint On-chain</span>
+              </button>
             </div>
 
-            <div class="status" id="statusText"></div>
-            <p class="hint">Flow: sign issue challenge, sign Token-2022 mint transaction, sign finalize challenge, verify on-chain state.</p>
+            <div class="status" id="statusText" role="status" aria-live="polite"></div>
+
+            <div class="status-error-area" id="errorArea">
+              <p id="errorText"></p>
+              <button onclick="retryLastAction()">Retry</button>
+            </div>
+
+            <div class="mint-progress" id="mintProgress">
+              <div class="mint-step" data-mint-step="sign" id="mintStepSign">
+                <span class="mint-step-dot"></span>
+                Sign
+              </div>
+              <div class="mint-step" data-mint-step="mint" id="mintStepMint">
+                <span class="mint-step-dot"></span>
+                Mint
+              </div>
+              <div class="mint-step" data-mint-step="finalize" id="mintStepFinalize">
+                <span class="mint-step-dot"></span>
+                Finalize
+              </div>
+              <div class="mint-step" data-mint-step="verify" id="mintStepVerify">
+                <span class="mint-step-dot"></span>
+                Verify
+              </div>
+            </div>
+
+            <p class="hint">Flow: sign issue challenge → sign Token-2022 mint transaction → sign finalize challenge → verify on-chain state.</p>
           </div>
         </div>
       </section>
 
       <aside>
-        <div class="panel-card">
-          <div class="panel-header">◇ Passport State</div>
+        <div class="panel-card" id="passportStatePanel">
+          <div class="panel-header">Passport State</div>
           <div class="panel-body">
-            <div class="passport-row"><div class="passport-key">Status</div><div class="passport-value" id="pStatus">—</div></div>
-            <div class="passport-row"><div class="passport-key">Owner</div><div class="passport-value" id="pOwner">—</div></div>
-            <div class="passport-row"><div class="passport-key">Mint</div><div class="passport-value" id="pMint">—</div></div>
-            <div class="passport-row"><div class="passport-key">Metadata</div><div class="passport-value" id="pMeta">—</div></div>
-            <div class="passport-row"><div class="passport-key">Tx</div><div class="passport-value" id="pTx">—</div></div>
-            <div class="passport-row"><div class="passport-key">Issued</div><div class="passport-value" id="pIssued">—</div></div>
-            <img id="glyphImg" class="glyph" alt="Agent glyph" style="display:none;">
+            <div class="passport-row"><div class="passport-key">Status</div><div class="passport-value" id="pStatus"><span class="empty">—</span></div></div>
+            <div class="passport-row"><div class="passport-key">Owner</div><div class="passport-value" id="pOwner"><span class="empty">—</span></div></div>
+            <div class="passport-row"><div class="passport-key">Mint</div><div class="passport-value" id="pMint"><span class="empty">—</span></div></div>
+            <div class="passport-row"><div class="passport-key">Metadata</div><div class="passport-value" id="pMeta"><span class="empty">—</span></div></div>
+            <div class="passport-row"><div class="passport-key">Tx</div><div class="passport-value" id="pTx"><span class="empty">—</span></div></div>
+            <div class="passport-row"><div class="passport-key">Issued</div><div class="passport-value" id="pIssued"><span class="empty">—</span></div></div>
+            <div class="glyph-preview-container" id="glyphContainer" style="display:none;">
+              <img id="glyphImg" class="glyph-img" alt="Agent glyph">
+            </div>
           </div>
         </div>
       </aside>
     </div>
   </main>
 
-  <footer>
-    <div class="footer-content">
-      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.5.0 · Solana</div>
-      <div class="footer-meta">deployed autonomously · identity protocol for AI agents</div>
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">⏀ SIGIL PROTOCOL</div>
+      <div class="footer-meta">identity infrastructure for autonomous agents</div>
       <nav class="footer-links">
         <a href="index.html">Protocol</a>
         <a href="register.html">Register</a>
         <a href="gallery.html">Gallery</a>
-        <a href="dashboard.html">Registry</a>
         <a href="stake.html">Stake</a>
         <a href="passport.html">Passport</a>
         <a href="verify.html">Verify</a>
         <a href="integrations.html">Integrate</a>
-        <a href="portfolio.html">Portfolio</a>
         <a href="leaderboard.html">Leaderboard</a>
       </nav>
     </div>
   </footer>
+
+</div>
 
   <script src="https://unpkg.com/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
   <script>
@@ -496,8 +924,78 @@
       : location.origin;
     const ACTION_SESSION_STORAGE_KEY = 'sigil.action.session.v1';
 
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    if (navToggle && navLinks) {
+      navToggle.addEventListener('click', () => {
+        const isOpen = navLinks.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', String(isOpen));
+      });
+      navLinks.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
     let walletProvider = null;
     let walletPublicKey = null;
+    let lastAction = null;
+
+    /* Flow step management */
+    function updateFlowStep(step) {
+      document.querySelectorAll('.flow-step').forEach((el) => {
+        const s = parseInt(el.dataset.step, 10);
+        if (s < step) {
+          el.classList.add('completed');
+          el.classList.remove('active');
+        } else if (s === step) {
+          el.classList.add('active');
+          el.classList.remove('completed');
+        } else {
+          el.classList.remove('active', 'completed');
+        }
+      });
+    }
+
+    /* Mint progress steps */
+    function setMintStep(stepName) {
+      const progress = document.getElementById('mintProgress');
+      progress.classList.add('visible');
+      const steps = ['sign', 'mint', 'finalize', 'verify'];
+      const activeIdx = steps.indexOf(stepName);
+      steps.forEach((s, i) => {
+        const el = document.getElementById('mintStep' + s.charAt(0).toUpperCase() + s.slice(1));
+        if (!el) return;
+        if (i < activeIdx) {
+          el.classList.add('completed');
+          el.classList.remove('active');
+        } else if (i === activeIdx) {
+          el.classList.add('active');
+          el.classList.remove('completed');
+        } else {
+          el.classList.remove('active', 'completed');
+        }
+      });
+    }
+
+    function hideMintProgress() {
+      document.getElementById('mintProgress').classList.remove('visible');
+    }
+
+    function completeMintProgress() {
+      document.querySelectorAll('.mint-step').forEach((el) => {
+        el.classList.add('completed');
+        el.classList.remove('active');
+      });
+    }
 
     function uint8ToBase58(bytes) {
       const ALPHA = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
@@ -549,8 +1047,28 @@
 
     function setStatus(msg, ok = true) {
       const el = document.getElementById('statusText');
+      const errorArea = document.getElementById('errorArea');
       el.textContent = msg || '';
       el.className = `status ${ok ? 'ok' : 'err'}`;
+      el.classList.remove('loading');
+      if (!ok && msg) {
+        document.getElementById('errorText').textContent = msg;
+        errorArea.classList.add('visible');
+      } else {
+        errorArea.classList.remove('visible');
+      }
+    }
+
+    function setStatusLoading(msg) {
+      const el = document.getElementById('statusText');
+      el.textContent = msg || '';
+      el.className = 'status loading';
+      document.getElementById('errorArea').classList.remove('visible');
+    }
+
+    function retryLastAction() {
+      if (lastAction === 'lookup') lookupPassport();
+      else if (lastAction === 'issue') issuePassport();
     }
 
     function getWalletProvider() {
@@ -564,39 +1082,67 @@
           setStatus('No wallet found. Install Phantom or Solflare.', false);
           return;
         }
+
+        const btn = document.getElementById('walletBtn');
+        btn.innerHTML = '<span class="btn-text">Connecting…</span>';
+        btn.style.animation = 'breathe 2s ease-in-out infinite';
+
         const resp = await walletProvider.connect();
         walletPublicKey = resp.publicKey.toString();
+
+        btn.style.animation = '';
+        document.getElementById('walletBar').classList.add('connected');
         document.getElementById('walletPub').textContent = walletPublicKey;
-        document.getElementById('walletBtn').textContent = 'Wallet Connected';
+        document.getElementById('walletPub').classList.add('active');
+        document.getElementById('walletBtn').innerHTML = '<span class="btn-text">Connected</span>';
+        document.getElementById('walletBtn').classList.remove('btn--connect');
+        document.getElementById('walletBtn').classList.add('btn--secondary');
         document.getElementById('issueBtn').disabled = false;
+        updateFlowStep(2);
         setStatus('Wallet connected');
       } catch (err) {
+        const btn = document.getElementById('walletBtn');
+        btn.style.animation = '';
+        btn.innerHTML = '<span class="btn-text">Connect Wallet</span>';
         setStatus(err.message || 'Wallet connect failed', false);
       }
     }
 
     function setPassportState(passport, agentPub) {
+      const panel = document.getElementById('passportStatePanel');
+
       document.getElementById('pStatus').textContent = passport?.status || 'not-issued';
       document.getElementById('pOwner').textContent = passport?.ownerPublicKey || '—';
       document.getElementById('pMint').textContent = passport?.mintAddress || '—';
+
+      // Mark empty values
+      ['pStatus', 'pOwner', 'pMint', 'pIssued'].forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.toggle('empty', !el.textContent || el.textContent === '—');
+      });
+
       if (passport?.metadataUri) {
-        document.getElementById('pMeta').innerHTML = `<a href="${passport.metadataUri}" target="_blank">open</a>`;
+        document.getElementById('pMeta').innerHTML = `<a href="${passport.metadataUri}" target="_blank" rel="noopener">open ↗</a>`;
       } else {
-        document.getElementById('pMeta').textContent = '—';
+        document.getElementById('pMeta').innerHTML = '<span class="empty">—</span>';
       }
       if (passport?.txSignature) {
         const txUrl = `https://solscan.io/tx/${passport.txSignature}`;
-        document.getElementById('pTx').innerHTML = `<a href="${txUrl}" target="_blank">${passport.txSignature.slice(0, 10)}...${passport.txSignature.slice(-8)}</a>`;
+        document.getElementById('pTx').innerHTML = `<a href="${txUrl}" target="_blank" rel="noopener">${passport.txSignature.slice(0, 10)}…${passport.txSignature.slice(-8)}</a>`;
       } else {
-        document.getElementById('pTx').textContent = '—';
+        document.getElementById('pTx').innerHTML = '<span class="empty">—</span>';
       }
       document.getElementById('pIssued').textContent = passport?.mintedAt || '—';
 
+      const container = document.getElementById('glyphContainer');
       const glyph = document.getElementById('glyphImg');
       if (agentPub) {
         glyph.src = `${API_BASE}/api/glyph/${encodeURIComponent(agentPub)}`;
-        glyph.style.display = 'block';
+        container.style.display = 'flex';
       }
+
+      // Animate the panel
+      panel.style.animation = 'fadeInUp 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
 
       if (passport?.status === 'legacy_simulated') {
         setStatus('Legacy simulated passport record found. Mint on-chain to upgrade this agent.', false);
@@ -604,12 +1150,14 @@
     }
 
     async function lookupPassport() {
+      lastAction = 'lookup';
       const agentPub = document.getElementById('agentPub').value.trim();
       if (!agentPub) {
         setStatus('Enter an agent public key first.', false);
         return;
       }
       try {
+        setStatusLoading('Looking up passport…');
         const r = await fetch(`${API_BASE}/api/passport/${encodeURIComponent(agentPub)}`);
         const data = await r.json();
         if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
@@ -623,6 +1171,7 @@
     }
 
     async function issuePassport() {
+      lastAction = 'issue';
       const agentPub = document.getElementById('agentPub').value.trim();
       if (!walletPublicKey) {
         setStatus('Connect wallet first.', false);
@@ -632,9 +1181,17 @@
         setStatus('Enter an agent public key first.', false);
         return;
       }
+
+      const issueBtn = document.getElementById('issueBtn');
+      issueBtn.classList.add('btn--loading');
+      issueBtn.disabled = true;
+
       try {
         const sessionId = getActionSessionId();
         const domain = getActionDomain();
+
+        setMintStep('sign');
+        updateFlowStep(2);
 
         const challengeResp = await fetch(`${API_BASE}/api/auth/action-challenge`, {
           method: 'POST',
@@ -656,9 +1213,12 @@
         const challenge = challengeData?.challenge;
         if (!challenge?.message || !challenge?.nonce) throw new Error('Invalid challenge response');
 
-        setStatus('Challenge issued. Approve message signature…');
+        setStatusLoading('Challenge issued. Approve message signature…');
         const signed = await walletProvider.signMessage(new TextEncoder().encode(challenge.message), 'utf8');
         const sig = uint8ToBase58(new Uint8Array(signed.signature || signed));
+
+        setMintStep('mint');
+        setStatusLoading('Preparing mint transaction…');
 
         const prepareResp = await fetch(`${API_BASE}/api/passport/${encodeURIComponent(agentPub)}/mint-prepare`, {
           method: 'POST',
@@ -683,7 +1243,7 @@
           if (!prepared.transactionBase64) {
             throw new Error('Missing mint transaction payload');
           }
-          setStatus('Approve passport mint transaction in wallet…');
+          setStatusLoading('Approve passport mint transaction in wallet…');
           const txBytes = Uint8Array.from(atob(prepared.transactionBase64), (ch) => ch.charCodeAt(0));
           const tx = solanaWeb3.Transaction.from(txBytes);
 
@@ -705,6 +1265,9 @@
             await connection.confirmTransaction(txSignature, 'confirmed');
           }
         }
+
+        setMintStep('finalize');
+        setStatusLoading('Finalizing passport…');
 
         const finalizeChallengeResp = await fetch(`${API_BASE}/api/auth/action-challenge`, {
           method: 'POST',
@@ -728,7 +1291,7 @@
         const finalizeChallenge = finalizeChallengeData?.challenge;
         if (!finalizeChallenge?.message || !finalizeChallenge?.nonce) throw new Error('Invalid finalize challenge response');
 
-        setStatus('Approve finalize signature…');
+        setStatusLoading('Approve finalize signature…');
         const finalizeSigned = await walletProvider.signMessage(new TextEncoder().encode(finalizeChallenge.message), 'utf8');
         const finalizeSig = uint8ToBase58(new Uint8Array(finalizeSigned.signature || finalizeSigned));
 
@@ -748,12 +1311,21 @@
         const finalized = await finalizeResp.json();
         if (!finalizeResp.ok) throw new Error(finalized.error || `HTTP ${finalizeResp.status}`);
 
+        setMintStep('verify');
+        setStatusLoading('Verifying on-chain…');
+
         await lookupPassport();
+        completeMintProgress();
+        updateFlowStep(3);
         setStatus(prepared.alreadyExists
           ? 'Passport already existed on-chain and has been linked.'
           : 'Passport minted on-chain and verified.');
       } catch (err) {
+        hideMintProgress();
         setStatus(err.message || 'Issuance failed', false);
+      } finally {
+        issueBtn.classList.remove('btn--loading');
+        issueBtn.disabled = !walletPublicKey;
       }
     }
   </script>

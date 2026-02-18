@@ -3,395 +3,710 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIGIL Protocol | Integrations</title>
+  <title>SIGIL Protocol — Integrations</title>
   <meta name="description" content="Drop-in integration guide for SIGIL verification APIs, compact policy checks, and embeddable badges.">
+  <meta name="theme-color" content="#000000">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.cdnfonts.com" crossorigin>
+  <link href="https://fonts.cdnfonts.com/css/geist" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/geist-mono" rel="stylesheet">
 
   <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
     :root {
-      --bg: #050505;
-      --bg-elevated: #0a0a0a;
-      --surface: #0f0f0f;
-      --border: rgba(255, 255, 255, 0.06);
-      --border-hover: rgba(255,255,255,0.14);
-      --text: rgba(255, 255, 255, 0.82);
-      --text-muted: rgba(255, 255, 255, 0.45);
-      --text-dim: rgba(255, 255, 255, 0.2);
-      --accent: #4ade80;
-      --ember: #d4a574;
-      --ember-dim: rgba(212, 165, 116, 0.15);
+      --black:    #000000;
+      --gray-950: #030303;
+      --gray-900: #050505;
+      --gray-850: #0a0a0a;
+      --gray-800: #0f0f0f;
+      --gray-750: #141414;
+      --gray-700: #1a1a1a;
+      --gray-650: #1f1f1f;
+      --gray-600: #252525;
+      --gray-550: #2a2a2a;
+      --gray-500: #333333;
+      --gray-450: #404040;
+      --gray-400: #4d4d4d;
+      --gray-350: #595959;
+      --gray-300: #666666;
+      --gray-250: #737373;
+      --gray-200: #808080;
+      --gray-150: #999999;
+      --gray-100: #b3b3b3;
+      --gray-50:  #cccccc;
+      --white:    #e6e6e6;
 
-      --font-display: 'Syne', sans-serif;
-      --font-sans: 'Public Sans', -apple-system, system-ui, sans-serif;
-      --font-mono: 'Spline Sans Mono', monospace;
+      --bg:          var(--black);
+      --bg-subtle:   var(--gray-950);
+      --bg-muted:    var(--gray-900);
+      --bg-surface:  var(--gray-850);
+      --bg-elevated: var(--gray-800);
+      --bg-overlay:  var(--gray-750);
 
-      --radius-sm: 2px;
-      --radius-md: 4px;
+      --border-base:    rgba(230, 230, 230, 0.06);
+      --border-faint:   rgba(230, 230, 230, 0.08);
+      --border-subtle:  rgba(230, 230, 230, 0.10);
+      --border-muted:   rgba(230, 230, 230, 0.12);
+      --border-default: rgba(230, 230, 230, 0.15);
+      --border-medium:  rgba(230, 230, 230, 0.18);
+      --border-strong:  rgba(230, 230, 230, 0.20);
+
+      --text:        var(--gray-50);
+      --text-strong: var(--white);
+      --text-medium: var(--gray-100);
+      --text-muted:  var(--gray-150);
+      --text-faint:  var(--gray-300);
+      --text-ghost:  var(--gray-400);
+
+      --status-active:  #22c55e;
+      --status-special: #8b5cf6;
+
+      --font-sans: 'Geist', -apple-system, system-ui, sans-serif;
+      --font-mono: 'Geist Mono', 'SF Mono', 'Cascadia Code', monospace;
+
+      --radius-sm:   3px;
+      --radius-md:   6px;
+      --radius-lg:   8px;
+      --radius-xl:   12px;
+      --radius-2xl:  16px;
       --radius-full: 9999px;
 
-      --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
-      --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
-      --space-12: 48px; --space-16: 64px;
+      --ease-reveal: cubic-bezier(0.32, 0.72, 0, 1);
+      --ease-out:    cubic-bezier(0, 0, 0.2, 1);
+      --duration-fast:   150ms;
+      --duration-normal: 300ms;
+
+      --content-width: min(90vw, 1200px);
     }
 
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    html {
+      scroll-behavior: smooth;
+      scrollbar-gutter: stable;
+      overscroll-behavior: none;
+    }
     body {
       font-family: var(--font-sans);
       background: var(--bg);
       color: var(--text);
+      font-weight: 300;
+      font-size: 0.9375rem;
       line-height: 1.7;
-      font-size: 14px;
       min-height: 100vh;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
+    ::selection { background: rgba(230, 230, 230, 0.08); color: var(--text-strong); }
 
-    body::after {
-      content: '';
+    /* ───── NAV ───── */
+    .nav {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 9999;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px);
-    }
-
-    ::selection { background: rgba(74, 222, 128, 0.18); color: var(--text); }
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: var(--radius-full); }
-    :focus { outline: none; }
-    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-    @keyframes sigilBurn {
-      0% { text-shadow: 0 0 10px rgba(212,165,116,0.3); }
-      50% { text-shadow: 0 0 20px rgba(212,165,116,0.5); }
-      100% { text-shadow: 0 0 10px rgba(212,165,116,0.3); }
-    }
-
-    header {
-      border-bottom: 1px solid var(--border);
-      padding: var(--space-4) var(--space-8);
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: 64px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      position: sticky;
-      top: 0;
-      background: rgba(5,5,5,0.85);
-      backdrop-filter: blur(12px);
-      z-index: 50;
+      justify-content: space-between;
+      padding: 0 2rem;
+      background: rgba(0, 0, 0, 0.8);
+      border-bottom: 1px solid var(--border-base);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
     }
-
-    .header-left { display: flex; align-items: center; gap: var(--space-4); }
-    .logo { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; }
-    .logo-sigil { font-size: 1.25rem; color: var(--ember); animation: sigilBurn 4s infinite; line-height: 1; }
-    .logo-text { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); }
-    .logo-text span { color: rgba(255,255,255,0.2); font-weight: 400; }
-    .build-meta { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.15); letter-spacing: 0.02em; white-space: nowrap; }
-
-    nav { display: flex; gap: var(--space-8); }
-    nav a {
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    .nav-logo .glyph {
+      font-size: 1rem;
+      color: var(--text-ghost);
+      transition: color 0.6s var(--ease-reveal);
+    }
+    .nav-logo:hover .glyph { color: var(--status-special); }
+    .nav-mobile-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0.25rem;
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-sm);
+      color: var(--text-faint);
+      background: var(--bg-surface);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-links a {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 300;
       color: var(--text-muted);
       text-decoration: none;
-      font-family: var(--font-mono);
-      font-size: 11px;
+      transition: color var(--duration-fast) ease;
+      padding: 0.5rem 0;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .nav-links a:hover { color: var(--text-strong); }
+    .nav-links a.active { color: var(--text); }
+    .nav-links a:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ───── PAGE ───── */
+    .page { padding-top: 64px; min-height: 100vh; }
+
+    .page-layout {
+      width: var(--content-width);
+      margin: 0 auto;
+      padding: 4rem 0 6rem;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    /* ───── SIDEBAR NAV ───── */
+    .sidebar-nav {
+      position: sticky;
+      top: 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .sidebar-nav-label {
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: var(--space-2) 0;
-      position: relative;
-      transition: color 0.25s ease;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      padding-left: 0.5rem;
     }
-    nav a::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 1px;
-      background: var(--ember);
-      transition: width 0.25s ease;
+    .sidebar-nav a {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 300;
+      color: var(--text-faint);
+      text-decoration: none;
+      padding: 0.375rem 0.5rem;
+      border-radius: var(--radius-sm);
+      transition: color var(--duration-fast) ease, background-color var(--duration-fast) ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: 36px;
     }
-    nav a:hover { color: rgba(255,255,255,0.75); }
-    nav a:hover::after { width: 100%; }
-    nav a.active { color: var(--ember); }
-    nav a.active::after { width: 100%; }
+    .sidebar-nav a:hover { color: var(--text); background: var(--bg-surface); }
+    .sidebar-nav a:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+    }
+    .sidebar-nav a .section-icon {
+      font-size: 0.6875rem;
+      color: var(--text-ghost);
+      width: 16px;
+      text-align: center;
+    }
 
-    main { max-width: 1200px; margin: 0 auto; padding: var(--space-10) var(--space-6); }
+    /* ───── MAIN CONTENT ───── */
+    main {
+      min-width: 0;
+    }
 
+    /* ───── PAGE HEADER ───── */
+    .page-header { margin-bottom: 3rem; }
     .section-label {
-      font-family: var(--font-mono);
-      font-size: 11px;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: rgba(255,255,255,0.3);
-      margin-bottom: var(--space-4);
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 0.75rem;
     }
-
-    h1 {
-      font-family: var(--font-display);
-      font-size: clamp(1.5rem, 4vw, 2rem);
-      font-weight: 600;
+    .page-header h1 {
+      font-family: var(--font-sans);
+      font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+      font-weight: 200;
       letter-spacing: -0.02em;
-      color: rgba(255,255,255,0.85);
-      margin-bottom: var(--space-2);
+      line-height: 1.2;
+      color: var(--text-strong);
+      margin-bottom: 0.75rem;
+    }
+    .page-header p {
+      font-family: var(--font-sans);
+      font-size: 0.9375rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      max-width: 65ch;
+      line-height: 1.7;
     }
 
-    p { font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-4); }
-
+    /* ───── FLOW STEPS ───── */
     .flow-steps {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: var(--space-3);
+      gap: 0.75rem;
       max-width: 920px;
-      margin-top: var(--space-5);
-      margin-bottom: var(--space-8);
+      margin-top: 1.5rem;
+      margin-bottom: 3rem;
     }
-
     .flow-step {
       display: flex;
       align-items: center;
-      gap: var(--space-3);
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.015);
+      gap: 0.75rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
       border-radius: var(--radius-md);
-      padding: var(--space-3) var(--space-4);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.03em;
-      color: rgba(255,255,255,0.7);
+      padding: 0.75rem 1rem;
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text);
+      opacity: 0;
+      animation: fadeInUp 0.4s var(--ease-reveal) forwards;
     }
-
+    .flow-step:nth-child(1) { animation-delay: 0ms; }
+    .flow-step:nth-child(2) { animation-delay: 80ms; }
+    .flow-step:nth-child(3) { animation-delay: 160ms; }
     .flow-step-index {
-      width: 20px;
-      height: 20px;
+      width: 24px; height: 24px;
       border-radius: var(--radius-full);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
-      border: 1px solid rgba(255,255,255,0.16);
-      color: var(--ember);
-      background: rgba(212,165,116,0.1);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      border: 1px solid var(--border-default);
+      color: var(--text-muted);
+      background: var(--bg-elevated);
       flex: 0 0 auto;
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
     }
 
-    .integration-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-4);
+    /* ───── INTEGRATION SECTIONS ───── */
+    .integration-section {
+      margin-bottom: 3rem;
+      scroll-margin-top: 80px;
     }
 
     .panel-card {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
       overflow: hidden;
-      background: rgba(255,255,255,0.01);
+      transition: border-color var(--duration-fast) ease;
     }
+    .panel-card:hover { border-color: var(--border-subtle); }
 
     .panel-header {
-      padding: var(--space-3) var(--space-5);
-      background: rgba(255,255,255,0.02);
-      border-bottom: 1px solid var(--border);
-      font-family: var(--font-mono);
-      font-size: 10px;
+      padding: 0.75rem 1.5rem;
+      border-bottom: 1px solid var(--border-base);
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
       font-weight: 500;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
+    .panel-header .icon {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .method-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.0625rem 0.375rem;
+      font-family: var(--font-mono);
+      font-size: 0.5625rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-base);
+      margin-left: auto;
+    }
+    .method-badge.get { color: var(--status-active); border-color: rgba(34,197,94,0.2); }
+    .method-badge.post { color: var(--status-special); border-color: rgba(139,92,246,0.2); }
 
-    .panel-body { padding: var(--space-5); }
+    .panel-body { padding: 1.5rem; }
 
     .panel-title {
-      font-family: var(--font-display);
-      font-size: 1.15rem;
-      color: rgba(255,255,255,0.9);
-      margin-bottom: var(--space-2);
+      font-family: var(--font-sans);
+      font-size: 1.125rem;
+      font-weight: 300;
+      color: var(--text-strong);
+      letter-spacing: -0.01em;
+      margin-bottom: 0.5rem;
     }
-
-    .panel-copy { font-size: 13px; color: var(--text-muted); margin-bottom: var(--space-3); }
-
-    pre {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: rgba(255,255,255,0.015);
-      padding: 10px 12px;
-      color: rgba(236,245,242,0.82);
+    .panel-copy {
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      line-height: 1.7;
+      max-width: 65ch;
+    }
+    .panel-endpoint {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-base);
+      border-radius: var(--radius-md);
+    }
+    .panel-endpoint-method {
       font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.02em;
-      overflow: auto;
-      line-height: 1.5;
-      white-space: pre;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      padding: 0.125rem 0.375rem;
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
     }
+    .panel-endpoint-method.get { color: var(--status-active); }
+    .panel-endpoint-method.post { color: var(--status-special); }
+    .panel-endpoint-path {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-medium);
+      letter-spacing: 0.02em;
+    }
+
+    /* ───── CODE BLOCKS ───── */
+    pre {
+      background: var(--gray-850);
+      border: 1px solid var(--border-base);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      color: var(--text-medium);
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      overflow-x: auto;
+      line-height: 1.7;
+      white-space: pre;
+      position: relative;
+    }
+    pre .comment { color: var(--text-faint); }
+    pre .keyword { color: var(--text-muted); }
+    pre .string { color: var(--text-muted); }
 
     .badge-preview {
-      margin-top: var(--space-3);
+      margin-top: 0.75rem;
       width: 100%;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-base);
+      border-radius: var(--radius-md);
       background: var(--bg-elevated);
     }
 
+    /* ───── WELL-KNOWN ───── */
     .well-known {
-      margin-top: var(--space-5);
-      border: 1px solid rgba(212,165,116,0.35);
-      border-radius: var(--radius-sm);
-      background: var(--ember-dim);
-      color: var(--ember);
+      margin-top: 2rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
       font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 10px 12px;
+      font-size: 0.8125rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      color: var(--text-medium);
+      padding: 0.75rem 1.25rem;
     }
 
-    footer {
-      border-top: 1px solid var(--border);
-      padding: var(--space-12) var(--space-8) var(--space-10);
-      margin-top: var(--space-8);
-    }
-
-    .footer-content {
-      max-width: 1200px;
+    /* ───── FOOTER ───── */
+    .footer {
+      border-top: 1px solid var(--border-base);
+      padding: 4rem 0;
+      width: var(--content-width);
       margin: 0 auto;
+    }
+    .footer-inner {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: var(--space-3);
+      justify-content: space-between;
+      align-items: flex-start;
     }
-
-    .footer-brand { font-family: var(--font-mono); font-size: 12px; color: rgba(255,255,255,0.2); text-align: center; }
-    .footer-brand .ember-text { color: var(--ember); }
-    .footer-meta { font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,0.12); text-align: center; }
-
-    .footer-links { display: flex; gap: var(--space-8); margin-top: var(--space-3); flex-wrap: wrap; justify-content: center; }
-    .footer-links a {
-      color: rgba(255,255,255,0.2);
-      text-decoration: none;
+    .footer-brand {
       font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.05em;
-      transition: color 0.25s ease;
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text-ghost);
+      letter-spacing: 0.1em;
     }
-    .footer-links a:hover { color: rgba(255,255,255,0.5); }
+    .footer-links { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .footer-links a {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 300;
+      color: var(--text-faint);
+      text-decoration: none;
+      transition: color var(--duration-fast) ease;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .footer-links a:hover { color: var(--text-muted); }
+    .footer-links a:focus-visible {
+      outline: 2px solid var(--text-ghost);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
 
+    /* ───── ANIMATIONS ───── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+      .flow-step { opacity: 1; transform: none; }
+    }
+
+    /* ───── RESPONSIVE ───── */
     @media (max-width: 980px) {
-      .integration-grid, .flow-steps { grid-template-columns: 1fr; }
+      .page-layout { grid-template-columns: 1fr; }
+      .sidebar-nav {
+        position: static;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-base);
+      }
+      .sidebar-nav-label { display: none; }
+      .sidebar-nav a { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+      .flow-steps { grid-template-columns: 1fr; }
     }
-
     @media (max-width: 768px) {
-      header { padding: var(--space-4); }
-      nav { gap: var(--space-4); }
-      nav a { font-size: 10px; }
-      .build-meta { display: none; }
-      main { padding: var(--space-6) var(--space-4); }
+      .nav { padding: 0 1rem; }
+      .nav-mobile-toggle { display: inline-flex; }
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.98);
+        border-bottom: 1px solid var(--border-base);
+        z-index: 120;
+      }
+      .nav-links.open a {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0.25rem;
+        font-size: 0.875rem;
+      }
+      .page-layout { padding: 2.5rem 0 4rem; }
+      .footer-inner { flex-direction: column; gap: 1.5rem; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="header-left">
-      <a href="index.html" class="logo">
-        <span class="logo-sigil">⏀</span>
-        <div class="logo-text">SIGIL<span> PROTOCOL</span></div>
-      </a>
-      <span class="build-meta">v0.5.0 · solana mainnet</span>
-    </div>
-    <nav>
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo">
+      <span class="glyph">⏀</span> SIGIL
+    </a>
+    <button class="nav-mobile-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+    <div class="nav-links" id="navLinks">
       <a href="index.html">Protocol</a>
       <a href="register.html">Register</a>
       <a href="gallery.html">Gallery</a>
       <a href="stake.html">Stake</a>
       <a href="passport.html">Passport</a>
       <a href="verify.html">Verify</a>
-      <a href="integrations.html" class="active">Integrate</a>
-      <a href="portfolio.html">Portfolio</a>
+      <a href="integrations.html" class="active" aria-current="page">Integrate</a>
       <a href="leaderboard.html">Leaderboard</a>
-    </nav>
-  </header>
-
-  <main>
-    <div style="margin-bottom: var(--space-6);">
-      <p class="section-label">Developer Integrations</p>
-      <h1>Ship Agent Verification in 3 Calls</h1>
-      <p style="max-width: 900px;">Use SIGIL as your trust layer: full attestation for policy engines, compact endpoint for runtime gates, and an embeddable badge for public verification surfaces.</p>
-      <div class="flow-steps">
-        <div class="flow-step"><span class="flow-step-index">1</span>Query full attestation</div>
-        <div class="flow-step"><span class="flow-step-index">2</span>Gate with compact checks</div>
-        <div class="flow-step"><span class="flow-step-index">3</span>Embed live verification badge</div>
-      </div>
     </div>
+  </nav>
 
-    <div class="integration-grid">
-      <section class="panel-card">
-        <div class="panel-header">◆ Full Attestation API</div>
-        <div class="panel-body">
-          <h2 class="panel-title">Policy-grade verification payload</h2>
-          <p class="panel-copy">Identity continuity, receipts, anchors, staking context, and optional strict passport requirement in one response.</p>
-          <pre id="fullSnippet"></pre>
-        </div>
-      </section>
+  <div class="page">
+    <div class="page-layout">
 
-      <section class="panel-card">
-        <div class="panel-header">◇ Compact Gate API</div>
-        <div class="panel-body">
-          <h2 class="panel-title">Fast pass/fail integration</h2>
-          <p class="panel-copy">Purpose-built for middleware and edge gates where you need concise policy decisions.</p>
-          <pre id="compactSnippet"></pre>
-        </div>
-      </section>
-
-      <section class="panel-card">
-        <div class="panel-header">◈ Badge Embed</div>
-        <div class="panel-body">
-          <h2 class="panel-title">Public trust surface</h2>
-          <p class="panel-copy">Display proof of verification across docs, profile pages, and partner directories.</p>
-          <pre id="badgeSnippet"></pre>
-          <img id="badgePreview" class="badge-preview" alt="SIGIL verification badge preview">
-        </div>
-      </section>
-
-      <section class="panel-card">
-        <div class="panel-header">◉ Frontend Example</div>
-        <div class="panel-body">
-          <h2 class="panel-title">Client gate snippet</h2>
-          <p class="panel-copy">Minimal browser-side check before enabling privileged interactions.</p>
-          <pre id="jsSnippet"></pre>
-        </div>
-      </section>
-    </div>
-
-    <div class="well-known" id="wellKnownLine"></div>
-  </main>
-
-  <footer>
-    <div class="footer-content">
-      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.5.0 · Solana</div>
-      <div class="footer-meta">deployed autonomously · identity protocol for AI agents</div>
-      <nav class="footer-links">
-        <a href="index.html">Protocol</a>
-        <a href="register.html">Register</a>
-        <a href="gallery.html">Gallery</a>
-        <a href="dashboard.html">Registry</a>
-        <a href="stake.html">Stake</a>
-        <a href="passport.html">Passport</a>
-        <a href="verify.html">Verify</a>
-        <a href="integrations.html">Integrate</a>
-        <a href="portfolio.html">Portfolio</a>
-        <a href="leaderboard.html">Leaderboard</a>
+      <!-- Sidebar Navigation -->
+      <nav class="sidebar-nav" aria-label="Page sections">
+        <span class="sidebar-nav-label">Sections</span>
+        <a href="#overview"><span class="section-icon">◆</span> Overview</a>
+        <a href="#full-attestation"><span class="section-icon">◇</span> Attestation API</a>
+        <a href="#compact-gate"><span class="section-icon">◈</span> Compact Gate</a>
+        <a href="#badge-embed"><span class="section-icon">◉</span> Badge Embed</a>
+        <a href="#frontend"><span class="section-icon">⊹</span> Frontend</a>
+        <a href="#discovery"><span class="section-icon">⏀</span> Discovery</a>
       </nav>
+
+      <main>
+
+        <!-- Overview -->
+        <div class="page-header" id="overview">
+          <span class="section-label">Developer Integrations</span>
+          <h1>Ship Agent Verification in 3 Calls</h1>
+          <p>Use SIGIL as your trust layer: full attestation for policy engines, compact endpoint for runtime gates, and an embeddable badge for public verification surfaces.</p>
+          <div class="flow-steps">
+            <div class="flow-step"><span class="flow-step-index">1</span> Query full attestation</div>
+            <div class="flow-step"><span class="flow-step-index">2</span> Gate with compact checks</div>
+            <div class="flow-step"><span class="flow-step-index">3</span> Embed live verification badge</div>
+          </div>
+        </div>
+
+        <!-- Full Attestation -->
+        <div class="integration-section" id="full-attestation">
+          <section class="panel-card">
+            <div class="panel-header">
+              <span class="icon">◆</span> Full Attestation API
+              <span class="method-badge get">GET</span>
+            </div>
+            <div class="panel-body">
+              <h2 class="panel-title">Policy-grade verification payload</h2>
+              <p class="panel-copy">Identity continuity, receipts, anchors, staking context, and optional strict passport requirement in one response.</p>
+              <div class="panel-endpoint">
+                <span class="panel-endpoint-method get">GET</span>
+                <span class="panel-endpoint-path">/api/verification/agent/{publicKey}</span>
+              </div>
+              <pre id="fullSnippet"></pre>
+            </div>
+          </section>
+        </div>
+
+        <!-- Compact Gate -->
+        <div class="integration-section" id="compact-gate">
+          <section class="panel-card">
+            <div class="panel-header">
+              <span class="icon">◇</span> Compact Gate API
+              <span class="method-badge get">GET</span>
+            </div>
+            <div class="panel-body">
+              <h2 class="panel-title">Fast pass / fail integration</h2>
+              <p class="panel-copy">Purpose-built for middleware and edge gates where you need concise policy decisions.</p>
+              <div class="panel-endpoint">
+                <span class="panel-endpoint-method get">GET</span>
+                <span class="panel-endpoint-path">/api/verification/agent/{publicKey}/compact</span>
+              </div>
+              <pre id="compactSnippet"></pre>
+            </div>
+          </section>
+        </div>
+
+        <!-- Badge Embed -->
+        <div class="integration-section" id="badge-embed">
+          <section class="panel-card">
+            <div class="panel-header">
+              <span class="icon">◈</span> Badge Embed
+              <span class="method-badge get">GET</span>
+            </div>
+            <div class="panel-body">
+              <h2 class="panel-title">Public trust surface</h2>
+              <p class="panel-copy">Display proof of verification across docs, profile pages, and partner directories.</p>
+              <div class="panel-endpoint">
+                <span class="panel-endpoint-method get">GET</span>
+                <span class="panel-endpoint-path">/api/verification/badge/{publicKey}.svg</span>
+              </div>
+              <pre id="badgeSnippet"></pre>
+              <img id="badgePreview" class="badge-preview" alt="SIGIL verification badge preview" loading="lazy">
+            </div>
+          </section>
+        </div>
+
+        <!-- Frontend Example -->
+        <div class="integration-section" id="frontend">
+          <section class="panel-card">
+            <div class="panel-header">
+              <span class="icon">◉</span> Frontend Example
+            </div>
+            <div class="panel-body">
+              <h2 class="panel-title">Client gate snippet</h2>
+              <p class="panel-copy">Minimal browser-side check before enabling privileged interactions.</p>
+              <pre id="jsSnippet"></pre>
+            </div>
+          </section>
+        </div>
+
+        <!-- Discovery -->
+        <div class="integration-section" id="discovery">
+          <div class="well-known" id="wellKnownLine"></div>
+        </div>
+
+      </main>
     </div>
-  </footer>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <span class="footer-brand">⏀ SIGIL PROTOCOL</span>
+        <nav class="footer-links" aria-label="Footer navigation">
+          <a href="index.html">Protocol</a>
+          <a href="register.html">Register</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="integrations.html">Integrate</a>
+          <a href="leaderboard.html">Leaderboard</a>
+        </nav>
+      </div>
+    </footer>
+  </div>
 
   <script>
     const BASE = location.protocol === 'file:'
       ? 'http://localhost:3141'
       : location.origin;
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    if (navToggle && navLinks) {
+      navToggle.addEventListener('click', () => {
+        const isOpen = navLinks.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', String(isOpen));
+      });
+      navLinks.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
     const EXAMPLE_KEY = 'AGENT_PUBLIC_KEY_BASE58';
     const fullUrl = `${BASE}/api/verification/agent/${EXAMPLE_KEY}?requirePassport=1`;
     const compactUrl = `${BASE}/api/verification/agent/${EXAMPLE_KEY}/compact?requirePassport=1`;
@@ -410,6 +725,32 @@ const data = await resp.json();
 if (!resp.ok || !data.criticalPass) throw new Error("Agent verification failed");`;
 
     document.getElementById('wellKnownLine').textContent = `Discovery: ${BASE}/.well-known/sigil.json`;
+
+    // Highlight active sidebar link on scroll
+    const sections = document.querySelectorAll('.integration-section, .page-header');
+    const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+
+    if (window.IntersectionObserver) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            sidebarLinks.forEach(link => {
+              link.style.color = link.getAttribute('href') === `#${id}`
+                ? 'var(--text-strong)'
+                : '';
+              link.style.background = link.getAttribute('href') === `#${id}`
+                ? 'var(--bg-surface)'
+                : '';
+            });
+          }
+        });
+      }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+      sections.forEach(section => {
+        if (section.id) observer.observe(section);
+      });
+    }
   </script>
 </body>
 </html>

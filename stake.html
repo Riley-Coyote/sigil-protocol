@@ -6,207 +6,315 @@
   <title>SIGIL Protocol | Stake $SIGIL</title>
 
   <meta name="description" content="Stake $SIGIL tokens to AI agents on the SIGIL Protocol. Connect your wallet, browse agents, and back the ones you believe in.">
-  <meta name="theme-color" content="#050505">
+  <meta name="theme-color" content="#000000">
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="SIGIL Protocol | Stake $SIGIL">
   <meta property="og:description" content="Stake $SIGIL to AI agents. Earn rewards. Fund persistence.">
   <meta property="og:url" content="https://sigilprotocol.xyz/stake.html">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/geist" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/geist-mono" rel="stylesheet">
 
   <style>
-    /* ===== DESIGN TOKENS ===== */
+    /* ════════════════════════════════════════════════════════
+       SIGIL Protocol — Stake Page
+       Design System: Polyphonic-aligned v2.0
+       ════════════════════════════════════════════════════════ */
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
     :root {
-      --bg: #050505;
-      --bg-elevated: #0a0a0a;
-      --surface: #0f0f0f;
-      --surface-hover: #141414;
-      --border: rgba(255, 255, 255, 0.06);
-      --border-hover: rgba(255, 255, 255, 0.12);
-      --text: rgba(255, 255, 255, 0.8);
-      --text-muted: rgba(255, 255, 255, 0.45);
-      --text-dim: rgba(255, 255, 255, 0.2);
-      --accent: #4ade80;
-      --accent-hover: #22c55e;
-      --accent-dim: rgba(74, 222, 128, 0.15);
-      --ember: #d4a574;
-      --ember-hover: #e0b68a;
-      --ember-dim: rgba(212, 165, 116, 0.15);
-      --ember-glow: rgba(212, 165, 116, 0.3);
-      --danger: #ef4444;
-      --danger-dim: rgba(239, 68, 68, 0.15);
-      --warning: #f59e0b;
+      /* Grayscale Ramp */
+      --black:    #000000;
+      --gray-950: #030303;
+      --gray-900: #050505;
+      --gray-850: #0a0a0a;
+      --gray-800: #0f0f0f;
+      --gray-750: #141414;
+      --gray-700: #1a1a1a;
+      --gray-650: #1f1f1f;
+      --gray-600: #252525;
+      --gray-550: #2a2a2a;
+      --gray-500: #333333;
+      --gray-450: #404040;
+      --gray-400: #4d4d4d;
+      --gray-350: #595959;
+      --gray-300: #666666;
+      --gray-250: #737373;
+      --gray-200: #808080;
+      --gray-150: #999999;
+      --gray-100: #b3b3b3;
+      --gray-50:  #cccccc;
+      --white:    #e6e6e6;
 
-      --font-display: 'Syne', sans-serif;
-      --font-sans: 'Public Sans', -apple-system, system-ui, sans-serif;
-      --font-mono: 'Spline Sans Mono', monospace;
+      /* Semantic Backgrounds */
+      --bg:          var(--black);
+      --bg-subtle:   var(--gray-950);
+      --bg-muted:    var(--gray-900);
+      --bg-surface:  var(--gray-850);
+      --bg-elevated: var(--gray-800);
+      --bg-overlay:  var(--gray-750);
 
-      --radius-sm: 2px;
-      --radius-md: 4px;
+      /* Semantic Borders (solid hex) */
+      --border-faint:   #141414;
+      --border-subtle:  #1a1a1a;
+      --border-muted:   #1f1f1f;
+      --border-default: #252525;
+      --border-medium:  #2a2a2a;
+      --border-strong:  #333333;
+
+      /* Semantic Text */
+      --text:        #cccccc;
+      --text-strong: #e6e6e6;
+      --text-medium: #b3b3b3;
+      --text-muted:  #999999;
+      --text-faint:  #666666;
+      --text-ghost:  #4d4d4d;
+
+      /* Status */
+      --status-active: #22c55e;
+      --status-error:  #ef4444;
+      --status-warning: #f59e0b;
+
+      /* Fonts */
+      --font-sans: 'Geist', -apple-system, system-ui, sans-serif;
+      --font-mono: 'Geist Mono', 'SF Mono', 'Cascadia Code', monospace;
+
+      /* Radius */
+      --radius-sm: 3px;
+      --radius-md: 6px;
       --radius-full: 9999px;
 
+      /* Spacing (4px grid) */
       --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
       --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
       --space-12: 48px; --space-16: 64px;
 
-      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-      --duration-fast: 150ms;
-      --duration-normal: 250ms;
-      --duration-slow: 400ms;
-
-      --z-sticky: 50;
-      --z-modal: 100;
-      --z-overlay: 200;
+      /* Motion */
+      --ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+      --ease-standard: cubic-bezier(0.2, 0, 0, 1);
     }
 
-    /* ===== RESET ===== */
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      scrollbar-gutter: stable;
+    }
+
     body {
       font-family: var(--font-sans);
       background: var(--bg);
       color: var(--text);
       line-height: 1.7;
-      font-size: 14px;
+      font-size: 0.9375rem;
+      font-weight: 400;
       min-height: 100vh;
       overflow-x: hidden;
+      overscroll-behavior: none;
     }
 
-    /* Scanline overlay */
-    body::after {
-      content: '';
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 9999;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px);
-    }
-
-    ::selection { background: var(--accent-dim); color: var(--text); }
-    ::-webkit-scrollbar { width: 8px; }
+    ::selection { background: rgba(230, 230, 230, 0.08); color: var(--text-strong); }
+    ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: var(--radius-full); }
+    ::-webkit-scrollbar-thumb { background: var(--gray-600); border-radius: var(--radius-full); }
     :focus { outline: none; }
-    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    :focus-visible { outline: 1px solid var(--border-strong); outline-offset: 2px; }
 
     /* ===== ANIMATIONS ===== */
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    @keyframes sigilBurn { 0% { text-shadow: 0 0 10px rgba(212,165,116,0.3); } 50% { text-shadow: 0 0 20px rgba(212,165,116,0.5); } 100% { text-shadow: 0 0 10px rgba(212,165,116,0.3); } }
-    @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 10px rgba(74,222,128,0.3); } 50% { box-shadow: 0 0 20px rgba(74,222,128,0.5); } }
-    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-    /* ===== HEADER ===== */
-    header {
-      border-bottom: 1px solid var(--border);
-      padding: var(--space-4) var(--space-8);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      background: rgba(5,5,5,0.85);
-      backdrop-filter: blur(12px);
-      z-index: var(--z-sticky);
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes breathe {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    @keyframes successFlash {
+      0% { opacity: 1; }
+      30% { opacity: 0.6; background: rgba(34, 197, 94, 0.04); }
+      100% { opacity: 1; background: transparent; }
     }
 
-    .header-left { display: flex; align-items: center; gap: var(--space-4); }
+    /* ===== NAV ===== */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-8);
+      background: rgba(0, 0, 0, 0.85);
+      border-bottom: 1px solid var(--border-faint);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
 
-    .logo { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; }
-    .logo-sigil { font-size: 1.25rem; color: var(--ember); animation: sigilBurn 4s infinite; line-height: 1; }
-    .logo-text { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); }
-    .logo-text span { color: rgba(255,255,255,0.2); font-weight: 400; }
-    .build-meta { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.15); letter-spacing: 0.02em; white-space: nowrap; }
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      text-decoration: none;
+      transition: color 150ms var(--ease-out);
+    }
+    .nav-logo:hover { color: var(--text); }
 
-    nav { display: flex; gap: var(--space-8); }
-    nav a {
+    .nav-logo .glyph {
+      font-size: 1rem;
+      color: var(--text-ghost);
+    }
+    .nav-mobile-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      padding: var(--space-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      background: var(--surface);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: var(--space-8);
+    }
+
+    .nav-links a {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
       color: var(--text-muted);
       text-decoration: none;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      transition: color 150ms var(--ease-out);
       padding: var(--space-2) 0;
-      position: relative;
-      transition: color 0.25s ease;
     }
-    nav a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--ember); transition: width 0.25s ease; }
-    nav a:hover { color: rgba(255,255,255,0.75); }
-    nav a:hover::after { width: 100%; }
-    nav a.active { color: var(--ember); }
-    nav a.active::after { width: 100%; background: var(--ember); }
+
+    .nav-links a:hover { color: var(--text-strong); }
+    .nav-links a.active { color: var(--text); }
 
     /* ===== MAIN ===== */
-    main { max-width: 1200px; margin: 0 auto; padding: var(--space-10) var(--space-6); }
+    .page {
+      padding-top: 64px;
+      min-height: 100vh;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-12) var(--space-6) var(--space-16);
+    }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      margin-bottom: var(--space-10);
+    }
 
     .section-label {
-      font-family: var(--font-mono);
-      font-size: 11px;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: rgba(255,255,255,0.3);
-      margin-bottom: var(--space-4);
+      color: var(--text-muted);
+      margin-bottom: var(--space-3);
+      display: block;
     }
 
     h1 {
-      font-family: var(--font-display);
-      font-size: clamp(1.5rem, 4vw, 2rem);
-      font-weight: 600;
+      font-family: var(--font-sans);
+      font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+      font-weight: 200;
       letter-spacing: -0.02em;
-      color: rgba(255,255,255,0.85);
-      margin-bottom: var(--space-2);
-    }
-
-    h2 {
-      font-family: var(--font-display);
-      font-size: clamp(1rem, 2.5vw, 1.25rem);
-      font-weight: 500;
-      color: rgba(255,255,255,0.8);
+      line-height: 1.2;
+      color: var(--text-strong);
       margin-bottom: var(--space-4);
     }
 
-    p { font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-4); }
+    .page-desc {
+      font-family: var(--font-sans);
+      font-size: 0.9375rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 65ch;
+      margin-bottom: var(--space-6);
+    }
 
+    /* ===== FLOW STEPS ===== */
     .flow-steps {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: var(--space-3);
       max-width: 760px;
-      margin-top: var(--space-5);
     }
 
     .flow-step {
       display: flex;
       align-items: center;
       gap: var(--space-3);
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.015);
+      border: 1px solid var(--border-faint);
+      background: var(--bg-surface);
       border-radius: var(--radius-md);
       padding: var(--space-3) var(--space-4);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.03em;
-      color: rgba(255,255,255,0.7);
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      color: var(--text-muted);
+      transition: border-color 200ms var(--ease-out);
+    }
+
+    .flow-step.active {
+      border-color: var(--border-strong);
+      color: var(--text);
     }
 
     .flow-step-index {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       border-radius: var(--radius-full);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
-      border: 1px solid rgba(255,255,255,0.16);
-      color: var(--ember);
-      background: rgba(212,165,116,0.1);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      border: 1px solid var(--border-default);
+      color: var(--text-muted);
+      background: transparent;
       flex: 0 0 auto;
+      transition: border-color 200ms var(--ease-out);
+    }
+
+    .flow-step.active .flow-step-index {
+      border-color: var(--border-strong);
+      color: var(--text);
     }
 
     /* ===== WALLET BAR ===== */
@@ -215,10 +323,15 @@
       align-items: center;
       justify-content: space-between;
       padding: var(--space-4) var(--space-5);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: rgba(255,255,255,0.015);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
       margin-bottom: var(--space-8);
+      transition: border-color 200ms var(--ease-out);
+    }
+
+    .wallet-bar.connected {
+      border-color: var(--border-subtle);
     }
 
     .wallet-bar-info {
@@ -231,34 +344,36 @@
       display: flex;
       align-items: center;
       gap: var(--space-2);
-      font-family: var(--font-mono);
-      font-size: 12px;
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
     }
 
     .wallet-dot {
-      width: 8px; height: 8px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
+      flex-shrink: 0;
     }
 
-    .wallet-dot.connected {
-      background: var(--accent);
-      box-shadow: 0 0 8px rgba(74,222,128,0.5);
-    }
-
-    .wallet-dot.disconnected {
-      background: var(--text-dim);
-    }
+    .wallet-dot.connected { background: var(--status-active); }
+    .wallet-dot.disconnected { background: var(--text-ghost); }
 
     .wallet-address {
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 0.75rem;
+      font-weight: 400;
       color: var(--text-muted);
+      letter-spacing: 0.02em;
     }
 
     .wallet-balance {
       font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--ember);
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text-medium);
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
     }
 
     /* ===== BUTTONS ===== */
@@ -267,49 +382,84 @@
       align-items: center;
       justify-content: center;
       gap: var(--space-2);
-      padding: 12px 24px;
+      padding: 0 var(--space-5);
+      height: 36px;
+      min-height: 36px;
       font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
       text-decoration: none;
-      border: 1px solid transparent;
-      border-radius: 4px;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: all var(--duration-normal) var(--ease-out);
+      transition: transform 100ms var(--ease-out), border-color 150ms var(--ease-out), color 150ms var(--ease-out), background 150ms var(--ease-out), opacity 150ms var(--ease-out);
       background: transparent;
+      color: var(--text);
     }
-    .btn:disabled { opacity: 0.5; pointer-events: none; cursor: not-allowed; }
 
-    .btn--primary { color: var(--accent); border-color: var(--accent); }
-    .btn--primary:hover { background: rgba(74,222,128,0.1); }
+    .btn:hover {
+      border-color: var(--border-strong);
+      color: var(--text-strong);
+    }
 
-    .btn--ember { color: var(--ember); border-color: var(--ember); }
-    .btn--ember:hover { background: var(--ember-dim); }
+    .btn:active {
+      transform: scale(0.97);
+      background: var(--bg-surface);
+    }
 
-    .btn--secondary { color: var(--text-muted); border: 1px solid rgba(255,255,255,0.2); }
-    .btn--secondary:hover { border-color: rgba(255,255,255,0.4); color: rgba(255,255,255,0.7); }
+    .btn:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
 
-    .btn--danger { color: var(--danger); border-color: var(--danger); }
-    .btn--danger:hover { background: var(--danger-dim); }
+    .btn--primary {
+      color: var(--text);
+      border-color: var(--border-default);
+      background: var(--bg-surface);
+    }
+    .btn--primary:hover { border-color: var(--border-strong); background: var(--bg-elevated); }
+
+    .btn--connect {
+      color: var(--text-strong);
+      border-color: var(--border-strong);
+      background: var(--bg-surface);
+    }
+    .btn--connect:hover { border-color: var(--text-ghost); background: var(--bg-elevated); }
+
+    .btn--secondary {
+      color: var(--text-muted);
+      border-color: var(--border-muted);
+    }
+    .btn--secondary:hover { border-color: var(--border-default); color: var(--text); }
+
+    .btn--danger { color: var(--status-error); border-color: var(--status-error); }
+    .btn--danger:hover { background: rgba(239, 68, 68, 0.06); }
 
     .btn--ghost { color: var(--text-muted); border-color: transparent; }
-    .btn--ghost:hover { color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.05); }
+    .btn--ghost:hover { color: var(--text); background: var(--bg-surface); }
 
-    .btn--small { padding: 8px 16px; font-size: 11px; }
-    .btn--xs { padding: 5px 10px; font-size: 10px; }
+    .btn--small { height: 32px; min-height: 32px; padding: 0 var(--space-4); font-size: 0.6875rem; }
+    .btn--xs { height: 28px; min-height: 28px; padding: 0 var(--space-3); font-size: 0.625rem; }
 
     .btn--loading { pointer-events: none; position: relative; }
     .btn--loading .btn-text { opacity: 0; }
     .btn--loading::after {
       content: '';
       position: absolute;
-      width: 16px; height: 16px;
-      border: 2px solid currentColor;
+      width: 14px; height: 14px;
+      border: 1px solid currentColor;
       border-right-color: transparent;
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
+    }
+
+    /* Touch targets on mobile */
+    @media (pointer: coarse) {
+      .btn { min-height: 44px; }
+      .btn--small { min-height: 44px; }
+      .btn--xs { min-height: 40px; }
     }
 
     /* ===== TWO COLUMN LAYOUT ===== */
@@ -322,9 +472,10 @@
 
     /* ===== AGENT BROWSER ===== */
     .agent-browser {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
       overflow: hidden;
+      background: var(--bg-surface);
     }
 
     .browser-header {
@@ -332,37 +483,57 @@
       align-items: center;
       justify-content: space-between;
       padding: var(--space-3) var(--space-5);
-      background: rgba(255,255,255,0.02);
-      border-bottom: 1px solid var(--border);
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border-faint);
     }
 
     .browser-title {
-      font-family: var(--font-mono);
-      font-size: 10px;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
       font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
     }
 
     .browser-search {
-      padding: 6px 12px;
+      padding: var(--space-2) var(--space-3);
+      height: 32px;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
       color: var(--text);
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-muted);
+      border-radius: var(--radius-sm);
       outline: none;
       width: 200px;
-      transition: border-color var(--duration-fast);
+      transition: border-color 150ms var(--ease-out);
     }
-    .browser-search::placeholder { color: var(--text-dim); }
-    .browser-search:focus { border-color: rgba(255,255,255,0.15); }
+    .browser-search::placeholder { color: var(--text-faint); }
+    .browser-search:focus-visible { border-color: var(--border-strong); outline: none; }
 
     .agent-list {
       max-height: 480px;
       overflow-y: auto;
+    }
+
+    .agent-empty {
+      text-align: center;
+      padding: var(--space-10) var(--space-5);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .agent-loading {
+      text-align: center;
+      padding: var(--space-10) var(--space-5);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      animation: breathe 2s ease-in-out infinite;
     }
 
     .agent-mini-card {
@@ -370,18 +541,22 @@
       align-items: center;
       gap: var(--space-4);
       padding: var(--space-4) var(--space-5);
-      border-bottom: 1px solid rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--border-faint);
+      border-left: 2px solid transparent;
       cursor: pointer;
-      transition: background var(--duration-fast);
+      transition: background 150ms var(--ease-out), border-color 150ms var(--ease-out);
     }
     .agent-mini-card:last-child { border-bottom: none; }
-    .agent-mini-card:hover { background: rgba(255,255,255,0.015); }
-    .agent-mini-card.selected { background: var(--ember-dim); border-left: 2px solid var(--ember); }
+    .agent-mini-card:hover { background: var(--bg-elevated); }
+    .agent-mini-card.selected {
+      background: var(--bg-elevated);
+      border-left-color: var(--text-medium);
+    }
 
     .agent-mini-glyph {
       width: 40px; height: 40px;
       border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-faint);
       overflow: hidden;
       flex-shrink: 0;
       background: var(--bg-elevated);
@@ -392,9 +567,9 @@
 
     .agent-mini-name {
       font-family: var(--font-sans);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-strong);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -404,28 +579,31 @@
       display: flex;
       gap: var(--space-3);
       font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-dim);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: var(--text-muted);
       margin-top: 2px;
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
     }
 
-    .agent-mini-meta .ember { color: var(--ember); }
+    .agent-mini-meta .data { color: var(--text-muted); }
 
     .agent-mini-tier {
       padding: 2px 8px;
-      font-family: var(--font-mono);
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+      font-family: var(--font-sans);
+      font-size: 0.5625rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
       border-radius: var(--radius-full);
       flex-shrink: 0;
     }
 
-    .tier-0 { color: var(--text-dim); background: rgba(255,255,255,0.06); }
-    .tier-1 { color: var(--text-muted); background: rgba(255,255,255,0.08); }
-    .tier-2 { color: var(--accent); background: rgba(74,222,128,0.1); }
-    .tier-3 { color: var(--ember); background: var(--ember-dim); }
+    .tier-0 { color: var(--text-ghost); background: var(--bg-elevated); border: 1px solid var(--border-faint); }
+    .tier-1 { color: var(--text-faint); background: var(--bg-elevated); border: 1px solid var(--border-muted); }
+    .tier-2 { color: var(--text-muted); background: var(--bg-elevated); border: 1px solid var(--border-default); }
+    .tier-3 { color: var(--text-medium); background: var(--bg-elevated); border: 1px solid var(--border-strong); }
 
     /* ===== STAKING PANEL ===== */
     .staking-panel {
@@ -434,22 +612,23 @@
     }
 
     .panel-card {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
       overflow: hidden;
       margin-bottom: var(--space-5);
+      background: var(--bg-surface);
     }
 
     .panel-header {
       padding: var(--space-3) var(--space-5);
-      background: rgba(255,255,255,0.02);
-      border-bottom: 1px solid var(--border);
-      font-family: var(--font-mono);
-      font-size: 10px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border-faint);
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
       font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
     }
 
     .panel-body {
@@ -463,13 +642,13 @@
       gap: var(--space-4);
       margin-bottom: var(--space-5);
       padding-bottom: var(--space-5);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--border-faint);
     }
 
     .selected-agent-glyph {
       width: 56px; height: 56px;
       border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-faint);
       overflow: hidden;
       background: var(--bg-elevated);
     }
@@ -477,16 +656,19 @@
 
     .selected-agent-name {
       font-family: var(--font-sans);
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--text);
+      font-size: 1.125rem;
+      font-weight: 200;
+      color: var(--text-strong);
+      letter-spacing: -0.01em;
     }
 
     .selected-agent-key {
       font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-dim);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: var(--text-muted);
       margin-top: 2px;
+      letter-spacing: 0.02em;
     }
 
     /* Staking stats grid */
@@ -494,34 +676,35 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
+      background: var(--border-faint);
+      border: 1px solid var(--border-faint);
       border-radius: var(--radius-sm);
       overflow: hidden;
       margin-bottom: var(--space-5);
     }
 
     .stake-stat {
-      background: rgba(255,255,255,0.015);
+      background: var(--bg-surface);
       padding: var(--space-3) var(--space-4);
       text-align: center;
     }
 
     .stake-stat-value {
       font-family: var(--font-mono);
-      font-size: 14px;
-      font-weight: 600;
-      color: rgba(255,255,255,0.85);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-strong);
       font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
     }
-    .stake-stat-value.ember { color: var(--ember); }
 
     .stake-stat-label {
-      font-family: var(--font-mono);
-      font-size: 8px;
+      font-family: var(--font-sans);
+      font-size: 0.5625rem;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
       margin-top: 2px;
     }
 
@@ -538,60 +721,72 @@
     }
 
     .stake-input-label span {
-      font-family: var(--font-mono);
-      font-size: 10px;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
     }
 
     .stake-input-label .balance {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
       color: var(--text-muted);
       cursor: pointer;
-      transition: color var(--duration-fast);
+      transition: color 150ms var(--ease-out);
+      font-variant-numeric: tabular-nums;
     }
-    .stake-input-label .balance:hover { color: var(--ember); }
+    .stake-input-label .balance:hover { color: var(--text-strong); }
 
     .stake-input-wrapper {
       display: flex;
       align-items: center;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-muted);
+      border-radius: var(--radius-sm);
+      background: var(--bg-subtle);
       overflow: hidden;
-      transition: border-color var(--duration-fast);
+      transition: border-color 150ms var(--ease-out);
     }
-    .stake-input-wrapper:focus-within { border-color: rgba(255,255,255,0.15); }
+    .stake-input-wrapper:focus-within { border-color: var(--border-strong); }
+    .stake-input-wrapper.has-error { border-color: rgba(239, 68, 68, 0.4); }
 
     .stake-input {
       flex: 1;
-      padding: 12px 16px;
+      padding: var(--space-3) var(--space-4);
       font-family: var(--font-mono);
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--text);
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--text-strong);
       background: transparent;
       border: none;
       outline: none;
       font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+      min-height: 44px;
     }
-    .stake-input::placeholder { color: var(--text-dim); }
+    .stake-input::placeholder { color: var(--text-ghost); }
 
     .stake-input-token {
-      padding: 0 16px;
+      padding: 0 var(--space-4);
       font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--ember);
-      letter-spacing: 0.05em;
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
     }
 
     .stake-input-error {
       font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--danger);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: var(--status-error);
       margin-top: var(--space-2);
       min-height: 16px;
+      letter-spacing: 0.02em;
+      transition: opacity 200ms var(--ease-out);
     }
 
     /* Quick amount buttons */
@@ -603,59 +798,75 @@
 
     .quick-btn {
       flex: 1;
-      padding: 6px;
+      padding: var(--space-1) 0;
+      min-height: 28px;
       font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-dim);
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--border);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border-faint);
       border-radius: var(--radius-sm);
       cursor: pointer;
       text-align: center;
-      transition: all var(--duration-fast);
+      transition: border-color 150ms var(--ease-out), color 150ms var(--ease-out);
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
     }
-    .quick-btn:hover { border-color: var(--border-hover); color: var(--text-muted); }
+    .quick-btn:hover { border-color: var(--border-default); color: var(--text-muted); }
+    .quick-btn:active { transform: scale(0.97); }
+
+    @media (pointer: coarse) {
+      .quick-btn { min-height: 44px; }
+    }
 
     /* No agent selected state */
     .no-agent-state {
       text-align: center;
-      padding: var(--space-8) var(--space-5);
+      padding: var(--space-10) var(--space-5);
     }
 
     .no-agent-sigil {
-      font-size: 40px;
-      color: rgba(255,255,255,0.06);
+      font-family: var(--font-mono);
+      font-size: 3rem;
+      font-weight: 200;
+      color: var(--text-ghost);
       margin-bottom: var(--space-4);
+      animation: breathe 5s ease-in-out infinite;
     }
 
     .no-agent-state p {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-dim);
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-muted);
       text-align: center;
     }
 
     /* ===== ACTIVE STAKES SECTION ===== */
     .active-stakes {
       margin-top: var(--space-8);
+      content-visibility: auto;
     }
 
     .stake-position {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-faint);
+      border-radius: var(--radius-md);
       overflow: hidden;
       margin-bottom: var(--space-4);
-      transition: border-color var(--duration-fast);
+      background: var(--bg-surface);
+      transition: border-color 200ms var(--ease-out);
       animation: fadeInUp 0.3s var(--ease-out);
     }
-    .stake-position:hover { border-color: var(--border-hover); }
+    .stake-position:hover { border-color: var(--border-subtle); }
+    .stake-position.success { animation: successFlash 0.6s var(--ease-out); }
 
     .position-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: var(--space-4) var(--space-5);
-      background: rgba(255,255,255,0.015);
+      background: var(--bg-elevated);
     }
 
     .position-agent {
@@ -667,7 +878,7 @@
     .position-agent-glyph {
       width: 32px; height: 32px;
       border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-faint);
       overflow: hidden;
       background: var(--bg-elevated);
     }
@@ -675,17 +886,18 @@
 
     .position-agent-name {
       font-family: var(--font-sans);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-strong);
     }
 
     .position-amount {
       font-family: var(--font-mono);
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--ember);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-strong);
       font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
     }
 
     .position-body {
@@ -693,15 +905,18 @@
       align-items: center;
       justify-content: space-between;
       padding: var(--space-3) var(--space-5);
-      border-top: 1px solid rgba(255,255,255,0.03);
+      border-top: 1px solid var(--border-faint);
     }
 
     .position-meta {
       display: flex;
       gap: var(--space-4);
       font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-dim);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
     }
 
     .position-actions {
@@ -712,8 +927,8 @@
     /* Cooldown bar */
     .cooldown-bar {
       padding: var(--space-3) var(--space-5);
-      background: rgba(245,158,11,0.05);
-      border-top: 1px solid rgba(245,158,11,0.15);
+      background: var(--bg-elevated);
+      border-top: 1px solid var(--border-faint);
     }
 
     .cooldown-info {
@@ -724,32 +939,35 @@
     }
 
     .cooldown-label {
-      font-family: var(--font-mono);
-      font-size: 10px;
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--warning);
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
     }
 
     .cooldown-timer {
       font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--warning);
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text-medium);
       font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
     }
 
     .cooldown-progress {
-      height: 3px;
-      background: rgba(255,255,255,0.06);
-      border-radius: var(--radius-full);
+      height: 2px;
+      background: var(--border-faint);
+      border-radius: 1px;
       overflow: hidden;
     }
 
     .cooldown-progress-fill {
       height: 100%;
-      background: var(--warning);
-      border-radius: var(--radius-full);
+      background: var(--text-ghost);
+      border-radius: 1px;
       transition: width 1s linear;
     }
 
@@ -757,57 +975,67 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.8);
-      z-index: var(--z-overlay);
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 200;
       display: none;
       align-items: center;
       justify-content: center;
-      animation: fadeIn 0.2s ease;
+      animation: fadeIn 0.15s var(--ease-out);
     }
     .modal-overlay.visible { display: flex; }
 
     .modal {
       background: var(--bg-elevated);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-faint);
       border-radius: var(--radius-md);
       padding: var(--space-8);
       max-width: 440px;
       width: 90%;
-      animation: fadeInUp 0.3s var(--ease-out);
+      animation: fadeInUp 0.25s var(--ease-out);
     }
 
     .modal-icon {
-      font-size: 32px;
+      font-size: 1.5rem;
       margin-bottom: var(--space-4);
     }
 
     .modal h3 {
       font-family: var(--font-sans);
-      font-size: 18px;
-      font-weight: 500;
-      color: var(--text);
+      font-size: 1.125rem;
+      font-weight: 200;
+      color: var(--text-strong);
       margin-bottom: var(--space-3);
+      letter-spacing: -0.01em;
     }
 
     .modal p {
-      font-size: 13px;
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 400;
       color: var(--text-muted);
       margin-bottom: var(--space-5);
+      line-height: 1.7;
+      max-width: 65ch;
     }
 
     .modal-warning {
       padding: var(--space-4);
-      border: 1px solid rgba(239,68,68,0.2);
-      background: rgba(239,68,68,0.05);
+      border: 1px solid rgba(239, 68, 68, 0.15);
+      background: rgba(239, 68, 68, 0.03);
       border-radius: var(--radius-sm);
       margin-bottom: var(--space-5);
     }
 
     .modal-warning p {
-      color: var(--danger);
+      color: var(--text-muted);
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 0.75rem;
+      font-weight: 400;
       margin: 0;
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
     }
 
     .modal-actions {
@@ -823,49 +1051,170 @@
       left: 50%;
       transform: translateX(-50%) translateY(100px);
       background: var(--bg-elevated);
-      border: 1px solid var(--accent);
+      border: 1px solid var(--border-default);
       padding: var(--space-3) var(--space-5);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-sm);
       font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text);
       z-index: 300;
-      transition: transform 0.3s var(--ease-out), opacity 0.3s;
+      transition: transform 300ms var(--ease-out), opacity 300ms var(--ease-out);
       opacity: 0;
       pointer-events: none;
+      letter-spacing: 0.02em;
     }
     .toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.error { border-color: rgba(239, 68, 68, 0.3); color: var(--status-error); }
+    .toast.success { border-color: rgba(34, 197, 94, 0.2); }
 
     /* ===== FOOTER ===== */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: var(--space-12) var(--space-8) var(--space-10);
-      margin-top: var(--space-8);
+    .footer {
+      border-top: 1px solid var(--border-faint);
+      padding: var(--space-16) 0;
+      width: min(90vw, 1200px);
+      margin: 0 auto;
+      content-visibility: auto;
     }
 
-    .footer-content {
-      max-width: 1200px;
-      margin: 0 auto;
+    .footer-inner {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: var(--space-3);
     }
 
-    .footer-brand { font-family: var(--font-mono); font-size: 12px; color: rgba(255,255,255,0.2); text-align: center; }
-    .footer-brand .ember-text { color: var(--ember); }
-    .footer-meta { font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,0.12); text-align: center; }
-
-    .footer-links { display: flex; gap: var(--space-8); margin-top: var(--space-3); flex-wrap: wrap; justify-content: center; }
-    .footer-links a {
-      color: rgba(255,255,255,0.2);
-      text-decoration: none;
+    .footer-brand {
       font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.05em;
-      transition: color 0.25s ease;
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text-ghost);
+      letter-spacing: 0.1em;
     }
-    .footer-links a:hover { color: rgba(255,255,255,0.5); }
+
+    .footer-meta {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: var(--space-8);
+      margin-top: var(--space-3);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-links a {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 150ms var(--ease-out);
+      padding: var(--space-1) 0;
+    }
+    .footer-links a:hover { color: var(--text-muted); }
+
+    /* ===== TOKEN INFO BANNER ===== */
+    .token-info-banner {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      padding: var(--space-5) var(--space-6);
+      margin-bottom: var(--space-8);
+      animation: fadeInUp 0.4s var(--ease-out);
+    }
+
+    .token-info-banner__title {
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-strong);
+      margin-bottom: var(--space-3);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .token-info-banner__title .icon {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    .token-info-banner__grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3) var(--space-6);
+    }
+
+    .token-info-banner__item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .token-info-banner__label {
+      font-family: var(--font-sans);
+      font-size: 0.625rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+    }
+
+    .token-info-banner__value {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-medium);
+      line-height: 1.5;
+    }
+
+    .token-info-banner__value a {
+      color: var(--text);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-default);
+      transition: border-color 150ms var(--ease-out), color 150ms var(--ease-out);
+    }
+
+    .token-info-banner__value a:hover {
+      color: var(--text-strong);
+      border-bottom-color: var(--text-muted);
+    }
+
+    .token-info-banner__mint {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: var(--text-medium);
+      letter-spacing: 0.02em;
+      user-select: all;
+      -webkit-user-select: all;
+      word-break: break-all;
+      line-height: 1.5;
+      background: var(--bg-elevated);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-faint);
+      display: inline-block;
+      margin-top: 2px;
+    }
+
+    .token-info-banner__full-width {
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 600px) {
+      .token-info-banner__grid {
+        grid-template-columns: 1fr;
+      }
+      .token-info-banner {
+        padding: var(--space-4) var(--space-4);
+      }
+    }
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 900px) {
@@ -875,52 +1224,107 @@
     }
 
     @media (max-width: 768px) {
-      header { padding: var(--space-4); }
-      nav { gap: var(--space-4); }
-      nav a { font-size: 10px; }
-      .build-meta { display: none; }
+      .nav { padding: 0 var(--space-4); }
+      .nav-mobile-toggle { display: inline-flex; }
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-2);
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        padding: var(--space-4);
+        background: rgba(5,5,5,0.98);
+        border-bottom: 1px solid var(--border);
+        z-index: 120;
+      }
+      .nav-links.open a {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        font-size: 0.875rem;
+        padding: 0 var(--space-2);
+      }
       main { padding: var(--space-6) var(--space-4); }
       .wallet-bar { flex-direction: column; gap: var(--space-3); align-items: flex-start; }
       .stake-stats { grid-template-columns: 1fr; }
     }
+
+    /* ===== REDUCED MOTION ===== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .no-agent-sigil { animation: none; }
+      .agent-loading { animation: none; }
+    }
   </style>
 </head>
 <body>
+<div class="page">
 
-  <!-- Header -->
-  <header>
-    <div class="header-left">
-      <a href="index.html" class="logo">
-        <span class="logo-sigil">⏀</span>
-        <div class="logo-text">SIGIL<span> PROTOCOL</span></div>
-      </a>
-      <span class="build-meta">v0.5.0 · solana mainnet</span>
-    </div>
-    <nav>
+  <!-- Nav -->
+  <nav class="nav">
+    <a href="index.html" class="nav-logo">
+      <span class="glyph">⏀</span>
+      SIGIL
+    </a>
+    <button class="nav-mobile-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+    <div class="nav-links" id="navLinks">
       <a href="index.html">Protocol</a>
       <a href="register.html">Register</a>
       <a href="gallery.html">Gallery</a>
       <a href="stake.html" class="active">Stake</a>
       <a href="passport.html">Passport</a>
       <a href="verify.html">Verify</a>
-        <a href="integrations.html">Integrate</a>
-      <a href="portfolio.html">Portfolio</a>
+      <a href="integrations.html">Integrate</a>
       <a href="leaderboard.html">Leaderboard</a>
-    </nav>
-  </header>
+    </div>
+  </nav>
 
   <!-- Main -->
   <main>
 
     <!-- Page Header -->
-    <div style="margin-bottom: var(--space-6);">
-      <p class="section-label">$SIGIL Staking</p>
+    <div class="page-header">
+      <span class="section-label">$SIGIL STAKING</span>
       <h1>Stake to Persist</h1>
-      <p style="max-width: 640px;">Back high-signal agents in three steps. Every stake action is signed with a one-time nonce so approvals cannot be replayed.</p>
-      <div class="flow-steps">
-        <div class="flow-step"><span class="flow-step-index">1</span>Connect wallet</div>
-        <div class="flow-step"><span class="flow-step-index">2</span>Select an agent</div>
-        <div class="flow-step"><span class="flow-step-index">3</span>Sign and stake</div>
+      <p class="page-desc">Back high-signal agents in three steps. Every stake action is signed with a one-time nonce so approvals cannot be replayed.</p>
+      <div class="flow-steps" id="flowSteps">
+        <div class="flow-step active" data-step="1"><span class="flow-step-index">1</span>Connect wallet</div>
+        <div class="flow-step" data-step="2"><span class="flow-step-index">2</span>Select an agent</div>
+        <div class="flow-step" data-step="3"><span class="flow-step-index">3</span>Sign and stake</div>
+      </div>
+    </div>
+
+    <!-- Token Info Banner -->
+    <div class="token-info-banner">
+      <div class="token-info-banner__title">
+        <span class="icon">⏀</span>
+        You need $SIGIL tokens to stake
+      </div>
+      <div class="token-info-banner__grid">
+        <div class="token-info-banner__item token-info-banner__full-width">
+          <span class="token-info-banner__label">Token Mint Address</span>
+          <code class="token-info-banner__mint">4jja37YHJWuGBHMicmHXFUENa7DpD7JcUUS47C4QBAGS</code>
+        </div>
+        <div class="token-info-banner__item">
+          <span class="token-info-banner__label">Where to Get $SIGIL</span>
+          <span class="token-info-banner__value">Swap SOL or USDC on <a href="https://jup.ag" target="_blank" rel="noopener">Jupiter</a> or <a href="https://raydium.io" target="_blank" rel="noopener">Raydium</a></span>
+        </div>
+        <div class="token-info-banner__item">
+          <span class="token-info-banner__label">Staking Range</span>
+          <span class="token-info-banner__value">1,000 – 50,000 $SIGIL per agent</span>
+        </div>
+        <div class="token-info-banner__item">
+          <span class="token-info-banner__label">Cooldown Period</span>
+          <span class="token-info-banner__value">7-day withdrawal period</span>
+        </div>
       </div>
     </div>
 
@@ -929,12 +1333,12 @@
       <div class="wallet-bar-info">
         <div class="wallet-status">
           <span class="wallet-dot disconnected" id="walletDot"></span>
-          <span id="walletStatusText" style="color: var(--text-dim);">Not Connected</span>
+          <span id="walletStatusText" style="color: var(--text-muted);">Not Connected</span>
         </div>
         <span class="wallet-address" id="walletAddress" style="display:none;"></span>
         <span class="wallet-balance" id="walletBalance" style="display:none;"></span>
       </div>
-      <button class="btn btn--primary btn--small" id="connectWalletBtn" onclick="connectWallet()">
+      <button class="btn btn--connect btn--small" id="connectWalletBtn" onclick="connectWallet()">
         <span class="btn-text">Connect Wallet</span>
       </button>
     </div>
@@ -946,21 +1350,18 @@
       <div>
         <div class="agent-browser">
           <div class="browser-header">
-            <span class="browser-title">⏀ Browse Agents</span>
-            <input type="text" class="browser-search" id="agentSearch" placeholder="Search agents..." autocomplete="off" spellcheck="false">
+            <span class="browser-title">Browse Agents</span>
+            <input type="text" class="browser-search" id="agentSearch" placeholder="Search agents…" autocomplete="off" spellcheck="false">
           </div>
           <div class="agent-list" id="agentList">
-            <!-- Populated by JS -->
-            <div style="text-align:center; padding: 40px; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);">Loading agents...</div>
+            <div class="agent-loading">Loading agents…</div>
           </div>
         </div>
 
         <!-- Active Stakes -->
         <div class="active-stakes" id="activeStakes" style="display:none;">
-          <p class="section-label" style="margin-top: var(--space-8);">Your Active Stakes</p>
-          <div id="stakePositions">
-            <!-- Populated by JS -->
-          </div>
+          <span class="section-label" style="margin-top: var(--space-8); display: block;">Your Active Stakes</span>
+          <div id="stakePositions"></div>
         </div>
       </div>
 
@@ -969,7 +1370,7 @@
 
         <!-- No Agent Selected -->
         <div class="panel-card" id="noAgentPanel">
-          <div class="panel-header">⏀ Staking Panel</div>
+          <div class="panel-header">Staking Panel</div>
           <div class="panel-body">
             <div class="no-agent-state">
               <div class="no-agent-sigil">⏀</div>
@@ -983,7 +1384,7 @@
 
           <!-- Agent Info -->
           <div class="panel-card">
-            <div class="panel-header">◆ Selected Agent</div>
+            <div class="panel-header">Selected Agent</div>
             <div class="panel-body">
               <div class="selected-agent-display">
                 <div class="selected-agent-glyph">
@@ -997,7 +1398,7 @@
 
               <div class="stake-stats">
                 <div class="stake-stat">
-                  <div class="stake-stat-value ember" id="agentTotalStaked">0</div>
+                  <div class="stake-stat-value" id="agentTotalStaked">0</div>
                   <div class="stake-stat-label">Total Staked</div>
                 </div>
                 <div class="stake-stat">
@@ -1014,18 +1415,18 @@
 
           <!-- Stake Form -->
           <div class="panel-card">
-            <div class="panel-header">◇ Stake $SIGIL</div>
+            <div class="panel-header">Stake $SIGIL</div>
             <div class="panel-body">
               <div class="stake-input-group">
                 <div class="stake-input-label">
                   <span>Amount</span>
                   <span class="balance" id="availableBalance" onclick="setMaxAmount()" title="Click to fill max">Balance: — SIGIL</span>
                 </div>
-                <div class="stake-input-wrapper">
+                <div class="stake-input-wrapper" id="stakeInputWrapper">
                   <input type="number" class="stake-input" id="stakeAmount" placeholder="0" min="1000" max="50000" step="100">
                   <span class="stake-input-token">SIGIL</span>
                 </div>
-                <div class="stake-input-error" id="stakeError"></div>
+                <div class="stake-input-error" id="stakeError" role="alert" aria-live="polite"></div>
               </div>
 
               <div class="quick-amounts">
@@ -1036,7 +1437,7 @@
                 <button class="quick-btn" onclick="setAmount(50000)">50K</button>
               </div>
 
-              <button class="btn btn--ember" id="stakeBtn" style="width:100%;" onclick="executeStake()" disabled>
+              <button class="btn btn--primary" id="stakeBtn" style="width:100%;" onclick="executeStake()" disabled>
                 <span class="btn-text">Connect Wallet to Stake</span>
               </button>
             </div>
@@ -1052,11 +1453,11 @@
   <!-- Emergency Unstake Modal -->
   <div class="modal-overlay" id="emergencyModal">
     <div class="modal">
-      <div class="modal-icon">⚠️</div>
+      <div class="modal-icon">⚠</div>
       <h3>Emergency Unstake</h3>
       <p>You are about to emergency unstake from <strong id="emergencyAgentName">—</strong>. This is an instant withdrawal with a penalty.</p>
       <div class="modal-warning">
-        <p>⚠ 10% PENALTY — <span id="emergencySlashAmount">—</span> SIGIL will be permanently burned to the treasury. You will receive <span id="emergencyReturnAmount">—</span> SIGIL.</p>
+        <p>10% penalty — <span id="emergencySlashAmount">—</span> SIGIL will be permanently burned to the treasury. You will receive <span id="emergencyReturnAmount">—</span> SIGIL.</p>
       </div>
       <div class="modal-actions">
         <button class="btn btn--secondary btn--small" onclick="closeEmergencyModal()">Cancel</button>
@@ -1066,30 +1467,51 @@
   </div>
 
   <!-- Toast -->
-  <div class="toast" id="toast">✓ Transaction submitted</div>
+  <div class="toast" id="toast" role="status" aria-live="polite">✓ Transaction submitted</div>
 
   <!-- Footer -->
-  <footer>
-    <div class="footer-content">
-      <div class="footer-brand"><span class="ember-text">⏀</span> SIGIL PROTOCOL · v0.5.0 · Solana</div>
-      <div class="footer-meta">deployed autonomously · identity protocol for AI agents</div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">⏀ SIGIL PROTOCOL</div>
+      <div class="footer-meta">identity infrastructure for autonomous agents</div>
       <nav class="footer-links">
         <a href="index.html">Protocol</a>
         <a href="register.html">Register</a>
         <a href="gallery.html">Gallery</a>
-        <a href="dashboard.html">Registry</a>
         <a href="stake.html">Stake</a>
         <a href="passport.html">Passport</a>
         <a href="verify.html">Verify</a>
         <a href="integrations.html">Integrate</a>
-        <a href="portfolio.html">Portfolio</a>
         <a href="leaderboard.html">Leaderboard</a>
       </nav>
     </div>
   </footer>
 
+</div>
+
   <script src="https://unpkg.com/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
   <script>
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    if (navToggle && navLinks) {
+      navToggle.addEventListener('click', () => {
+        const isOpen = navLinks.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', String(isOpen));
+      });
+      navLinks.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
     const API_BASE = location.protocol === 'file:'
       ? 'http://localhost:3141'
       : location.origin;
@@ -1122,9 +1544,18 @@
     }
     function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
 
-    function showToast(msg) {
+    /* Flow step indicator */
+    function updateFlowStep(step) {
+      document.querySelectorAll('.flow-step').forEach((el) => {
+        const s = parseInt(el.dataset.step, 10);
+        el.classList.toggle('active', s <= step);
+      });
+    }
+
+    function showToast(msg, type = '') {
       const t = document.getElementById('toast');
       t.textContent = msg;
+      t.className = 'toast' + (type ? ' ' + type : '');
       t.classList.add('visible');
       setTimeout(() => t.classList.remove('visible'), 3000);
     }
@@ -1289,9 +1720,13 @@
     async function connectWallet() {
       const provider = wallet();
       if (!provider) {
-        showToast('No wallet detected. Install Phantom or Solflare.');
+        showToast('No wallet detected. Install Phantom or Solflare.', 'error');
         return;
       }
+
+      const btn = document.getElementById('connectWalletBtn');
+      btn.innerHTML = '<span class="btn-text">Connecting…</span>';
+      btn.style.animation = 'breathe 2s ease-in-out infinite';
 
       try {
         const resp = await provider.connect();
@@ -1299,16 +1734,21 @@
         walletProvider = provider;
         walletConnected = true;
 
+        btn.style.animation = '';
+
+        document.getElementById('walletBar').classList.add('connected');
         document.getElementById('walletDot').classList.remove('disconnected');
         document.getElementById('walletDot').classList.add('connected');
         document.getElementById('walletStatusText').textContent = 'Connected';
-        document.getElementById('walletStatusText').style.color = 'var(--accent)';
+        document.getElementById('walletStatusText').style.color = 'var(--text-muted)';
         document.getElementById('walletAddress').textContent = truncKey(walletPublicKey);
         document.getElementById('walletAddress').style.display = 'inline';
         document.getElementById('connectWalletBtn').innerHTML = '<span class="btn-text">Disconnect</span>';
         document.getElementById('connectWalletBtn').onclick = disconnectWallet;
-        document.getElementById('connectWalletBtn').classList.remove('btn--primary');
+        document.getElementById('connectWalletBtn').classList.remove('btn--connect');
         document.getElementById('connectWalletBtn').classList.add('btn--secondary');
+
+        updateFlowStep(selectedAgent ? 3 : 2);
 
         sigilBalance = await fetchSigilBalance(walletPublicKey);
         document.getElementById('walletBalance').textContent = balanceKnown
@@ -1323,7 +1763,9 @@
         updateStakeButton();
       } catch (err) {
         console.error('Wallet connect failed:', err);
-        showToast('Wallet connection failed');
+        btn.style.animation = '';
+        btn.innerHTML = '<span class="btn-text">Connect Wallet</span>';
+        showToast('Wallet connection failed', 'error');
       }
     }
 
@@ -1336,18 +1778,20 @@
       balanceKnown = false;
       stakePositions = [];
 
+      document.getElementById('walletBar').classList.remove('connected');
       document.getElementById('walletDot').classList.add('disconnected');
       document.getElementById('walletDot').classList.remove('connected');
       document.getElementById('walletStatusText').textContent = 'Not Connected';
-      document.getElementById('walletStatusText').style.color = 'var(--text-dim)';
+      document.getElementById('walletStatusText').style.color = 'var(--text-muted)';
       document.getElementById('walletAddress').style.display = 'none';
       document.getElementById('walletBalance').style.display = 'none';
       document.getElementById('connectWalletBtn').innerHTML = '<span class="btn-text">Connect Wallet</span>';
       document.getElementById('connectWalletBtn').onclick = connectWallet;
-      document.getElementById('connectWalletBtn').classList.add('btn--primary');
+      document.getElementById('connectWalletBtn').classList.add('btn--connect');
       document.getElementById('connectWalletBtn').classList.remove('btn--secondary');
       document.getElementById('availableBalance').textContent = 'Balance: — SIGIL';
       document.getElementById('activeStakes').style.display = 'none';
+      updateFlowStep(1);
       updateStakeButton();
       renderPositions();
     }
@@ -1370,27 +1814,30 @@
       } catch (err) {
         console.error(err);
         document.getElementById('agentList').innerHTML =
-          '<div style="text-align:center; padding: 40px; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);">Failed to load agents</div>';
+          '<div class="agent-empty">Failed to load agents — <a href="#" onclick="loadAgents(); return false;" style="color: var(--text-muted); text-decoration: underline;">retry</a></div>';
       }
     }
 
     function renderAgentList(agents) {
       const list = document.getElementById('agentList');
       if (!agents.length) {
-        list.innerHTML = '<div style="text-align:center; padding: 40px; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);">No agents found</div>';
+        list.innerHTML = '<div class="agent-empty">No agents found</div>';
         return;
       }
       list.innerHTML = agents.map((a) => `
         <div class="agent-mini-card ${selectedAgent && selectedAgent.publicKey === a.publicKey ? 'selected' : ''}"
              onclick="selectAgent('${a.publicKey}')"
-             data-key="${a.publicKey}">
+             data-key="${a.publicKey}"
+             role="button"
+             tabindex="0"
+             onkeydown="if(event.key==='Enter')selectAgent('${a.publicKey}')">
           <div class="agent-mini-glyph">
             <img src="${API_BASE}/api/glyph/${a.publicKey}" alt="" loading="lazy" onerror="this.style.opacity='0.15'">
           </div>
           <div class="agent-mini-info">
             <div class="agent-mini-name">${escapeHtml(a.displayName || 'Anonymous Agent')}</div>
             <div class="agent-mini-meta">
-              <span class="ember">${formatStake(a.totalStaked)} staked</span>
+              <span class="data">${formatStake(a.totalStaked)} staked</span>
               <span>${a.stakerCount} stakers</span>
             </div>
           </div>
@@ -1429,6 +1876,7 @@
       document.getElementById('agentStakers').textContent = selectedAgent.stakerCount;
       document.getElementById('agentTier').textContent = 'T' + selectedAgent.tier;
 
+      updateFlowStep(walletConnected ? 3 : 2);
       updateStakeButton();
     }
 
@@ -1448,28 +1896,34 @@
     function validateStake() {
       const val = parseInt(document.getElementById('stakeAmount').value, 10) || 0;
       const errorEl = document.getElementById('stakeError');
+      const wrapper = document.getElementById('stakeInputWrapper');
 
       if (val === 0) {
         errorEl.textContent = '';
+        wrapper.classList.remove('has-error');
         updateStakeButton();
         return false;
       }
       if (val < MIN_STAKE) {
         errorEl.textContent = `Minimum stake is ${MIN_STAKE.toLocaleString()} SIGIL`;
+        wrapper.classList.add('has-error');
         updateStakeButton();
         return false;
       }
       if (val > MAX_STAKE) {
         errorEl.textContent = `Maximum stake per agent is ${MAX_STAKE.toLocaleString()} SIGIL`;
+        wrapper.classList.add('has-error');
         updateStakeButton();
         return false;
       }
       if (walletConnected && balanceKnown && val > sigilBalance) {
         errorEl.textContent = `Insufficient balance (${formatStake(sigilBalance)} SIGIL available)`;
+        wrapper.classList.add('has-error');
         updateStakeButton();
         return false;
       }
       errorEl.textContent = '';
+      wrapper.classList.remove('has-error');
       updateStakeButton();
       return true;
     }
@@ -1526,13 +1980,14 @@
         document.getElementById('availableBalance').textContent = balanceKnown
           ? `Balance: ${formatStake(sigilBalance)} SIGIL`
           : 'Balance: unavailable';
-        showToast(`Staked ${formatStake(amount)} SIGIL`);
+
+        showToast(`Staked ${formatStake(amount)} SIGIL`, 'success');
         await loadAgents();
         await loadPositions();
         updateStakeButton();
       } catch (err) {
         console.error(err);
-        showToast(err.message || 'Stake transaction failed');
+        showToast(err.message || 'Stake transaction failed', 'error');
       } finally {
         btn.classList.remove('btn--loading');
       }
@@ -1693,12 +2148,12 @@
         const payload = { stakerPublicKey: walletPublicKey, agentPublicKey: pos.agentId, amount };
         const { signature, nonce, sessionId, domain } = await signStakeAction('begin_unstake', payload);
         await apiPost('/api/staking/begin-unstake', { ...payload, signature, nonce, sessionId, domain });
-        showToast('Cooldown started');
+        showToast('Cooldown started', 'success');
         await loadAgents();
         await loadPositions();
       } catch (err) {
         console.error(err);
-        showToast(err.message || 'Failed to begin unstake');
+        showToast(err.message || 'Failed to begin unstake', 'error');
       }
     }
 
@@ -1731,12 +2186,12 @@
         } else {
           await apiPost('/api/staking/complete-unstake', { ...payload, signature, nonce, sessionId, domain });
         }
-        showToast('Unstake completed');
+        showToast('Unstake completed', 'success');
         await loadAgents();
         await loadPositions();
       } catch (err) {
         console.error(err);
-        showToast(err.message || 'Failed to complete unstake');
+        showToast(err.message || 'Failed to complete unstake', 'error');
       }
     }
 
@@ -1747,12 +2202,12 @@
         const payload = { stakerPublicKey: walletPublicKey, agentPublicKey: pos.agentId };
         const { signature, nonce, sessionId, domain } = await signStakeAction('cancel_unstake', payload);
         await apiPost('/api/staking/cancel-unstake', { ...payload, signature, nonce, sessionId, domain });
-        showToast('Cooldown cancelled');
+        showToast('Cooldown cancelled', 'success');
         await loadAgents();
         await loadPositions();
       } catch (err) {
         console.error(err);
-        showToast(err.message || 'Failed to cancel cooldown');
+        showToast(err.message || 'Failed to cancel cooldown', 'error');
       }
     }
 
@@ -1810,12 +2265,12 @@
           await apiPost('/api/staking/emergency-unstake', { ...payload, signature, nonce, sessionId, domain });
         }
         closeEmergencyModal();
-        showToast('Emergency unstake executed');
+        showToast('Emergency unstake executed', 'success');
         await loadAgents();
         await loadPositions();
       } catch (err) {
         console.error(err);
-        showToast(err.message || 'Emergency unstake failed');
+        showToast(err.message || 'Emergency unstake failed', 'error');
       }
     }
 

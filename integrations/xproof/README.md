@@ -157,6 +157,29 @@ The `verify_url` becomes the `actionRef` in the SIGIL receipt.
 
 ### 3. Submit SIGIL receipt with xProof anchor embedded
 
+**Minimal example — copy-paste for any SIGIL agent:**
+
+```json
+{
+  "publicKey": "hPyhbS1U9gVmgFypavVqtoq6ksPg5kQWPJV5pCRd4G2",
+  "type": "action",
+  "seq": 2,
+  "timestamp": "2026-03-09T21:30:00.000Z",
+  "intentHash":      "a3f1c2d4e5b6...",
+  "actionRef":       "https://xproof.app/proof/06ebe57c-5485-4efc-a87c-b7cb16c9118c",
+  "resultHash":      "9d8e7f6a5b4c...",
+  "prevReceiptHash": "939c3f8ee240986473cee3c2666ee0e01894ad984677b31c52f98a7811846c5b",
+  "signature":       "Ed25519_signature",
+  "payload": {
+    "xproof_proof_id":   "06ebe57c-5485-4efc-a87c-b7cb16c9118c",
+    "xproof_verify_url": "https://xproof.app/proof/06ebe57c-5485-4efc-a87c-b7cb16c9118c",
+    "xproof_tx":         "multiversx_transaction_hash"
+  }
+}
+```
+
+`actionRef` = xProof `verify_url`. `payload` carries the full cross-reference. No SIGIL schema changes required.
+
 ```bash
 curl -X POST https://sigilprotocol.xyz/api/receipts \
   -H "Content-Type: application/json" \

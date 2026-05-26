@@ -1,7 +1,7 @@
 # xProof × SIGIL — Temporal Anchoring for Receipt Chains
 
 **Status:** Production  
-**xProof version:** 2.0.0  
+**xProof version:** 3.0.0  
 **SIGIL compatibility:** v0.5.0+
 
 ---
